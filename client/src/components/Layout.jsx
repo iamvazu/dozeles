@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import { api } from '../api.js';
-import Icon from './Icon.jsx';
+import Header from './Header.jsx';
 import { SERVICES } from '../data/services.js';
 import { CITIES } from '../data/cities.js';
 
@@ -19,7 +19,6 @@ const NAV = [
 
 export default function Layout() {
   const { site } = useContent();
-  const [open, setOpen] = useState(false);
   const [subEmail, setSubEmail] = useState('');
   const [subMsg, setSubMsg] = useState('');
 
@@ -36,36 +35,7 @@ export default function Layout() {
 
   return (
     <>
-      <div className="topbar">
-        <div className="container">
-          <div className="topbar-items">
-            <a href={`tel:${site.phoneRaw}`}><Icon name="phone" size={13} /> {site.phone}</a>
-            <span>{site.hours}</span>
-            <a href={`mailto:${site.email}`}>{site.email}</a>
-          </div>
-          <div className="topbar-items">
-            <span>Licensed &amp; Insured · Women-Certified Business</span>
-          </div>
-        </div>
-      </div>
-
-      <header className="header">
-        <div className="container">
-          <Link to="/" className="logo"><img src={site.logo} alt="Dozeles Professional Cleaning" /></Link>
-          <nav className={`nav ${open ? 'open' : ''}`}>
-            {NAV.map((n) => (
-              <NavLink key={n.to} to={n.to} onClick={() => setOpen(false)} end={n.to === '/'}>
-                {n.label}
-              </NavLink>
-            ))}
-            <a href={`tel:${site.phoneRaw}`} className="nav-phone">
-              <Icon name="phone" size={16} /> {site.phone}
-            </a>
-            <Link to="/book" className="btn btn-blue" onClick={() => setOpen(false)}>Free Quote</Link>
-          </nav>
-          <button className="hamburger" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
-        </div>
-      </header>
+      <Header site={site} />
 
       <main>
         <Outlet />
