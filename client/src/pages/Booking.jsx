@@ -1,12 +1,22 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import { PageBanner } from '../components/Shared.jsx';
+import Icon from '../components/Icon.jsx';
 import { api } from '../api.js';
+import { SERVICES } from '../data/services.js';
 
 export default function Booking() {
-  const { services, site } = useContent();
+  const { site } = useContent();
+  const [params] = useSearchParams();
+  const est = params.get('est');
+  const summary = params.get('summary');
+
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', service: '', date: '', time: '', address: '', notes: '',
+    name: '', email: '', phone: '',
+    service: params.get('service') || '',
+    date: '', time: '', address: '',
+    notes: summary ? `Calculator estimate — ${summary}` : '',
   });
   const [state, setState] = useState(null);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -35,6 +45,17 @@ export default function Booking() {
               Pick a service and a date that works for you — we'll confirm your appointment right away.
             </p>
           </div>
+
+          {est && (
+            <div className="est-banner">
+              <span className="icon"><Icon name="badge" size={26} /></span>
+              <div>
+                <strong>Your calculator estimate: ${Number(est).toLocaleString()}</strong>
+                {summary && <p>{summary}</p>}
+                <small>We'll confirm this in writing after a free walkthrough.</small>
+              </div>
+            </div>
+          )}
           <form className="form card" onSubmit={submit} style={{ padding: 34 }}>
             <div className="form-row">
               <input placeholder="Full name *" value={form.name} onChange={set('name')} required />
@@ -43,7 +64,7 @@ export default function Booking() {
             <input type="email" placeholder="Email" value={form.email} onChange={set('email')} />
             <select value={form.service} onChange={set('service')} required>
               <option value="">Select a service *</option>
-              {services.map((s) => <option key={s.id} value={s.title}>{s.title}</option>)}
+              {SERVICES.map((s) => <option key={s.slug} value={s.title}>{s.title}</option>)}
             </select>
             <div className="form-row">
               <input type="date" value={form.date} onChange={set('date')} required />
@@ -51,7 +72,7 @@ export default function Booking() {
             </div>
             <input placeholder="Address" value={form.address} onChange={set('address')} />
             <textarea placeholder="Anything we should know? (size of space, pets, access...)" value={form.notes} onChange={set('notes')} />
-            <button className="btn btn-green" type="submit">Request Booking</button>
+            <button className="btn btn-blue" type="submit">Request Booking</button>
             {state && <div className={`form-note ${state.ok ? 'ok' : 'err'}`}>{state.msg}</div>}
           </form>
         </div>

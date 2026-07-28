@@ -17,7 +17,7 @@ const HOME_FAQS = [
   },
   {
     q: 'How much does cleaning cost in the Bay Area?',
-    a: 'Residential house cleaning starts at $149 per visit and typically runs $149–$279 depending on size and frequency. Commercial janitorial contracts price between $0.09 and $0.20 per square foot per visit. Move-out deep cleans run $280–$650. Every quote is fixed and written after a free walkthrough — no hourly billing and no surprises.',
+    a: 'Residential house cleaning starts at $149 per visit and typically runs $149–$329 depending on size, frequency, and scope. Commercial janitorial is contracted monthly at roughly $0.10–$0.45 per square foot per month. Move-out and deep cleans run $280–$650. Use the calculator on our pricing page for an instant estimate — every quote is then fixed in writing after a free walkthrough.',
   },
   {
     q: 'Are cleaning supplies and equipment included?',

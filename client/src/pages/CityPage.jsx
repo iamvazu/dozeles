@@ -21,7 +21,7 @@ export default function CityPage() {
   const cityFaqs = [
     {
       q: `How much do cleaning services cost in ${city.name}?`,
-      a: `Cleaning costs in ${city.name} depend on the service. Recurring house cleaning typically runs $140–$260 per visit; commercial and janitorial contracts generally price at $0.08–$0.20 per square foot per visit; move-out deep cleans run $280–$650. Every Dozeles quote in ${city.name} is fixed and written after a free walkthrough, so there are no hourly surprises.`,
+      a: `Cleaning costs in ${city.name} depend on the service. Recurring house cleaning typically runs $149–$329 per visit; commercial and janitorial contracts are billed monthly at roughly $0.10–$0.45 per square foot per month depending on facility type and frequency; move-out deep cleans run $280–$650. Every Dozeles quote in ${city.name} is fixed and written after a free walkthrough, so there are no hourly surprises.`,
     },
     {
       q: `Do you offer same-week service in ${city.name}?`,

@@ -61,7 +61,7 @@ export const SERVICES = [
     faqs: [
       {
         q: 'How much does commercial and office cleaning cost in {city}?',
-        a: 'Most contracts in {city} run between $0.08 and $0.20 per square foot per visit, depending on frequency, floor type, and scope. A 3,000 sq ft office cleaned twice a week generally falls between $700 and $1,300 per month; a 5,000 sq ft office cleaned three nights a week typically lands between $1,200 and $2,400 per month. We provide a fixed written quote after a free on-site walkthrough, so the number you approve is the number you pay.',
+        a: 'Commercial work is contracted monthly, not per visit. Rates in {city} typically run $0.10 to $0.45 per square foot per month depending on facility type and frequency. A 3,000 sq ft office cleaned twice a week lands around $660 per month; a 5,000 sq ft office cleaned three nights a week runs about $1,450 per month. Try the calculator on our pricing page for an instant estimate, then we confirm it in writing after a free walkthrough.',
       },
       {
         q: 'Do you clean outside of business hours?',
