@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import Icon from './Icon.jsx';
+import Social, { SOCIALS } from './Social.jsx';
 import { SERVICES } from '../data/services.js';
 
 const ABOUT_LINKS = [
   { to: '/about-us', label: 'Who We Are', sub: '20+ years in Northern California', icon: 'users' },
+  { to: '/cleaning-process', label: 'Cleaning Process', sub: 'Exactly how we work, room by room', icon: 'spray' },
   { to: '/reviews', label: 'Reviews & FAQ', sub: 'What our clients say', icon: 'star' },
   { to: '/before-after', label: 'Before & After', sub: 'See our work', icon: 'image' },
   { to: '/government-contract', label: 'Government Contracts', sub: 'Certified & compliant', icon: 'landmark' },
@@ -41,7 +43,13 @@ export default function Header({ site }) {
       <div className="topbar">
         <div className="container">
           <div className="tb-group">
-            <a href={`tel:${site.phoneRaw}`}><Icon name="phone" size={14} /> {site.phone}</a>
+            <span className="tb-soc">
+              {SOCIALS.map((s) => (
+                <a key={s.key} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
+                  <Social name={s.key} size={14} />
+                </a>
+              ))}
+            </span>
             <span className="tb-dot tb-hide-sm" />
             <a href={`mailto:${site.email}`} className="tb-hide-sm"><Icon name="mail" size={14} /> {site.email}</a>
             <span className="tb-dot tb-hide-sm" />

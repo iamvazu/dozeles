@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
 import Reveal from '../components/Reveal.jsx';
+import ReviewsShowcase from '../components/ReviewsShowcase.jsx';
 import Seo from '../seo.jsx';
 import { CountUp } from '../components/Shared.jsx';
 import { api } from '../api.js';
@@ -114,7 +115,7 @@ function QuoteFormPanel() {
 }
 
 export default function Home() {
-  const { site, stats, reviews } = useContent();
+  const { site, stats } = useContent();
   const featured = FEATURED;
   const groups = citiesByRegion();
 
@@ -271,7 +272,7 @@ export default function Home() {
           </Reveal>
 
           <div className="center" style={{ marginTop: 46 }}>
-            <Link to="/about-us" className="btn btn-white">Our Cleaning Process</Link>
+            <Link to="/cleaning-process" className="btn btn-white">Our Cleaning Process</Link>
           </div>
         </div>
       </section>
@@ -310,30 +311,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- TESTIMONIALS ---------- */}
-      <section>
-        <div className="container">
-          <Reveal className="center" style={{ marginBottom: 46 }}>
-            <div className="eyebrow">Testimonials</div>
-            <h2 className="h2">Trusted by Thousands of Homes &amp; Businesses</h2>
-          </Reveal>
-          <div className="grid grid-3">
-            {(reviews || []).slice(0, 6).map((r, i) => (
-              <Reveal className="quote-card" key={r.id} delay={(i % 3) * 110}>
-                <div className="qmark">"</div>
-                <p>{r.text}</p>
-                <div className="who">
-                  {r.image && <img src={r.image} alt={r.name} loading="lazy" />}
-                  <span>
-                    <strong>{r.name}</strong>
-                    <span>Verified Customer</span>
-                  </span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ---------- REVIEWS SHOWCASE ---------- */}
+      <ReviewsShowcase />
 
       {/* ---------- GET A QUOTE ---------- */}
       <section className="section-alt">

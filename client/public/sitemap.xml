@@ -37,6 +37,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://dozeles.com/cleaning-process</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://dozeles.com/reviews</loc>
     <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>

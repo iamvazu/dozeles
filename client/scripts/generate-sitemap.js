@@ -26,6 +26,7 @@ add('/pricing', '0.9');
 add('/locations', '0.9');
 add('/government-contract', '0.8');
 add('/about-us', '0.7', 'monthly');
+add('/cleaning-process', '0.8');
 add('/reviews', '0.7', 'monthly');
 add('/before-after', '0.6', 'monthly');
 add('/contact-us', '0.7', 'monthly');

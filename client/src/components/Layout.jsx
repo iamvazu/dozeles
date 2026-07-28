@@ -3,18 +3,27 @@ import { Outlet, Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import { api } from '../api.js';
 import Header from './Header.jsx';
+import Icon from './Icon.jsx';
+import Social, { SOCIALS } from './Social.jsx';
 import { SERVICES } from '../data/services.js';
 import { CITIES } from '../data/cities.js';
 
-const NAV = [
+const COMPANY = [
   { to: '/', label: 'Home' },
-  { to: '/about-us', label: 'About' },
-  { to: '/services-offered', label: 'Services' },
+  { to: '/about-us', label: 'About Us' },
+  { to: '/cleaning-process', label: 'Cleaning Process' },
   { to: '/pricing', label: 'Pricing' },
   { to: '/locations', label: 'Locations' },
   { to: '/government-contract', label: 'Government' },
-  { to: '/reviews', label: 'Reviews' },
+  { to: '/reviews', label: 'Reviews & FAQ' },
+  { to: '/before-after', label: 'Before & After' },
   { to: '/contact-us', label: 'Contact' },
+];
+
+const HOURS = [
+  ['Mon – Fri', '9:00am – 6:00pm'],
+  ['Saturday', '9:00am – 6:00pm'],
+  ['Sunday', 'Closed'],
 ];
 
 export default function Layout() {
@@ -43,25 +52,61 @@ export default function Layout() {
 
       <footer className="footer">
         <div className="container">
+          {/* ---------- CTA + newsletter ---------- */}
+          <div className="footer-cta">
+            <div>
+              <h2>Our Goal Is to Wow You With Every Clean</h2>
+              <Link to="/book" className="btn-quote">
+                Get a Free Quote <Icon name="arrow" size={15} />
+              </Link>
+            </div>
+            <div>
+              <div className="footer-sub-label">Subscribe to our newsletter</div>
+              <form className="subscribe" onSubmit={subscribe}>
+                <input
+                  type="email"
+                  placeholder="Enter your email address"
+                  value={subEmail}
+                  onChange={(e) => setSubEmail(e.target.value)}
+                  required
+                />
+                <button className="btn-quote" type="submit">Subscribe</button>
+              </form>
+              {subMsg && <p style={{ marginTop: 10, fontSize: '0.85rem' }}>{subMsg}</p>}
+            </div>
+          </div>
+
+          {/* ---------- columns ---------- */}
           <div className="footer-grid">
             <div>
-              <span className="logo-white"><img src={site.logo} alt={site.name} /></span>
+              <span className="logo-white">
+                <img src={site.logo} alt="Dozeles Professional Cleaning" />
+              </span>
               <p>{site.footerText}</p>
-              <p style={{ marginTop: 14 }}>
-                <a href={`tel:${site.phoneRaw}`} style={{ color: '#fff', fontWeight: 700, fontSize: '1.15rem' }}>
-                  {site.phone}
-                </a>
-                <br />
-                <a href={`mailto:${site.email}`}>{site.email}</a>
-              </p>
+              <div className="soc-row" style={{ marginTop: 22 }}>
+                {SOCIALS.map((s) => (
+                  <a
+                    key={s.key}
+                    className="soc-btn"
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    title={s.label}
+                  >
+                    <Social name={s.key} size={18} />
+                  </a>
+                ))}
+              </div>
             </div>
+
             <div>
               <h4>Company</h4>
               <div className="footer-links">
-                {NAV.map((n) => <Link key={n.to} to={n.to}>{n.label}</Link>)}
-                <Link to="/before-after">Before &amp; After</Link>
+                {COMPANY.map((n) => <Link key={n.to} to={n.to}>{n.label}</Link>)}
               </div>
             </div>
+
             <div>
               <h4>Services</h4>
               <div className="footer-links">
@@ -70,17 +115,37 @@ export default function Layout() {
                 ))}
               </div>
             </div>
+
             <div>
-              <h4>Get Our Tips</h4>
-              <p>Cleaning tips, seasonal checklists, and exclusive offers for Bay Area businesses and homeowners.</p>
-              <form className="subscribe" onSubmit={subscribe}>
-                <input type="email" placeholder="Your email" value={subEmail} onChange={(e) => setSubEmail(e.target.value)} required />
-                <button className="btn btn-blue" type="submit">Join</button>
-              </form>
-              {subMsg && <p style={{ marginTop: 8, fontSize: '0.85rem' }}>{subMsg}</p>}
+              <h4>Contact Info</h4>
+              <div className="footer-contact">
+                <a href={`tel:${site.phoneRaw}`}>
+                  <span className="footer-ico"><Icon name="phone" size={17} /></span>
+                  <span className="footer-phone">{site.phone}</span>
+                </a>
+                <a href={`mailto:${site.email}`}>
+                  <span className="footer-ico"><Icon name="mail" size={17} /></span>
+                  <span>{site.email}</span>
+                </a>
+                <div>
+                  <span className="footer-ico"><Icon name="pin" size={17} /></span>
+                  <span>{site.address}<br />Serving the Bay Area &amp; NorCal</span>
+                </div>
+              </div>
+
+              <h4 style={{ marginTop: 30 }}>Working Hours</h4>
+              <div>
+                {HOURS.map(([d, h]) => (
+                  <div className="hours-row" key={d}>
+                    <span>{d}</span>
+                    <span>{h}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
+          {/* ---------- service-area link mesh (SEO) ---------- */}
           <div className="footer-mesh">
             <h4>Popular Service Areas</h4>
             <div className="link-mesh">
@@ -90,16 +155,17 @@ export default function Layout() {
                 </Link>
               ))}
             </div>
-            <p style={{ marginTop: 16 }}>
+            <p style={{ marginTop: 18 }}>
               <Link to="/locations" style={{ color: '#fff', fontWeight: 700 }}>
                 View all {CITIES.length} service areas →
               </Link>
             </p>
           </div>
-        </div>
-        <div className="footer-bottom">
-          Copyright © {new Date().getFullYear()} Dozeles Professional Cleaning. All Rights Reserved. ·
-          Commercial &amp; Residential Janitorial Services · Bay Area &amp; Northern California
+
+          <div className="footer-bottom">
+            <span>© {new Date().getFullYear()} Dozeles Professional Cleaning. All Rights Reserved.</span>
+            <span>Commercial &amp; Residential Janitorial · Bay Area &amp; Northern California</span>
+          </div>
         </div>
       </footer>
     </>

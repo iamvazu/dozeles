@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
+import CleaningProcess from './pages/CleaningProcess.jsx';
 import Services from './pages/Services.jsx';
 import ServiceDetail from './pages/ServiceDetail.jsx';
 import ServiceCity from './pages/ServiceCity.jsx';
@@ -21,6 +22,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about-us" element={<About />} />
+        <Route path="/cleaning-process" element={<CleaningProcess />} />
         <Route path="/services-offered" element={<Services />} />
 
         {/* Programmatic SEO routes */}
