@@ -9,6 +9,9 @@ import {
 
 export default function ServiceDetail() {
   const { service: slug } = useParams();
+  // Legacy/merged slugs → canonical destination (office cleaning merged into commercial)
+  const REDIRECTS = { 'office-cleaning': 'commercial-cleaning' };
+  if (REDIRECTS[slug]) return <Navigate to={`/services/${REDIRECTS[slug]}`} replace />;
   const service = getService(slug);
   if (!service) return <Navigate to="/services-offered" replace />;
 

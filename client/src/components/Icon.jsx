@@ -22,11 +22,15 @@ const paths = {
   star: 'M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.2l5.9-.9L12 3z',
   users: 'M17 20v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 10a4 4 0 100-8 4 4 0 000 8zm14 10v-2a4 4 0 00-3-3.9M16 2.1a4 4 0 010 7.8',
   image: 'M3 3h18v18H3V3zm2 14l4.5-5 3.5 4 3-2.5L19 17M8.5 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z',
+  calendar: 'M3 6a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6zm0 4h18M8 2v4m8-4v4m-5 9l1.6 1.6L16 13',
+  spray: 'M9 8h6v13a1 1 0 01-1 1h-4a1 1 0 01-1-1V8zm0-3a1 1 0 011-1h4a1 1 0 011 1v3H9V5zm7-1h2m-2 3h3m-3 3h2M11 13h2',
+  smile: 'M12 22a10 10 0 100-20 10 10 0 000 20zM8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01',
 };
 
-export default function Icon({ name, size = 24 }) {
+export default function Icon({ name, size = 24, className = '' }) {
   return (
     <svg
+      className={className}
       width={size}
       height={size}
       viewBox="0 0 24 24"

@@ -35,9 +35,8 @@ export function CountUp({ value }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
-    const io = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      io.disconnect();
+
+    const run = () => {
       const t0 = performance.now();
       const dur = 1400;
       const tick = (t) => {
@@ -46,8 +45,25 @@ export function CountUp({ value }) {
         if (p < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
+    };
+
+    // Graceful fallback: no IntersectionObserver (older browsers / SSR / tests)
+    // or reduced-motion -> show the final number immediately.
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window) || !el) {
+      setN(value);
+      return;
+    }
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+      setN(value);
+      return;
+    }
+
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      io.disconnect();
+      run();
     });
-    if (el) io.observe(el);
+    io.observe(el);
     return () => io.disconnect();
   }, [value]);
   return <span ref={ref}>{n.toLocaleString()}</span>;

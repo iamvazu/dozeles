@@ -10,6 +10,9 @@ import {
 
 export default function ServiceCity() {
   const { service: sSlug, city: cSlug } = useParams();
+  // Legacy/merged slugs → canonical destination (office cleaning merged into commercial)
+  const REDIRECTS = { 'office-cleaning': 'commercial-cleaning' };
+  if (REDIRECTS[sSlug]) return <Navigate to={`/services/${REDIRECTS[sSlug]}/${cSlug}`} replace />;
   const service = getService(sSlug);
   const city = getCity(cSlug);
   if (!service) return <Navigate to="/services-offered" replace />;

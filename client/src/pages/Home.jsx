@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
+import Reveal from '../components/Reveal.jsx';
 import Seo from '../seo.jsx';
 import { CountUp } from '../components/Shared.jsx';
 import { api } from '../api.js';
@@ -36,10 +37,21 @@ const HOME_FAQS = [
 ];
 
 const STEPS = [
-  { n: '01', title: 'Get a Free Quote', text: 'Tell us about your space and pick a date. Free walkthrough, fixed written pricing, no obligation.' },
-  { n: '02', title: 'We Clean', text: 'Our vetted, background-checked crew arrives on schedule with all equipment and green-certified supplies.' },
-  { n: '03', title: 'You Relax', text: 'Walk into a spotless space. If anything is missed, we come back and fix it free within 24 hours.' },
+  { n: 'Step 1', icon: 'calendar', title: 'Free quote', text: 'Tell us about your space and choose the date you want. Free walkthrough, fixed written pricing, no obligation.' },
+  { n: 'Step 2', icon: 'spray', title: 'We clean', text: 'Our vetted, background-checked crew arrives on schedule with all equipment and green-certified supplies.' },
+  { n: 'Step 3', icon: 'smile', title: 'You relax', text: 'Sit back and enjoy how amazing your space looks. If anything is missed, we fix it free within 24 hours.' },
 ];
+
+function StepArrow() {
+  return (
+    <div className="hiw-arrow" aria-hidden="true">
+      <svg viewBox="0 0 60 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <path className="dash" d="M2 11h48" />
+        <path d="M44 5l6 6-6 6" />
+      </svg>
+    </div>
+  );
+}
 
 const WHY = [
   { icon: 'badge', title: 'Free Quote & Fixed Pricing', text: 'Get a written, flat-rate quote after a free walkthrough. No hourly billing, no surprise line items.' },
@@ -159,9 +171,9 @@ export default function Home() {
             </div>
           </div>
           <div className="collage">
-            <img src="https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg" alt="Professional residential cleaning in the Bay Area" />
-            <img src="https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg" alt="Eco-friendly commercial cleaning products" loading="lazy" />
-            <img src="https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg" alt="Commercial janitorial services Northern California" loading="lazy" />
+            <img src="/images/hero_main.png" alt="Professional residential cleaning in the Bay Area" />
+            <img src="/images/hero_tr.png" alt="Eco-friendly commercial cleaning products" loading="lazy" />
+            <img src="/images/hero_br.png" alt="Commercial janitorial services Northern California" loading="lazy" />
           </div>
         </div>
       </div>
@@ -169,18 +181,29 @@ export default function Home() {
       {/* ---------- HOW IT WORKS ---------- */}
       <section>
         <div className="container">
-          <div className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 56 }}>
             <div className="eyebrow">How It Works</div>
             <h2 className="h2">Quick and Easy</h2>
             <p className="lead">Three steps from first call to a spotless space. No contracts, no runaround.</p>
-          </div>
-          <div className="steps">
-            {STEPS.map((s) => (
-              <div className="step" key={s.n}>
-                <div className="step-num">{s.n}</div>
-                <h3>{s.title}</h3>
-                <p>{s.text}</p>
-              </div>
+          </Reveal>
+          <div className="hiw">
+            {STEPS.map((s, i) => (
+              <Fragment key={s.title}>
+                {i > 0 && (
+                  <Reveal variant="scale" delay={i * 180 - 60}>
+                    <StepArrow />
+                  </Reveal>
+                )}
+                <Reveal className="hiw-step" variant="up" delay={i * 180}>
+                  <div className="hiw-circle">
+                    <Icon name={s.icon} />
+                    <Icon name="sparkles" size={34} className="hiw-spark" />
+                    <span className="hiw-num">{s.n}</span>
+                  </div>
+                  <h3>{s.title}</h3>
+                  <p>{s.text}</p>
+                </Reveal>
+              </Fragment>
             ))}
           </div>
         </div>
@@ -212,27 +235,27 @@ export default function Home() {
       {/* ---------- WHY CHOOSE US + STATS ---------- */}
       <section>
         <div className="container">
-          <div className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 46 }}>
             <div className="eyebrow">Why Choose Us</div>
             <h2 className="h2">We're Experienced &amp; We Have Expert Teams</h2>
-          </div>
+          </Reveal>
           <div className="grid grid-4">
-            {WHY.map((w) => (
-              <div className="card" key={w.title}>
+            {WHY.map((w, i) => (
+              <Reveal className="card" key={w.title} delay={i * 110}>
                 <div className="icon"><Icon name={w.icon} /></div>
                 <h3>{w.title}</h3>
                 <p>{w.text}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
-          <div className="stat-row">
+          <Reveal className="stat-row">
             {stats.items.map((s) => (
               <div className="stat-inline" key={s.label}>
                 <div className="n"><CountUp value={s.value} />+</div>
                 <div className="l">{s.label}</div>
               </div>
             ))}
-          </div>
+          </Reveal>
           <div className="center" style={{ marginTop: 40 }}>
             <Link to="/about-us" className="btn btn-outline">Our Cleaning Process</Link>
           </div>
@@ -242,17 +265,17 @@ export default function Home() {
       {/* ---------- SERVICES ---------- */}
       <section className="section-alt">
         <div className="container">
-          <div className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 46 }}>
             <div className="eyebrow">Our Services</div>
             <h2 className="h2">Here's What We Can Do for You</h2>
             <p className="lead">
               Nine specialized service lines covering every commercial janitorial and residential
               cleaning need in Northern California.
             </p>
-          </div>
+          </Reveal>
           <div className="grid grid-4">
-            {featured.map((s) => (
-              <Link className="svc-card" key={s.slug} to={`/services/${s.slug}`}>
+            {featured.map((s, i) => (
+              <Reveal key={s.slug} delay={i * 110} as={Link} className="svc-card" to={`/services/${s.slug}`}>
                 <div className="thumb">
                   <img src={s.hero} alt={s.title} loading="lazy" />
                 </div>
@@ -261,7 +284,7 @@ export default function Home() {
                   <p>{s.tagline}</p>
                   <span className="more">Learn more →</span>
                 </div>
-              </Link>
+              </Reveal>
             ))}
           </div>
           <div className="center" style={{ marginTop: 40 }}>
@@ -273,13 +296,13 @@ export default function Home() {
       {/* ---------- TESTIMONIALS ---------- */}
       <section>
         <div className="container">
-          <div className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 46 }}>
             <div className="eyebrow">Testimonials</div>
             <h2 className="h2">Trusted by Thousands of Homes &amp; Businesses</h2>
-          </div>
+          </Reveal>
           <div className="grid grid-3">
-            {(reviews || []).slice(0, 6).map((r) => (
-              <div className="quote-card" key={r.id}>
+            {(reviews || []).slice(0, 6).map((r, i) => (
+              <Reveal className="quote-card" key={r.id} delay={(i % 3) * 110}>
                 <div className="qmark">"</div>
                 <p>{r.text}</p>
                 <div className="who">
@@ -289,7 +312,7 @@ export default function Home() {
                     <span>Verified Customer</span>
                   </span>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -327,10 +350,10 @@ export default function Home() {
       {/* ---------- FAQ ---------- */}
       <section>
         <div className="container">
-          <div className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 46 }}>
             <div className="eyebrow">FAQs</div>
             <h2 className="h2">Frequently Asked Questions</h2>
-          </div>
+          </Reveal>
           <div className="faq-split">
             <div className="faq-contact">
               <h3>Looking for cleaning services in the Bay Area?</h3>
@@ -379,20 +402,20 @@ export default function Home() {
       {/* ---------- BLOG ---------- */}
       <section>
         <div className="container">
-          <div className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 46 }}>
             <div className="eyebrow">From Our Blog</div>
             <h2 className="h2">Cleaning Tips From the Pros</h2>
-          </div>
+          </Reveal>
           <div className="grid grid-3">
-            {BLOG.map((b) => (
-              <div className="blog-card" key={b.title}>
+            {BLOG.map((b, i) => (
+              <Reveal className="blog-card" key={b.title} delay={i * 110}>
                 <div className="thumb"><img src={b.img} alt={b.title} loading="lazy" /></div>
                 <div className="body">
                   <span className="tag">{b.tag}</span>
                   <h3>{b.title}</h3>
                   <p style={{ color: 'var(--muted)', fontSize: '0.92rem', marginTop: 8 }}>{b.excerpt}</p>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>

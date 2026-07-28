@@ -69,8 +69,8 @@ export default function Header({ site }) {
               </NavLink>
             </div>
 
-            <div className="nav-item">
-              <button className="nav-link">
+            <div className="nav-item wide">
+              <button className="nav-link" aria-haspopup="true">
                 Services <Icon name="caret" size={11} />
               </button>
               <div className="drop mega">

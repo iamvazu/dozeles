@@ -92,7 +92,7 @@ section { padding: 84px 0; }
   transition: box-shadow 0.3s, background 0.3s;
 }
 .header.scrolled { box-shadow: 0 6px 28px rgba(10, 37, 64, 0.09); background: rgba(255,255,255,0.97); }
-.hdr { display: flex; align-items: center; gap: 28px; height: 92px; transition: height 0.3s; }
+.hdr { display: flex; align-items: center; gap: 28px; height: 92px; transition: height 0.3s; position: relative; }
 .header.scrolled .hdr { height: 74px; }
 
 .logo { flex-shrink: 0; display: flex; align-items: center; }
@@ -119,15 +119,29 @@ section { padding: 84px 0; }
 .nav-item:hover .nav-link .caret { transform: rotate(180deg); }
 
 /* --- dropdowns --- */
+/* NOTE: use ONE transform property (never `translate` + `transform` together —
+   they compose and fight, which is what made the panel look see-through). */
 .drop {
-  position: absolute; top: calc(100% + 10px); left: 50%; translate: -50% 0;
-  background: #fff; border: 1px solid var(--line); border-radius: 16px;
-  box-shadow: 0 18px 50px rgba(10, 37, 64, 0.16);
-  padding: 12px; opacity: 0; visibility: hidden; transform: translateY(-8px);
-  transition: opacity 0.22s, transform 0.22s, visibility 0.22s; z-index: 70;
+  position: absolute; top: calc(100% + 10px); left: 50%;
+  background-color: #fff; background-image: none;
+  border: 1px solid var(--line); border-radius: 16px;
+  box-shadow: 0 20px 56px rgba(10, 37, 64, 0.18), 0 2px 8px rgba(10, 37, 64, 0.08);
+  padding: 12px; opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateX(-50%) translateY(-10px);
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  z-index: 200; isolation: isolate;
 }
-.nav-item:hover .drop { opacity: 1; visibility: visible; transform: translateY(0); }
-.drop::before { content: ''; position: absolute; top: -12px; left: 0; right: 0; height: 12px; }
+.nav-item:hover .drop,
+.nav-item:focus-within .drop {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+/* invisible bridge so the menu doesn't close while crossing the 10px gap */
+.drop::before { content: ''; position: absolute; top: -14px; left: 0; right: 0; height: 14px; }
+
+/* Wide mega panel anchors to the HEADER (position: static on the item) so it
+   can never overflow the viewport on narrow laptop widths. */
+.nav-item.wide { position: static; }
 .drop-link {
   display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px;
   font-size: 0.9rem; font-weight: 500; color: var(--text); white-space: nowrap; transition: 0.18s;
@@ -140,7 +154,7 @@ section { padding: 84px 0; }
 .drop-link:hover .di { background: var(--blue); color: #fff; }
 .drop-link small { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; }
 .drop-link:hover small { color: #5b7fae; }
-.drop.mega { width: 620px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.drop.mega { width: min(680px, calc(100vw - 44px)); display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
 .drop-foot {
   grid-column: 1 / -1; margin-top: 8px; padding: 13px 14px; border-top: 1px solid var(--line);
   display: flex; justify-content: space-between; align-items: center;
@@ -231,30 +245,87 @@ section { padding: 84px 0; }
 .drawer-meta { font-size: 0.82rem; color: var(--muted); line-height: 1.9; }
 .drawer-meta a { color: var(--muted); }
 
-/* --- header breakpoints --- */
-@media (max-width: 1180px) {
-  .hdr { gap: 18px; }
-  .nav-link { padding: 10px 12px; font-size: 0.9rem; }
+/* --- header breakpoints (tested: 1440 / 1280 / 1194 iPad Pro landscape /
+       1024 iPad landscape / 834 iPad Air portrait / 768 iPad mini / 390 phone) --- */
+
+/* the utility bar must never wrap to two lines on any device */
+.topbar .container { flex-wrap: nowrap; overflow: hidden; }
+.topbar a, .tb-badge { white-space: nowrap; }
+
+@media (max-width: 1320px) {
+  .hdr { gap: 20px; }
+  .nav-link { padding: 10px 13px; font-size: 0.9rem; }
+}
+@media (max-width: 1200px) {
+  /* free up ~190px by dropping the call-chip label first */
   .call-chip small { display: none; }
   .call-chip strong { font-size: 0.94rem; }
+  .call-chip .ring { width: 38px; height: 38px; }
+  .hdr { gap: 14px; }
+  .nav-link { padding: 10px 11px; font-size: 0.88rem; }
 }
-@media (max-width: 1024px) {
-  .nav-desktop { display: none; }
-  .burger { display: flex; }
-  .hdr { height: 78px; }
-  .header.scrolled .hdr { height: 68px; }
-  .btn-quote { padding: 12px 22px; font-size: 0.88rem; }
-}
-@media (max-width: 760px) {
-  .tb-hide-sm { display: none; }
-  .topbar { height: 38px; font-size: 0.75rem; }
+@media (max-width: 1080px) {
+  /* iPad landscape: keep the full nav, drop the phone chip (it's in the top bar) */
   .call-chip { display: none; }
 }
+@media (max-width: 980px) {
+  /* iPad portrait and below: switch to the drawer */
+  .nav-desktop { display: none; }
+  .burger { display: flex; }
+  .hdr { height: 76px; gap: 14px; }
+  .header.scrolled .hdr { height: 66px; }
+  .logo img { height: 46px; }
+  .header.scrolled .logo img { height: 42px; }
+  .btn-quote { padding: 12px 22px; font-size: 0.88rem; }
+  /* keep the top bar to essentials so it stays on one line */
+  .tb-badge { display: none; }
+}
+@media (max-width: 700px) {
+  .topbar { height: 36px; font-size: 0.74rem; }
+  .topbar .container { justify-content: center; }
+  .tb-group + .tb-group { display: none; }
+  .tb-hide-sm { display: none; }
+}
 @media (max-width: 520px) {
-  .btn-quote { padding: 11px 18px; font-size: 0.84rem; }
+  .btn-quote { padding: 11px 16px; font-size: 0.82rem; gap: 6px; }
   .btn-quote svg { display: none; }
-  .logo img { height: 42px; }
-  .hdr { height: 70px; gap: 12px; }
+  .logo img { height: 40px; }
+  .header.scrolled .logo img { height: 36px; }
+  .hdr { height: 66px; gap: 10px; }
+  .header.scrolled .hdr { height: 60px; }
+  .burger { width: 42px; height: 42px; }
+  .container { padding: 0 16px; }
+}
+@media (max-width: 370px) {
+  .btn-quote { padding: 10px 13px; font-size: 0.78rem; }
+  .logo img { height: 36px; }
+}
+
+/* --- cross-browser / device hardening --- */
+.header, .drawer, .btn-quote, .burger { -webkit-tap-highlight-color: transparent; }
+.drawer { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.drawer-nav { -webkit-overflow-scrolling: touch; }
+/* Safari <=15 and Firefox without backdrop-filter: fall back to solid white */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .header { background: #fff; }
+}
+/* iOS safe-area (notched iPhones / iPads in landscape) */
+@supports (padding: max(0px)) {
+  .topbar .container, .hdr { padding-left: max(22px, env(safe-area-inset-left)); padding-right: max(22px, env(safe-area-inset-right)); }
+  .drawer-foot { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+}
+/* touch devices: no hover-dependent dropdowns (prevents sticky menus on iPad) */
+@media (hover: none) {
+  .nav-item:hover .drop { opacity: 0; visibility: hidden; pointer-events: none; }
+  .nav-item:focus-within .drop { opacity: 1; visibility: visible; pointer-events: auto; }
+}
+
+/* --- How It Works responsive --- */
+@media (max-width: 980px) {
+  .hiw { grid-template-columns: 1fr; gap: 46px; }
+  .hiw-arrow { display: none; }
+  .hiw-circle { width: 160px; height: 160px; margin-bottom: 22px; }
+  .hiw-circle > svg { width: 64px; height: 64px; }
 }
 
 /* hero */
@@ -429,7 +500,55 @@ section { padding: 84px 0; }
 .collage img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; box-shadow: var(--shadow); }
 .collage img:first-child { grid-row: span 2; height: 100%; border-radius: 200px 200px 20px 20px; }
 
-/* --- numbered step cards (How it works) --- */
+/* ============================================================
+   SCROLL REVEAL ANIMATIONS
+   ============================================================ */
+.rv { opacity: 0; transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity, transform; }
+.rv-up { transform: translateY(30px); }
+.rv-scale { transform: scale(0.9); }
+.rv-left { transform: translateX(-34px); }
+.rv-right { transform: translateX(34px); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rv, .rv-up, .rv-scale, .rv-left, .rv-right { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* ============================================================
+   HOW IT WORKS — big circles + connector arrows
+   ============================================================ */
+.hiw { display: grid; grid-template-columns: 1fr 70px 1fr 70px 1fr; align-items: start; }
+.hiw-step { text-align: center; padding: 0 10px; }
+.hiw-circle {
+  width: 190px; height: 190px; border-radius: 50%; margin: 0 auto 28px;
+  background: var(--blue-tint); position: relative;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1), background 0.3s;
+}
+.hiw-step:hover .hiw-circle { transform: translateY(-8px) scale(1.04); background: #dceafc; }
+.hiw-circle > svg { width: 76px; height: 76px; color: var(--blue); stroke-width: 1.4; }
+.hiw-spark {
+  position: absolute; top: 12px; right: 14px; width: 34px; height: 34px;
+  color: var(--blue); opacity: 0.5; transition: transform 0.4s, opacity 0.3s;
+}
+.hiw-step:hover .hiw-spark { transform: rotate(18deg) scale(1.15); opacity: 0.85; }
+.hiw-num {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  background: var(--blue); color: #fff; font-family: var(--font-body); font-weight: 700;
+  font-size: 0.72rem; letter-spacing: 1.4px; padding: 5px 15px; border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(14, 95, 216, 0.3);
+}
+.hiw-step h3 {
+  font-family: var(--font-body); font-weight: 700; text-transform: none;
+  letter-spacing: -0.4px; font-size: 1.72rem; margin-bottom: 10px; color: var(--ink);
+}
+.hiw-step p { color: var(--muted); font-size: 0.96rem; max-width: 290px; margin: 0 auto; }
+.hiw-arrow { display: flex; align-items: center; justify-content: center; height: 190px; color: var(--blue); opacity: 0.4; }
+.hiw-arrow svg { width: 60px; height: 22px; }
+.hiw-arrow .dash { stroke-dasharray: 46; stroke-dashoffset: 46; animation: dashIn 1s 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes dashIn { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .hiw-arrow .dash { animation: none; stroke-dashoffset: 0; } }
+
+/* legacy step cards (kept for any other page using them) */
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
 .step { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 38px 30px; text-align: center; position: relative; transition: 0.25s; }
 .step:hover { box-shadow: var(--shadow); transform: translateY(-5px); }
