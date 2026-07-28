@@ -9,7 +9,7 @@ export const SERVICES = [
     title: 'Commercial Cleaning Services',
     short: 'Commercial Cleaning',
     icon: 'store',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    hero: '/images/commercial_cleaning.png',
     tagline: 'Spotless workplaces that protect your brand and your people.',
     metaTitle: 'Commercial Cleaning Services {city} | Dozeles Janitorial',
     metaDesc:
@@ -73,7 +73,7 @@ export const SERVICES = [
     title: 'Janitorial Services',
     short: 'Janitorial Services',
     icon: 'building',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    hero: '/images/janitorial_services.png',
     tagline: 'Daily janitorial programs that never miss a night.',
     metaTitle: 'Janitorial Services {city} CA | Commercial Janitorial Company',
     metaDesc:
@@ -137,7 +137,7 @@ export const SERVICES = [
     title: 'Office Cleaning Services',
     short: 'Office Cleaning',
     icon: 'building',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    hero: '/images/office_cleaning.png',
     tagline: 'Healthier offices, fewer sick days, better first impressions.',
     metaTitle: 'Office Cleaning Services {city} | Professional Office Cleaners',
     metaDesc:
@@ -201,7 +201,7 @@ export const SERVICES = [
     title: 'Residential House Cleaning',
     short: 'Residential Cleaning',
     icon: 'home',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+    hero: '/images/residential_cleaning.png',
     tagline: 'Come home to a house that feels genuinely clean.',
     metaTitle: 'House Cleaning Services {city} CA | Residential Cleaners',
     metaDesc:
