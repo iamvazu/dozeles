@@ -1,0 +1,185 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import { loadDb, saveDb, newId } from './db.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const app = express();
+const PORT = process.env.PORT || 4000;
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@dozeles.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+app.use(cors());
+app.use(express.json({ limit: '2mb' }));
+
+const db = loadDb();
+
+// ---------- email (optional) ----------
+let mailer = null;
+if (process.env.SMTP_HOST) {
+  mailer = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: Number(process.env.SMTP_PORT) === 465,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+}
+async function notify(subject, text) {
+  if (!mailer) return;
+  try {
+    await mailer.sendMail({
+      from: process.env.SMTP_USER,
+      to: process.env.NOTIFY_EMAIL || ADMIN_EMAIL,
+      subject,
+      text,
+    });
+  } catch (e) {
+    console.error('Email notification failed:', e.message);
+  }
+}
+
+// ---------- auth ----------
+function requireAdmin(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return res.status(401).json({ error: 'Not authenticated' });
+  try {
+    req.admin = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch {
+    res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
+
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body || {};
+  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    const token = jwt.sign({ email, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
+    return res.json({ token });
+  }
+  res.status(401).json({ error: 'Invalid credentials' });
+});
+
+// ---------- public content API ----------
+app.get('/api/content', (req, res) => {
+  const { bookings, messages, subscribers, ...content } = db;
+  res.json(content);
+});
+
+app.get('/api/reviews', (req, res) => res.json(db.reviews));
+
+// ---------- bookings ----------
+app.post('/api/bookings', async (req, res) => {
+  const { name, email, phone, service, date, time, address, notes } = req.body || {};
+  if (!name || !phone || !service || !date) {
+    return res.status(400).json({ error: 'name, phone, service and date are required' });
+  }
+  const booking = {
+    id: newId(),
+    name, email: email || '', phone, service, date, time: time || '',
+    address: address || '', notes: notes || '',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+  db.bookings.push(booking);
+  saveDb();
+  notify(`New booking request: ${service}`,
+    `Name: ${name}\nPhone: ${phone}\nEmail: ${email || '-'}\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || '-'}\nNotes: ${notes || '-'}`);
+  res.status(201).json({ ok: true, id: booking.id });
+});
+
+// ---------- contact + newsletter ----------
+app.post('/api/contact', async (req, res) => {
+  const { name, email, phone, message } = req.body || {};
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'name, email and message are required' });
+  }
+  const msg = { id: newId(), name, email, phone: phone || '', message, read: false, createdAt: new Date().toISOString() };
+  db.messages.push(msg);
+  saveDb();
+  notify(`New contact message from ${name}`, `Name: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\n\n${message}`);
+  res.status(201).json({ ok: true });
+});
+
+app.post('/api/subscribe', (req, res) => {
+  const { email } = req.body || {};
+  if (!email || !/.+@.+\..+/.test(email)) return res.status(400).json({ error: 'Valid email required' });
+  if (!db.subscribers.find((s) => s.email === email)) {
+    db.subscribers.push({ email, createdAt: new Date().toISOString() });
+    saveDb();
+  }
+  res.status(201).json({ ok: true });
+});
+
+// ---------- admin API ----------
+app.get('/api/admin/bookings', requireAdmin, (req, res) => res.json([...db.bookings].reverse()));
+app.patch('/api/admin/bookings/:id', requireAdmin, (req, res) => {
+  const b = db.bookings.find((x) => x.id === req.params.id);
+  if (!b) return res.status(404).json({ error: 'Not found' });
+  if (req.body.status) b.status = req.body.status;
+  saveDb();
+  res.json(b);
+});
+app.delete('/api/admin/bookings/:id', requireAdmin, (req, res) => {
+  db.bookings = db.bookings.filter((x) => x.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+app.get('/api/admin/messages', requireAdmin, (req, res) => res.json([...db.messages].reverse()));
+app.patch('/api/admin/messages/:id', requireAdmin, (req, res) => {
+  const m = db.messages.find((x) => x.id === req.params.id);
+  if (!m) return res.status(404).json({ error: 'Not found' });
+  if (typeof req.body.read === 'boolean') m.read = req.body.read;
+  saveDb();
+  res.json(m);
+});
+
+app.get('/api/admin/subscribers', requireAdmin, (req, res) => res.json(db.subscribers));
+
+// Content editing: replace a whole section (site, home, about, services, government, faqs, ...)
+const EDITABLE = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
+app.put('/api/admin/content/:section', requireAdmin, (req, res) => {
+  const { section } = req.params;
+  if (!EDITABLE.includes(section)) return res.status(400).json({ error: `Section must be one of: ${EDITABLE.join(', ')}` });
+  db[section] = req.body;
+  saveDb();
+  res.json({ ok: true, section });
+});
+
+// Reviews CRUD
+app.post('/api/admin/reviews', requireAdmin, (req, res) => {
+  const { name, text, rating, image } = req.body || {};
+  if (!name || !text) return res.status(400).json({ error: 'name and text required' });
+  const review = { id: newId(), name, text, rating: rating || 5, image: image || '' };
+  db.reviews.push(review);
+  saveDb();
+  res.status(201).json(review);
+});
+app.put('/api/admin/reviews/:id', requireAdmin, (req, res) => {
+  const i = db.reviews.findIndex((r) => r.id === req.params.id);
+  if (i === -1) return res.status(404).json({ error: 'Not found' });
+  db.reviews[i] = { ...db.reviews[i], ...req.body, id: req.params.id };
+  saveDb();
+  res.json(db.reviews[i]);
+});
+app.delete('/api/admin/reviews/:id', requireAdmin, (req, res) => {
+  db.reviews = db.reviews.filter((r) => r.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+// ---------- serve built frontend (production) ----------
+const clientDist = path.join(__dirname, '..', 'client', 'dist');
+if (fs.existsSync(clientDist)) {
+  app.use(express.static(clientDist));
+  app.get(/^(?!\/api).*/, (req, res) => res.sendFile(path.join(clientDist, 'index.html')));
+}
+
+app.listen(PORT, () => console.log(`Dozeles server running on http://localhost:${PORT}`));
