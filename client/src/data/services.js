@@ -6,6 +6,8 @@
 export const SERVICES = [
   {
     slug: 'commercial-cleaning',
+    cardName: 'Office Cleaning',
+    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
     title: 'Commercial & Office Cleaning Services',
     short: 'Commercial & Office',
     icon: 'store',
@@ -85,6 +87,8 @@ export const SERVICES = [
   },
   {
     slug: 'janitorial-services',
+    cardName: 'Janitorial Services',
+    cardImg: 'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg',
     title: 'Janitorial Services',
     short: 'Janitorial Services',
     icon: 'building',
@@ -149,6 +153,8 @@ export const SERVICES = [
   },
   {
     slug: 'residential-cleaning',
+    cardName: 'House Cleaning',
+    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
     title: 'Residential House Cleaning',
     short: 'Residential Cleaning',
     icon: 'home',
@@ -212,7 +218,76 @@ export const SERVICES = [
     ],
   },
   {
+    slug: 'deep-cleaning',
+    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
+    title: 'Deep Cleaning Services',
+    short: 'Deep Cleaning',
+    cardName: 'Deep Cleaning',
+    icon: 'sparkles',
+    hero: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
+    tagline: 'The reset your space has been waiting for.',
+    metaTitle: 'Deep Cleaning Services {city} CA | Deep House & Office Cleaners',
+    metaDesc:
+      'Professional deep cleaning services in {city}, CA. Top-to-bottom deep clean for homes and offices — inside appliances, grout, baseboards, vents. Free quote.',
+    keywords: [
+      'deep cleaning services',
+      'deep house cleaning',
+      'deep clean company',
+      'spring cleaning service',
+      'one time deep cleaning',
+      'detailed cleaning service',
+    ],
+    intro:
+      'A deep clean reaches everything routine cleaning skips. We hand-wipe every surface, scrub away built-up grime, dust hard-to-reach areas, wash baseboards and door frames, degrease kitchens, descale bathrooms, and vacuum furniture and upholstery. Most {city} clients book a deep clean once, then maintain it with lighter recurring visits.',
+    body: [
+      'Buildup does not happen evenly. Grease collects above the stove, soap scum hardens in the shower, dust settles on vents and light fixtures, and grout darkens a shade at a time until one day the whole room reads as dirty. A deep clean resets all of it at once, which is why the difference is so much more visible than a standard visit.',
+      'We schedule realistic time blocks for deep cleaning — typically two to three times a standard visit — because the work genuinely takes longer. Anyone quoting you a deep clean at standard-clean speed is not doing the parts that matter.',
+    ],
+    includes: [
+      'Inside oven, refrigerator, microwave, and dishwasher',
+      'Kitchen degreasing — hood, backsplash, cabinet fronts',
+      'Bathroom descaling — grout, tile, glass, fixtures',
+      'Baseboards, door frames, trim, and switch plates',
+      'Light fixtures, ceiling fans, and vent covers',
+      'Interior windows, sills, and window tracks',
+      'Furniture and upholstery vacuuming, under and behind',
+      'Hard-floor scrubbing and edge detail',
+      'High-touch disinfection throughout',
+      'Wall spot cleaning and scuff removal',
+    ],
+    industries: [
+      'Homes needing a seasonal reset',
+      'First-time cleaning clients',
+      'Offices after a busy quarter',
+      'Homes with pets or allergies',
+      'Pre-listing and pre-photography',
+      'Post-illness sanitizing',
+      'Holiday and event preparation',
+      'Landlord turnovers',
+    ],
+    faqs: [
+      {
+        q: 'How much does a deep cleaning cost in {city}?',
+        a: 'Deep cleaning in {city} typically runs $289 to $650 depending on square footage and how much buildup there is. A two-bedroom home usually lands around $289 to $420; a four-bedroom house is generally $500 to $700. Deep cleans price higher than standard visits because they take two to three times as long. We quote flat rate after a walkthrough or a few photos.',
+      },
+      {
+        q: 'What is the difference between a deep clean and a standard clean?',
+        a: 'A standard clean maintains a space that is already in good shape — surfaces, floors, bathrooms, kitchen. A deep clean addresses accumulated buildup: inside appliances, grout, baseboards, window tracks, light fixtures, vents, and behind and under furniture. We recommend starting with a deep clean, then maintaining with standard visits, which keeps your ongoing cost lower.',
+      },
+      {
+        q: 'How often should I get a deep cleaning?',
+        a: 'For most {city} homes on a recurring cleaning schedule, once or twice a year is plenty — usually spring and before the holidays. Homes without regular service, or with pets, kids, or allergy concerns, generally benefit from a deep clean every three to four months.',
+      },
+      {
+        q: 'How long does a deep clean take?',
+        a: 'A typical two-bedroom home takes 4 to 6 hours with a two-person crew; larger homes can run a full day. We give you a realistic time window when we quote, and we do not cut the checklist short to hit it — if it takes longer, that is on us, not on your invoice.',
+      },
+    ],
+  },
+  {
     slug: 'move-in-move-out-cleaning',
+    cardName: 'Move In Out Cleaning',
+    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg',
     title: 'Move-In / Move-Out Cleaning',
     short: 'Move In / Move Out',
     icon: 'truck',
@@ -534,3 +609,12 @@ export const SERVICES = [
 ];
 
 export const getService = (slug) => SERVICES.find((s) => s.slug === slug);
+
+// The four services featured on the home page, in display order.
+export const FEATURED_SLUGS = [
+  'residential-cleaning',
+  'commercial-cleaning',
+  'deep-cleaning',
+  'move-in-move-out-cleaning',
+];
+export const FEATURED = FEATURED_SLUGS.map((s) => SERVICES.find((x) => x.slug === s)).filter(Boolean);

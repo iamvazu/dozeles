@@ -6,7 +6,7 @@ import Reveal from '../components/Reveal.jsx';
 import Seo from '../seo.jsx';
 import { CountUp } from '../components/Shared.jsx';
 import { api } from '../api.js';
-import { SERVICES } from '../data/services.js';
+import { SERVICES, FEATURED } from '../data/services.js';
 import { CITIES, citiesByRegion } from '../data/cities.js';
 
 const HOME_FAQS = [
@@ -115,7 +115,7 @@ function QuoteFormPanel() {
 
 export default function Home() {
   const { site, stats, reviews } = useContent();
-  const featured = SERVICES.slice(0, 4);
+  const featured = FEATURED;
   const groups = citiesByRegion();
 
   return (
@@ -171,9 +171,9 @@ export default function Home() {
             </div>
           </div>
           <div className="collage">
-            <img src="/images/hero_main.png" alt="Professional residential cleaning in the Bay Area" />
-            <img src="/images/hero_tr.png" alt="Eco-friendly commercial cleaning products" loading="lazy" />
-            <img src="/images/hero_br.png" alt="Commercial janitorial services Northern California" loading="lazy" />
+            <img src="https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg" alt="Professional residential cleaning in the Bay Area" />
+            <img src="https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg" alt="Eco-friendly commercial cleaning products" loading="lazy" />
+            <img src="https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg" alt="Commercial janitorial services Northern California" loading="lazy" />
           </div>
         </div>
       </div>
@@ -232,32 +232,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- WHY CHOOSE US + STATS ---------- */}
-      <section>
+      {/* ---------- WHY CHOOSE US — gradient standout band ---------- */}
+      <section className="why-band">
+        <span className="why-blob b1" aria-hidden="true" />
+        <span className="why-blob b2" aria-hidden="true" />
+        <span className="why-blob b3" aria-hidden="true" />
+        <Icon name="sparkles" size={44} className="why-spark s1" />
+        <Icon name="sparkles" size={34} className="why-spark s2" />
+
         <div className="container">
-          <Reveal className="center" style={{ marginBottom: 46 }}>
+          <Reveal className="center" style={{ marginBottom: 52 }}>
             <div className="eyebrow">Why Choose Us</div>
             <h2 className="h2">We're Experienced &amp; We Have Expert Teams</h2>
+            <p className="lead">
+              Twenty years, thousands of buildings, and a guarantee we actually honor.
+            </p>
           </Reveal>
+
           <div className="grid grid-4">
             {WHY.map((w, i) => (
-              <Reveal className="card" key={w.title} delay={i * 110}>
-                <div className="icon"><Icon name={w.icon} /></div>
-                <h3>{w.title}</h3>
-                <p>{w.text}</p>
+              <Reveal key={w.title} delay={i * 120} variant="up">
+                <div className="why-card">
+                  <div className="icon"><Icon name={w.icon} /></div>
+                  <h3>{w.title}</h3>
+                  <p>{w.text}</p>
+                </div>
               </Reveal>
             ))}
           </div>
-          <Reveal className="stat-row">
+
+          <Reveal className="why-stats" delay={120}>
             {stats.items.map((s) => (
-              <div className="stat-inline" key={s.label}>
-                <div className="n"><CountUp value={s.value} />+</div>
+              <div className="s" key={s.label}>
+                <div className="n"><CountUp value={s.value} /><em>+</em></div>
                 <div className="l">{s.label}</div>
               </div>
             ))}
           </Reveal>
-          <div className="center" style={{ marginTop: 40 }}>
-            <Link to="/about-us" className="btn btn-outline">Our Cleaning Process</Link>
+
+          <div className="center" style={{ marginTop: 46 }}>
+            <Link to="/about-us" className="btn btn-white">Our Cleaning Process</Link>
           </div>
         </div>
       </section>
@@ -269,26 +283,29 @@ export default function Home() {
             <div className="eyebrow">Our Services</div>
             <h2 className="h2">Here's What We Can Do for You</h2>
             <p className="lead">
-              Nine specialized service lines covering every commercial janitorial and residential
-              cleaning need in Northern California.
+              {SERVICES.length} specialized service lines covering every commercial janitorial and
+              residential cleaning need in Northern California.
             </p>
           </Reveal>
           <div className="grid grid-4">
             {featured.map((s, i) => (
-              <Reveal key={s.slug} delay={i * 110} as={Link} className="svc-card" to={`/services/${s.slug}`}>
-                <div className="thumb">
-                  <img src={s.hero} alt={s.title} loading="lazy" />
+              <Reveal key={s.slug} delay={i * 120} as={Link} className="svc2" to={`/services/${s.slug}`}>
+                <div className="svc2-img">
+                  <img src={s.cardImg || s.hero} alt={s.cardName || s.short} loading="lazy" />
+                  <span className="svc2-badge"><Icon name={s.icon} size={26} /></span>
                 </div>
-                <div className="body">
-                  <h3>{s.short}</h3>
-                  <p>{s.tagline}</p>
-                  <span className="more">Learn more →</span>
-                </div>
+                <h3>{s.cardName || s.short}</h3>
+                <p>{s.tagline}</p>
+                <span className="svc2-more">
+                  Learn more <span className="cir"><Icon name="arrow" size={14} /></span>
+                </span>
               </Reveal>
             ))}
           </div>
-          <div className="center" style={{ marginTop: 40 }}>
-            <Link to="/services-offered" className="btn btn-blue">View All 9 Services</Link>
+          <div className="center" style={{ marginTop: 44 }}>
+            <Link to="/services-offered" className="btn btn-blue">
+              View All {SERVICES.length} Services
+            </Link>
           </div>
         </div>
       </section>
