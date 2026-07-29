@@ -582,7 +582,7 @@ section { padding: 84px 0; }
    ============================================================ */
 
 /* --- Split hero: copy left, image collage right --- */
-.chero { background: var(--surface); padding: 76px 0 90px; overflow: hidden; }
+.chero { background: var(--surface); padding: 40px 0; min-height: calc(100vh - 130px); display: flex; align-items: center; overflow: hidden; }
 .chero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
 .chero h1 { font-size: clamp(2.8rem, 6vw, 4.9rem); margin-bottom: 20px; }
 .chero h1 .accent { color: var(--blue); }
@@ -600,9 +600,9 @@ section { padding: 84px 0; }
 .review-badge .stars { color: #f5b301; font-size: 0.9rem; letter-spacing: 2px; }
 .review-badge .count { font-size: 0.8rem; color: var(--muted); }
 
-/* image collage */
-.collage { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 190px 190px; gap: 18px; }
-.collage img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; box-shadow: var(--shadow); }
+/* hero images */
+.hero-images { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.hero-images img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; border-radius: 16px; box-shadow: var(--shadow); }
 .collage img:first-child { grid-row: span 2; height: 100%; border-radius: 200px 200px 20px 20px; }
 
 /* ============================================================
