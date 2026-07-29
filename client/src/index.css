@@ -605,10 +605,6 @@ section { padding: 84px 0; }
 .collage img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; box-shadow: var(--shadow); }
 .collage img:first-child { grid-row: span 2; height: 100%; border-radius: 200px 200px 20px 20px; }
 
-/* hero images */
-.hero-images { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.hero-images img { width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; border-radius: 16px; box-shadow: var(--shadow); }
-
 /* ============================================================
    SCROLL REVEAL ANIMATIONS
    ============================================================ */
@@ -1562,3 +1558,22 @@ img, video, iframe, table { max-width: 100%; }
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 @media print { .mbar, .header, .footer { display: none !important; } }
+
+/* ---- anchor offset so #estimate never lands under the sticky header ---- */
+#estimate, [id] { scroll-margin-top: 90px; }
+
+/* ---- mobile header: push Free Quote + burger to the right ----
+   On desktop `.nav-desktop { margin-left:auto }` does the pushing. Once the
+   nav collapses on mobile there is nothing left to push, so the actions
+   bunched up next to the logo. Give the action group its own auto margin. ---- */
+@media (max-width: 980px) {
+  .hdr-actions { margin-left: auto; }
+  .logo img { height: 48px; }
+  .header.scrolled .logo img { height: 44px; }
+}
+@media (max-width: 520px) {
+  .logo img { height: 42px; }
+  .header.scrolled .logo img { height: 38px; }
+  .hdr { gap: 8px; }
+  .hdr-actions { gap: 8px; }
+}

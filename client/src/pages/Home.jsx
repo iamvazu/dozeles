@@ -172,9 +172,10 @@ export default function Home() {
               </span>
             </div>
           </div>
-          <div className="hero-images">
-            <img src="/images/hero_residential.png" alt="Professional residential cleaning in the Bay Area" />
-            <img src="/images/hero_commercial.png" alt="Professional commercial cleaning services" loading="lazy" />
+          <div className="collage">
+            <img src="https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg" alt="Professional residential cleaning in the Bay Area" />
+            <img src="https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg" alt="Eco-friendly commercial cleaning products" loading="lazy" />
+            <img src="https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg" alt="Commercial janitorial services Northern California" loading="lazy" />
           </div>
         </div>
       </div>
