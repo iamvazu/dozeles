@@ -4,6 +4,7 @@ import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
 import Reveal from '../components/Reveal.jsx';
 import ReviewsShowcase from '../components/ReviewsShowcase.jsx';
+import PriceCalculator from '../components/PriceCalculator.jsx';
 import Seo from '../seo.jsx';
 import { CountUp } from '../components/Shared.jsx';
 import { api } from '../api.js';
@@ -307,6 +308,26 @@ export default function Home() {
             <Link to="/services-offered" className="btn btn-blue">
               View All {SERVICES.length} Services
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- INSTANT PRICE CALCULATOR ---------- */}
+      <section className="calc-home" id="estimate">
+        <div className="container">
+          <Reveal className="center calc-home-head">
+            <div className="eyebrow">Instant Pricing</div>
+            <h2 className="h2">Know Your Price in 30 Seconds</h2>
+            <p className="lead">
+              No waiting for a callback. Choose your options and see a real estimate instantly —
+              home or business. Then book in three taps.
+            </p>
+          </Reveal>
+          <Reveal variant="up">
+            <PriceCalculator />
+          </Reveal>
+          <div className="center" style={{ marginTop: 28 }}>
+            <Link to="/pricing" className="btn btn-outline">See full pricing &amp; packages</Link>
           </div>
         </div>
       </section>

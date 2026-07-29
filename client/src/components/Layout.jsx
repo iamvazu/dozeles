@@ -3,6 +3,7 @@ import { Outlet, Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import { api } from '../api.js';
 import Header from './Header.jsx';
+import MobileBar from './MobileBar.jsx';
 import Icon from './Icon.jsx';
 import Social, { SOCIALS } from './Social.jsx';
 import { SERVICES } from '../data/services.js';
@@ -181,6 +182,8 @@ export default function Layout() {
           </div>
         </div>
       </footer>
+
+      <MobileBar site={site} />
     </>
   );
 }

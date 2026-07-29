@@ -46,7 +46,7 @@ export default function ReviewsShowcase() {
   useEffect(() => {
     const calc = () => {
       const w = window.innerWidth;
-      setPerView(w < 700 ? 1 : w < 1080 ? 2 : 3);
+      setPerView(w < 900 ? 1 : w < 1180 ? 2 : 3);
     };
     calc();
     window.addEventListener('resize', calc);

@@ -324,13 +324,7 @@ section { padding: 84px 0; }
   .nav-item:focus-within .drop { opacity: 1; visibility: visible; pointer-events: auto; }
 }
 
-/* --- How It Works responsive --- */
-@media (max-width: 980px) {
-  .hiw { grid-template-columns: 1fr; gap: 46px; }
-  .hiw-arrow { display: none; }
-  .hiw-circle { width: 160px; height: 160px; margin-bottom: 22px; }
-  .hiw-circle > svg { width: 64px; height: 64px; }
-}
+/* (How It Works responsive lives in the MOBILE LAYER at the end of this file) */
 
 /* hero */
 .hero { background: linear-gradient(100deg, rgba(10, 37, 64, 0.88) 30%, rgba(10, 37, 64, 0.55)), url('https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg') center/cover; color: #fff; padding: 130px 0 120px; }
@@ -1326,3 +1320,241 @@ section { padding: 84px 0; }
   section { padding: 56px 0; }
   .link-mesh { columns: 1; }
 }
+
+/* ============================================================================
+   ██  MOBILE LAYER  ██
+   Everything responsive lives here, at the END of the stylesheet, so it always
+   wins the cascade. (An earlier version of this file had mobile rules sitting
+   ABOVE their desktop counterparts, which silently broke the How It Works grid
+   on phones — never re-introduce responsive rules higher up.)
+
+   Designed mobile-first for high-intent traffic arriving from Google Maps,
+   Siri, and AI assistants: fastest path to price, call, and book.
+   ============================================================================ */
+
+/* ---- global: kill horizontal scroll, room for the action bar ---- */
+html, body { overflow-x: hidden; max-width: 100%; }
+img, video, iframe, table { max-width: 100%; }
+* { min-width: 0; }
+
+/* ---- burger: use margins, NOT flex gap.
+        Older Android browsers ignore flex `gap`, which collapsed the three
+        bars into one thick dash. Margins work everywhere. ---- */
+.burger { gap: 0 !important; }
+.burger span { margin: 2.5px 0; }
+
+/* ---- sticky mobile action bar ---- */
+.mbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 80;
+  display: none; gap: 8px; padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.97);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 22px rgba(10, 37, 64, 0.1);
+  transform: translateY(110%); transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mbar.in { transform: translateY(0); }
+.mbar-btn {
+  flex: 1; min-height: 52px; border-radius: 14px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.76rem; letter-spacing: 0.2px; line-height: 1.1;
+  -webkit-tap-highlight-color: transparent; transition: transform 0.15s;
+}
+.mbar-btn svg { margin-bottom: 3px; }
+.mbar-btn:active { transform: scale(0.96); }
+.mbar-btn.call { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.mbar-btn.price { background: var(--blue-tint); color: var(--blue); border: 1px solid rgba(14,95,216,0.2); }
+.mbar-btn.book { background: linear-gradient(135deg, #1470f0, #0A4BB0); color: #fff; box-shadow: 0 6px 16px rgba(14,95,216,0.35); }
+
+/* ---- home calculator section ---- */
+.calc-home { background: var(--surface); padding: 84px 0; }
+.calc-home-head { max-width: 720px; margin: 0 auto 40px; }
+
+/* ============================ <= 1080px ============================ */
+@media (max-width: 1080px) {
+  .hiw { grid-template-columns: 1fr; gap: 44px; }
+  .hiw-arrow { display: none !important; }
+}
+
+/* ============================ <= 980px ============================= */
+@media (max-width: 980px) {
+  section, .calc-home { padding: 60px 0; }
+  .h2 { font-size: clamp(1.75rem, 5.2vw, 2.6rem); }
+  .lead { font-size: 0.98rem; }
+  .hiw-circle { width: 158px; height: 158px; margin-bottom: 22px; }
+  .hiw-circle > svg { width: 62px; height: 62px; }
+  .hiw-step h3 { font-size: 1.5rem; }
+}
+
+/* ============================ <= 900px ============================= */
+@media (max-width: 900px) {
+  /* show the action bar; keep it from covering the footer */
+  .mbar { display: flex; }
+  body { padding-bottom: 74px; }
+
+  /* header: the topbar must never wrap or overflow.
+     NOTE: `.topbar a` is more specific than `.tb-hide-sm`, so the hide rule
+     has to be scoped too or the email keeps showing. */
+  .topbar .tb-hide-sm,
+  .topbar a.tb-hide-sm,
+  .topbar span.tb-hide-sm { display: none !important; }
+  .topbar .container { justify-content: center; }
+  .topbar { height: 40px; }
+  .tb-soc a { width: 30px; height: 30px; }
+
+  /* hero */
+  .chero { padding: 40px 0 56px; }
+  .chero h1 { font-size: clamp(1.9rem, 7.4vw, 3rem); line-height: 1.08; }
+  .chero p.sub { font-size: 1rem; margin-bottom: 24px; }
+  .chero-cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chero-cta .btn { width: 100%; text-align: center; padding: 15px 12px; font-size: 0.86rem; }
+  .pill-row { gap: 8px; margin-top: 24px; }
+  .pill-feat { padding: 8px 14px; font-size: 0.82rem; }
+  .review-badge { width: 100%; justify-content: center; margin-top: 20px; }
+  .collage { grid-template-rows: 132px 132px; gap: 12px; }
+  .collage img:first-child { border-radius: 120px 120px 16px 16px; }
+  .collage img { border-radius: 16px; }
+
+  /* reviews: one card at a time so text is readable */
+  .rev-band { padding: 56px 0 176px; }
+  .rev-panel { padding: 74px 14px 38px; }
+  .rev-arrow { display: none; }
+  .rev-slide { padding: 0 6px; }
+  .rev-card { padding: 24px 22px; }
+  .rev-float { position: static; width: 100%; margin-top: 16px; }
+  .rev-shot { aspect-ratio: 16 / 11; }
+  .rev-trust { gap: 10px 16px; }
+  .rev-trust-item { font-size: 0.84rem; }
+
+  /* calculator */
+  .calc-body { grid-template-columns: 1fr; }
+  .calc-result-inner { position: static; padding: 26px 20px 28px; }
+  .calc-inputs { padding: 24px 18px; }
+  .calc-opts-3 { grid-template-columns: repeat(2, 1fr); }
+  .calc-addons { grid-template-columns: 1fr; }
+
+  /* booking wizard */
+  .wiz { grid-template-columns: 1fr; gap: 24px; }
+  .wiz-side { position: static; order: -1; }   /* estimate first on mobile */
+  .wiz-main { padding: 26px 20px; }
+  .wiz-est { padding: 24px 20px; }
+  .wiz-est .calc-price { font-size: 3rem; }
+
+  /* generic */
+  .split { grid-template-columns: 1fr; gap: 32px; }
+  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .price-grid { grid-template-columns: 1fr; }
+  .price-card.featured { transform: none; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-cta { grid-template-columns: 1fr; }
+  .link-mesh { columns: 2; }
+  .why-stats { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+  .addon-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============================ <= 700px ============================= */
+@media (max-width: 700px) {
+  .container { padding: 0 18px; }
+  section, .calc-home { padding: 48px 0; }
+
+  .h2 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  .h3 { font-size: 1.4rem; }
+  .eyebrow { font-size: 0.72rem; letter-spacing: 2px; }
+
+  /* single-column everything that was 2-up */
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .form-row, .calc-row2, .wiz-row3 { grid-template-columns: 1fr; }
+  .checklist.two-col { grid-template-columns: 1fr; }
+  .addon-grid { grid-template-columns: 1fr; }
+  .footer-grid, .footer-certs { grid-template-columns: 1fr; }
+  .link-mesh { columns: 1; }
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+
+  /* hero: stack CTAs full width — biggest tap targets on the page */
+  .chero-cta { grid-template-columns: 1fr; }
+  .chero-cta .btn { padding: 16px; font-size: 0.92rem; }
+  .chero h1 { font-size: clamp(1.85rem, 8.4vw, 2.5rem); }
+  .collage { grid-template-columns: 1fr 1fr; grid-template-rows: 110px 110px; }
+
+  /* how it works */
+  .hiw-circle { width: 138px; height: 138px; }
+  .hiw-circle > svg { width: 54px; height: 54px; }
+  .hiw-step h3 { font-size: 1.35rem; }
+  .hiw-step p { font-size: 0.92rem; }
+
+  /* reviews */
+  .rev-badge { width: calc(100% - 28px); min-width: 0; padding: 15px 18px; border-radius: 18px; }
+  .rev-badge strong { font-size: 1.02rem; }
+  .rev-panel { padding: 68px 10px 34px; }
+
+  /* calculator: keep the price visible while choosing options */
+  .calc-tabs button { font-size: 0.88rem; padding: 15px 8px; gap: 7px; }
+  .calc-price { font-size: 3rem; }
+  .calc-chip { padding: 12px 16px; font-size: 0.86rem; }
+  .calc-opt { padding: 13px 14px; }
+  .calc-stepper button { width: 44px; height: 44px; font-size: 1.3rem; }
+
+  /* wizard */
+  .wiz-dot { width: 36px; height: 36px; font-size: 0.85rem; }
+  .wiz-actions { flex-direction: column-reverse; gap: 10px; }
+  .wiz-actions .btn, .wiz-actions .btn-quote { width: 100%; justify-content: center; }
+  .wiz-title { font-size: 0.95rem; padding: 12px 14px; }
+
+  /* pricing */
+  .price-card { padding: 30px 24px; }
+  .calc-hero-badges span { font-size: 0.8rem; padding: 8px 14px; }
+
+  /* footer */
+  .footer-cta h2 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  .subscribe { flex-direction: column; }
+  .subscribe .btn-quote { justify-content: center; width: 100%; }
+  .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
+
+  /* room tabs scroll horizontally instead of wrapping into a wall */
+  .room-tabs {
+    flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start;
+    padding-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .room-tabs::-webkit-scrollbar { display: none; }
+  .room-tab { flex: 0 0 auto; }
+
+  /* comfortable tap targets everywhere */
+  .btn, .btn-quote, .chip, .calc-chip, .room-tab, .wiz-addon, .nav-link, .drop-link {
+    min-height: 44px; display: inline-flex; align-items: center;
+  }
+  .btn, .btn-quote { justify-content: center; }
+  .drop-link { align-items: flex-start; }
+  .form input, .form select, .form textarea { font-size: 16px; }  /* stops iOS zoom-on-focus */
+}
+
+/* ============================ <= 430px ============================= */
+@media (max-width: 430px) {
+  .container { padding: 0 15px; }
+  .chero h1 { font-size: 1.72rem; }
+  .h2 { font-size: 1.5rem; }
+  .calc-price { font-size: 2.6rem; }
+  .hiw-circle { width: 124px; height: 124px; }
+  .hiw-circle > svg { width: 48px; height: 48px; }
+  .mbar-btn { font-size: 0.72rem; min-height: 50px; }
+  .gallery { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .rev-card { padding: 22px 18px; }
+  .stat-inline .n, .why-stats .n { font-size: 2.6rem; }
+  .footer .logo-white img { height: 56px; }
+}
+
+/* ============================ <= 360px ============================= */
+@media (max-width: 360px) {
+  .chero h1 { font-size: 1.58rem; }
+  .calc-price { font-size: 2.3rem; }
+  .mbar-btn span { font-size: 0.68rem; }
+  .btn-quote { padding: 10px 12px; font-size: 0.76rem; }
+}
+
+/* ---- reduced motion + print ---- */
+@media (prefers-reduced-motion: reduce) {
+  .mbar { transition: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+@media print { .mbar, .header, .footer { display: none !important; } }

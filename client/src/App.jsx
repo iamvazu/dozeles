@@ -15,35 +15,31 @@ import BeforeAfter from './pages/BeforeAfter.jsx';
 import Contact from './pages/Contact.jsx';
 import Booking from './pages/Booking.jsx';
 import Admin from './admin/Admin.jsx';
-import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   return (
-    <>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about-us" element={<About />} />
-          <Route path="/cleaning-process" element={<CleaningProcess />} />
-          <Route path="/services-offered" element={<Services />} />
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about-us" element={<About />} />
+        <Route path="/cleaning-process" element={<CleaningProcess />} />
+        <Route path="/services-offered" element={<Services />} />
 
-          {/* Programmatic SEO routes */}
-          <Route path="/services/:service" element={<ServiceDetail />} />
-          <Route path="/services/:service/:city" element={<ServiceCity />} />
-          <Route path="/cleaning-services/:city" element={<CityPage />} />
-          <Route path="/locations" element={<Locations />} />
+        {/* Programmatic SEO routes */}
+        <Route path="/services/:service" element={<ServiceDetail />} />
+        <Route path="/services/:service/:city" element={<ServiceCity />} />
+        <Route path="/cleaning-services/:city" element={<CityPage />} />
+        <Route path="/locations" element={<Locations />} />
 
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/government-contract" element={<Government />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/before-after" element={<BeforeAfter />} />
-          <Route path="/contact-us" element={<Contact />} />
-          <Route path="/book" element={<Booking />} />
-          <Route path="*" element={<Home />} />
-        </Route>
-        <Route path="/admin/*" element={<Admin />} />
-      </Routes>
-      <Analytics />
-    </>
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/government-contract" element={<Government />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/before-after" element={<BeforeAfter />} />
+        <Route path="/contact-us" element={<Contact />} />
+        <Route path="/book" element={<Booking />} />
+        <Route path="*" element={<Home />} />
+      </Route>
+      <Route path="/admin/*" element={<Admin />} />
+    </Routes>
   );
 }
