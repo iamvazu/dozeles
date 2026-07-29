@@ -491,6 +491,40 @@ section { padding: 84px 0; }
 .hours-row:last-child { border-bottom: none; }
 .hours-row span:last-child { color: #fff; white-space: nowrap; }
 
+/* certifications strip */
+.footer-certs {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  padding: 30px 0; border-top: 1px solid rgba(255,255,255,0.14);
+}
+.cert-card {
+  display: flex; gap: 12px; align-items: center; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 16px 18px;
+}
+.cert-ico {
+  width: 40px; height: 40px; border-radius: 11px; background: rgba(111,177,255,0.18); color: #6FB1FF;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cert-card strong { display: block; color: #fff; font-size: 0.88rem; line-height: 1.3; }
+.cert-no {
+  display: block; color: #9FC8FF; font-size: 0.76rem; margin-top: 3px;
+  font-family: var(--font-mono, monospace); letter-spacing: 0.3px;
+}
+@media (max-width: 980px) { .footer-certs { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .footer-certs { grid-template-columns: 1fr; } }
+
+/* google attribution on reviews */
+.who-google { margin-left: auto; color: #4285F4; display: flex; align-items: center; flex-shrink: 0; }
+.rev-cert-no {
+  font-style: normal; font-size: 0.7rem; color: #9FC8FF; background: rgba(255,255,255,0.12);
+  border-radius: 5px; padding: 2px 7px; margin-left: 7px; white-space: nowrap;
+}
+.rev-google-link {
+  display: inline-flex; align-items: center; gap: 9px; background: #fff; border: 1px solid var(--line);
+  border-radius: 999px; padding: 11px 22px; font-weight: 600; font-size: 0.88rem; color: var(--ink);
+  transition: 0.24s; box-shadow: 0 3px 10px rgba(10,37,64,0.08);
+}
+.rev-google-link:hover { border-color: #4285F4; color: #4285F4; transform: translateY(-2px); }
+
 /* social buttons */
 .soc-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .soc-btn {
@@ -751,6 +785,104 @@ section { padding: 84px 0; }
 .quote-card .who img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
 .quote-card .who strong { display: block; color: var(--ink); font-size: 0.95rem; }
 .quote-card .who span { color: var(--muted); font-size: 0.82rem; }
+
+/* ============================================================
+   BOOKING WIZARD — 3 steps + live estimate sidebar
+   ============================================================ */
+.wiz { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: start; }
+.wiz-main { background: #fff; border: 1px solid var(--line); border-radius: 26px; padding: 40px 38px; }
+
+/* stepper */
+.wiz-steps { display: flex; align-items: center; margin: 26px 0 30px; }
+.wiz-step { display: flex; align-items: center; flex: 1; }
+.wiz-step:last-child { flex: 0 0 auto; }
+.wiz-dot {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); color: var(--muted); font-weight: 700; font-size: 0.95rem;
+  border: 2px solid var(--line); transition: 0.3s;
+}
+.wiz-step.on .wiz-dot { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 0 0 5px rgba(14,95,216,0.15); }
+.wiz-step.done .wiz-dot { background: var(--blue); color: #fff; border-color: var(--blue); }
+.wiz-line { flex: 1; height: 3px; background: var(--line); margin: 0 10px; border-radius: 3px; position: relative; overflow: hidden; }
+.wiz-step.done .wiz-line::after {
+  content: ''; position: absolute; inset: 0; background: var(--blue);
+  animation: lineFill 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes lineFill { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { .wiz-step.done .wiz-line::after { animation: none; } }
+
+.wiz-title {
+  font-family: var(--font-body); font-weight: 700; color: var(--ink); font-size: 1.05rem;
+  border: 1.5px solid var(--ink); border-radius: 12px; padding: 13px 18px; margin-bottom: 26px;
+}
+.wiz-field { display: block; }
+.wiz-field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
+.wiz-field label small { color: #9aa4ab; font-weight: 400; }
+.wiz-row3 { grid-template-columns: 1.4fr 1fr 1fr; }
+
+.wiz-addons { display: flex; flex-wrap: wrap; gap: 8px; }
+.wiz-addon {
+  border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 16px;
+  cursor: pointer; font-family: var(--font-body); font-size: 0.84rem; font-weight: 600;
+  color: var(--ink); transition: 0.2s;
+}
+.wiz-addon:hover { border-color: var(--blue); }
+.wiz-addon.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+.wiz-addon em { font-style: normal; color: var(--blue); font-weight: 700; margin-left: 5px; }
+.wiz-addon.on em { color: #bcd8ff; }
+
+.wiz-actions { display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+.wiz-actions .btn-quote:disabled { opacity: 0.7; cursor: wait; }
+
+/* sidebar */
+.wiz-side { position: sticky; top: 110px; }
+.wiz-est {
+  border-radius: 26px; padding: 32px 28px; color: #fff; position: relative; overflow: hidden;
+  background: linear-gradient(160deg, #1470f0 0%, #0E5FD8 40%, #0A4BB0 72%, #0A2540 100%);
+}
+.wiz-est::before {
+  content: ''; position: absolute; width: 300px; height: 300px; top: -140px; right: -100px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.14), rgba(255,255,255,0) 70%);
+}
+.wiz-est > * { position: relative; z-index: 2; }
+.wiz-trust { display: grid; gap: 9px; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.2); }
+.wiz-trust span {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: 0.82rem; font-weight: 600; color: #dbe9fa;
+}
+.wiz-trust svg { color: #6FB1FF; flex-shrink: 0; }
+.wiz-trust em {
+  font-style: normal; font-size: 0.7rem; color: #9FC8FF; font-weight: 400;
+  background: rgba(255,255,255,0.1); border-radius: 5px; padding: 2px 7px; margin-left: auto; white-space: nowrap;
+}
+.wiz-google {
+  display: flex; align-items: center; gap: 11px; background: #fff; border-radius: 14px;
+  padding: 12px 16px; margin-top: 18px; color: var(--ink);
+}
+.wiz-google strong { font-size: 0.95rem; }
+.wiz-google small { display: block; color: var(--muted); font-size: 0.76rem; }
+
+/* confirmation */
+.wiz-done { text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 26px; padding: 56px 40px; }
+.wiz-check {
+  width: 84px; height: 84px; border-radius: 50%; background: var(--blue-tint); color: var(--blue);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 22px;
+}
+.wiz-done .lead { margin: 0 auto 26px; }
+.wiz-done-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 1080px) {
+  .wiz { grid-template-columns: 1fr; }
+  .wiz-side { position: static; }
+}
+@media (max-width: 600px) {
+  .wiz-main { padding: 26px 20px; }
+  .wiz-row3 { grid-template-columns: 1fr; }
+  .wiz-dot { width: 36px; height: 36px; font-size: 0.85rem; }
+  .wiz-actions { flex-direction: column-reverse; }
+  .wiz-actions .btn, .wiz-actions .btn-quote { width: 100%; justify-content: center; }
+}
 
 /* estimate banner carried from the calculator into booking */
 .est-banner {

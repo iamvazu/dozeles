@@ -145,6 +145,19 @@ export default function Layout() {
             </div>
           </div>
 
+          {/* ---------- certifications ---------- */}
+          <div className="footer-certs">
+            {(site.certifications || []).map((c) => (
+              <div className="cert-card" key={c.id}>
+                <span className="cert-ico"><Icon name={c.icon} size={19} /></span>
+                <div>
+                  <strong>{c.label}</strong>
+                  {c.number && <span className="cert-no">{c.numberLabel} {c.number}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* ---------- service-area link mesh (SEO) ---------- */}
           <div className="footer-mesh">
             <h4>Popular Service Areas</h4>

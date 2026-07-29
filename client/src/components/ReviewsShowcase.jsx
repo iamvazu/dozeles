@@ -12,9 +12,7 @@ const SHOTS = [
   'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg',
 ];
 
-const TRUST = [
-  { icon: 'shield', label: 'Licensed & Insured' },
-  { icon: 'badge', label: 'Women-Certified' },
+const EXTRA_TRUST = [
   { icon: 'leaf', label: 'Green Certified' },
   { icon: 'sparkles', label: 'HEPA Equipped' },
 ];
@@ -128,6 +126,9 @@ export default function ReviewsShowcase() {
                       <strong>{featured.name}</strong>
                       <span>Verified customer</span>
                     </span>
+                    <span className="who-google" title="Review from Google">
+                      <Social name="google" size={17} />
+                    </span>
                   </div>
                 </div>
               )}
@@ -142,7 +143,13 @@ export default function ReviewsShowcase() {
                 result of taking that seriously.
               </p>
               <div className="rev-trust">
-                {TRUST.map((t) => (
+                {(site.certifications || []).map((c) => (
+                  <span className="rev-trust-item" key={c.id} title={c.note}>
+                    <Icon name={c.icon} size={20} /> {c.label}
+                    {c.number && <em className="rev-cert-no">{c.number}</em>}
+                  </span>
+                ))}
+                {EXTRA_TRUST.map((t) => (
                   <span className="rev-trust-item" key={t.label}>
                     <Icon name={t.icon} size={20} /> {t.label}
                   </span>
@@ -190,7 +197,10 @@ export default function ReviewsShowcase() {
                           {r.image && <img src={r.image} alt={r.name} loading="lazy" />}
                           <span>
                             <strong>{r.name}</strong>
-                            <span>Customer</span>
+                            <span>Posted on Google</span>
+                          </span>
+                          <span className="who-google" title="Review from Google">
+                            <Social name="google" size={17} />
                           </span>
                         </div>
                       </div>
@@ -218,7 +228,17 @@ export default function ReviewsShowcase() {
             )}
 
             <div className="center" style={{ marginTop: 30 }}>
-              <Link to="/reviews" className="btn btn-blue">Read All Reviews</Link>
+              <a
+                className="rev-google-link"
+                href={site.googleReviewUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Social name="google" size={16} /> See all our reviews on Google
+              </a>
+              <div style={{ marginTop: 18 }}>
+                <Link to="/reviews" className="btn btn-blue">Read All Reviews</Link>
+              </div>
             </div>
           </div>
         </div>
