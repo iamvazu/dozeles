@@ -5,7 +5,8 @@ import App from './App.jsx';
 import { ContentProvider } from './content.jsx';
 import './index.css';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const rootElement = document.getElementById('root');
+const app = (
   <React.StrictMode>
     <BrowserRouter>
       <ContentProvider>
@@ -14,3 +15,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+if (rootElement.hasChildNodes()) {
+  ReactDOM.hydrateRoot(rootElement, app);
+} else {
+  ReactDOM.createRoot(rootElement).render(app);
+}
