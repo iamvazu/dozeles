@@ -80,12 +80,9 @@ export default function Layout() {
           {/* ---------- columns ---------- */}
           <div className="footer-grid">
             <div>
-              <Link to="/" className="logo-white" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#fff', borderRadius: '14px', padding: '12px 20px', marginBottom: '20px', boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)' }}>
-                <Icon name="sparkles" size={28} style={{ color: 'var(--blue)' }} />
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: '2.2rem', color: 'var(--ink)', letterSpacing: '1px', lineHeight: 1, marginTop: '2px' }}>
-                  DOZELES
-                </span>
-              </Link>
+              <span className="logo-white">
+                <img src={site.logo} alt="Dozeles Professional Cleaning" />
+              </span>
               <p>{site.footerText}</p>
               <div className="soc-row" style={{ marginTop: 22 }}>
                 {SOCIALS.map((s) => (
