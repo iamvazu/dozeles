@@ -174,17 +174,25 @@ export default function CleaningProcess() {
             <div className="eyebrow">Step by Step</div>
             <h2 className="h2">From First Call to Finished Space</h2>
           </Reveal>
-          <div className="grid grid-3">
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={(i % 3) * 110}>
-                <div className="proc-card">
-                  <span className="proc-n">{s.n}</span>
-                  <div className="icon"><Icon name={s.icon} /></div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
-                </div>
-              </Reveal>
-            ))}
+          <div className="proc-timeline">
+            <div className="proc-line">
+              <div className="proc-dot" />
+            </div>
+            {STEPS.map((s, i) => {
+              const sideClass = i % 2 === 0 ? 'left' : 'right';
+              return (
+                <Reveal key={s.n} delay={0} variant={i % 2 === 0 ? 'left' : 'right'}>
+                  <div className={`proc-item ${sideClass}`}>
+                    <div className="proc-card">
+                      <span className="proc-n">{s.n}</span>
+                      <div className="icon"><Icon name={s.icon} /></div>
+                      <h3>{s.title}</h3>
+                      <p>{s.text}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>

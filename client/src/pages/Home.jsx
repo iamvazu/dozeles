@@ -246,7 +246,20 @@ export default function Home() {
       {/* ---------- WHO WE ARE ---------- */}
       <section className="section-alt">
         <div className="container split">
-          <img src="/images/residential_cleaning.png" alt="The Dozeles cleaning team at work" loading="lazy" />
+          <div className="who-images">
+            <img 
+              src="/images/residential_cleaning.png" 
+              alt="The Dozeles residential cleaning team at work" 
+              loading="lazy"
+              style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
+            />
+            <img 
+              src="/images/corporate_lobby_cleaning.png" 
+              alt="The Dozeles commercial cleaning team at work" 
+              loading="lazy"
+              style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }}
+            />
+          </div>
           <div className="prose">
             <div className="eyebrow">Who We Are</div>
             <h2 className="h2">The Best Option For a Sparkling Home or Office</h2>
