@@ -45,7 +45,7 @@ export default function Seo({
   description,
   keywords,
   path = '/',
-  image = 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+  image = '/images/hero_main.png',
   faqs,
   breadcrumbs,
   serviceName,

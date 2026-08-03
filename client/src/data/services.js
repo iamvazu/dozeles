@@ -7,11 +7,11 @@ export const SERVICES = [
   {
     slug: 'commercial-cleaning',
     cardName: 'Office Cleaning',
-    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    cardImg: '/images/office_desk_cleaning.png',
     title: 'Commercial & Office Cleaning Services',
     short: 'Commercial & Office',
     icon: 'store',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    hero: '/images/office_desk_cleaning.png',
     tagline: 'Spotless workplaces that protect your brand and your people.',
     metaTitle: 'Commercial & Office Cleaning Services {city} | Dozeles',
     metaDesc:
@@ -88,11 +88,11 @@ export const SERVICES = [
   {
     slug: 'janitorial-services',
     cardName: 'Janitorial Services',
-    cardImg: 'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg',
+    cardImg: '/images/deep_cleaning.png',
     title: 'Janitorial Services',
     short: 'Janitorial Services',
     icon: 'building',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    hero: '/images/office_desk_cleaning.png',
     tagline: 'Daily janitorial programs that never miss a night.',
     metaTitle: 'Janitorial Services {city} CA | Commercial Janitorial Company',
     metaDesc:
@@ -154,11 +154,11 @@ export const SERVICES = [
   {
     slug: 'residential-cleaning',
     cardName: 'House Cleaning',
-    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+    cardImg: '/images/hero_main.png',
     title: 'Residential House Cleaning',
     short: 'Residential Cleaning',
     icon: 'home',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+    hero: '/images/hero_main.png',
     tagline: 'Come home to a house that feels genuinely clean.',
     metaTitle: 'House Cleaning Services {city} CA | Residential Cleaners',
     metaDesc:
@@ -219,12 +219,12 @@ export const SERVICES = [
   },
   {
     slug: 'deep-cleaning',
-    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
+    cardImg: '/images/vacuum_cleaning.png',
     title: 'Deep Cleaning Services',
     short: 'Deep Cleaning',
     cardName: 'Deep Cleaning',
     icon: 'sparkles',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
+    hero: '/images/vacuum_cleaning.png',
     tagline: 'The reset your space has been waiting for.',
     metaTitle: 'Deep Cleaning Services {city} CA | Deep House & Office Cleaners',
     metaDesc:
@@ -287,11 +287,11 @@ export const SERVICES = [
   {
     slug: 'move-in-move-out-cleaning',
     cardName: 'Move In Out Cleaning',
-    cardImg: 'https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg',
+    cardImg: '/images/family_cleaning.png',
     title: 'Move-In / Move-Out Cleaning',
     short: 'Move In / Move Out',
     icon: 'truck',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+    hero: '/images/hero_main.png',
     tagline: 'Deposit-back clean, guaranteed.',
     metaTitle: 'Move Out Cleaning Services {city} CA | Move In Cleaners',
     metaDesc:
@@ -355,7 +355,7 @@ export const SERVICES = [
     title: 'Post-Construction Cleaning',
     short: 'Post-Construction',
     icon: 'hardhat',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    hero: '/images/office_desk_cleaning.png',
     tagline: 'From dust-covered jobsite to handover-ready in one pass.',
     metaTitle: 'Post Construction Cleaning {city} CA | Construction Cleanup',
     metaDesc:
@@ -419,7 +419,7 @@ export const SERVICES = [
     title: 'Government Facility Cleaning',
     short: 'Government Facilities',
     icon: 'landmark',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
+    hero: '/images/vacuum_cleaning.png',
     tagline: 'Compliant, documented cleaning for public buildings.',
     metaTitle: 'Government Facility Cleaning {city} CA | Public Building Janitorial',
     metaDesc:
@@ -483,7 +483,7 @@ export const SERVICES = [
     title: 'Airbnb & Vacation Rental Cleaning',
     short: 'Airbnb Cleaning',
     icon: 'key',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+    hero: '/images/hero_main.png',
     tagline: 'Five-star turnovers, every single guest.',
     metaTitle: 'Airbnb Cleaning Service {city} CA | Vacation Rental Turnover',
     metaDesc:
@@ -547,7 +547,7 @@ export const SERVICES = [
     title: 'Disinfection & Sanitizing Services',
     short: 'Disinfection',
     icon: 'shield',
-    hero: 'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg',
+    hero: '/images/deep_cleaning.png',
     tagline: 'Hospital-grade disinfection without hospital-grade disruption.',
     metaTitle: 'Disinfection Services {city} CA | Commercial Sanitizing Company',
     metaDesc:

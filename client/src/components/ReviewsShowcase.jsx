@@ -6,10 +6,10 @@ import Social from './Social.jsx';
 import Reveal from './Reveal.jsx';
 
 const SHOTS = [
-  'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
-  'https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg',
-  'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
-  'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg',
+  '/images/hero_main.png',
+  '/images/family_cleaning.png',
+  '/images/vacuum_cleaning.png',
+  '/images/deep_cleaning.png',
 ];
 
 const EXTRA_TRUST = [

@@ -20,7 +20,7 @@ const ROOMS = [
     key: 'kitchen',
     name: 'Kitchen',
     icon: 'home',
-    img: 'https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg',
+    img: '/images/hero_main.png',
     body:
       'The kitchen gets more use than any other room, and that use shows. Cooking, eating, and foot traffic all lead to grease and buildup that ordinary wiping never removes. Our crews work from the top down so nothing settles onto surfaces we have already finished.',
     points: [
@@ -36,7 +36,7 @@ const ROOMS = [
     key: 'bathroom',
     name: 'Bathroom',
     icon: 'sparkles',
-    img: 'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg',
+    img: '/images/deep_cleaning.png',
     body:
       'Bathrooms are judged harder than any other room, by guests and by inspectors. We clean top to bottom, including the corners and fixtures that collect dust and germs quietly between visits.',
     points: [
@@ -52,7 +52,7 @@ const ROOMS = [
     key: 'bedroom',
     name: 'Bedroom',
     icon: 'clock',
-    img: 'https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg',
+    img: '/images/family_cleaning.png',
     body:
       'Your bedroom is where you recover. Dust builds on nightstands, allergens settle into carpets and curtains, and none of it is visible until it affects how you sleep. Regular bedroom cleaning is not cosmetic — it is air quality.',
     points: [
@@ -68,7 +68,7 @@ const ROOMS = [
     key: 'living',
     name: 'Living & Dining',
     icon: 'users',
-    img: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg',
+    img: '/images/vacuum_cleaning.png',
     body:
       'These are the rooms where life actually happens — where people gather, eat, and unwind. Our commitment goes past wiping visible surfaces to the places that get skipped: under furniture, behind cushions, along baseboards.',
     points: [
@@ -84,7 +84,7 @@ const ROOMS = [
     key: 'office',
     name: 'Office & Workspace',
     icon: 'building',
-    img: 'https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg',
+    img: '/images/office_desk_cleaning.png',
     body:
       'Commercial spaces have a different problem than homes: more people touching more shared surfaces. Our workplace scope prioritizes high-touch disinfection alongside the traditional floor and waste work.',
     points: [

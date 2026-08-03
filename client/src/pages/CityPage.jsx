@@ -67,7 +67,7 @@ export default function CityPage() {
       <PseoHero
         h1={`Cleaning & Janitorial Services in ${city.name}, CA`}
         sub={`Commercial janitorial, office cleaning, house cleaning, and specialty services across ${city.name} and all of ${city.county}. Licensed, insured, and eco-friendly for over 20 years.`}
-        image="https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg"
+        image="/images/office_desk_cleaning.png"
         city={city.name}
       />
 
@@ -95,7 +95,7 @@ export default function CityPage() {
             </Link>
           </div>
           <img
-            src="https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg"
+            src="/images/deep_cleaning.png"
             alt={`Professional cleaning services in ${city.name}, California`}
             loading="lazy"
           />
