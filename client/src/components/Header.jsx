@@ -66,8 +66,11 @@ export default function Header({ site }) {
       {/* ---------- main header ---------- */}
       <header className={`header ${scrolled ? 'scrolled' : ''}`}>
         <div className="container hdr">
-          <Link to="/" className="logo">
-            <img src={site.logo} alt="Dozeles Professional Cleaning" />
+          <Link to="/" className="logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Icon name="sparkles" size={32} style={{ color: 'var(--blue)' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', color: 'var(--ink)', letterSpacing: '1.5px', lineHeight: 1, marginTop: '4px' }}>
+              DOZELES
+            </span>
           </Link>
 
           <nav className="nav-desktop">
@@ -162,7 +165,12 @@ export default function Header({ site }) {
       <div className={`drawer-back ${open ? 'show' : ''}`} onClick={() => setOpen(false)} />
       <aside className={`drawer ${open ? 'open' : ''}`}>
         <div className="drawer-head">
-          <img src={site.logo} alt="Dozeles" />
+          <Link to="/" onClick={() => setOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Icon name="sparkles" size={26} style={{ color: 'var(--blue)' }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--ink)', letterSpacing: '1px', lineHeight: 1, marginTop: '2px' }}>
+              DOZELES
+            </span>
+          </Link>
           <button className="drawer-close" onClick={() => setOpen(false)} aria-label="Close menu">×</button>
         </div>
 
