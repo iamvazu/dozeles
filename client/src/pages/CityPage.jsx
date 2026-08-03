@@ -6,6 +6,32 @@ import Icon from '../components/Icon.jsx';
 import { Testimonials, Stats } from '../components/Shared.jsx';
 import { CrumbStrip, PseoHero, WhyDozeles, CtaStrip, FaqSection, LinkMesh } from '../components/Pseo.jsx';
 
+const HERO_IMAGES = [
+  '/images/office_desk_cleaning.png',
+  '/images/commercial_cleaning.png',
+  '/images/janitorial_services.png',
+  '/images/office_cleaning.png',
+];
+
+const CONTENT_IMAGES = [
+  '/images/city_cleaning_1.png',
+  '/images/city_cleaning_2.png',
+  '/images/deep_cleaning.png',
+  '/images/family_cleaning.png',
+  '/images/hero_residential.png',
+  '/images/residential_cleaning.png',
+  '/images/vacuum_cleaning.png',
+  '/images/hero_commercial.png',
+];
+
+const getConsistentIndex = (str, max) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash) % max;
+};
+
 export default function CityPage() {
   const { city: slug } = useParams();
   const city = getCity(slug);
@@ -67,7 +93,7 @@ export default function CityPage() {
       <PseoHero
         h1={`Cleaning & Janitorial Services in ${city.name}, CA`}
         sub={`Commercial janitorial, office cleaning, house cleaning, and specialty services across ${city.name} and all of ${city.county}. Licensed, insured, and eco-friendly for over 20 years.`}
-        image="/images/office_desk_cleaning.png"
+        image={HERO_IMAGES[getConsistentIndex(city.name, HERO_IMAGES.length)]}
         city={city.name}
       />
 
@@ -95,7 +121,7 @@ export default function CityPage() {
             </Link>
           </div>
           <img
-            src="/images/deep_cleaning.png"
+            src={CONTENT_IMAGES[getConsistentIndex(city.name + 'body', CONTENT_IMAGES.length)]}
             alt={`Professional cleaning services in ${city.name}, California`}
             loading="lazy"
           />
