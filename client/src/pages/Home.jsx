@@ -63,9 +63,9 @@ const WHY = [
 ];
 
 const BLOG = [
-  { tag: 'Commercial', title: 'How Often Should Your Office Actually Be Cleaned?', img: 'https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg', excerpt: 'Foot traffic, headcount, and floor type matter more than square footage. Here is how we scope frequency.' },
-  { tag: 'Eco-Friendly', title: 'Why HEPA Filtration Changes Indoor Air Quality', img: 'https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg', excerpt: 'Standard vacuums recirculate fine particles. HEPA captures 99.97% of them — here is what that means for your team.' },
-  { tag: 'Move-Out', title: 'The Move-Out Checklist Landlords Actually Inspect', img: 'https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg', excerpt: 'Inside appliances, window tracks, and baseboards decide your deposit. Standard cleaning skips all three.' },
+  { tag: 'Commercial', title: 'How Often Should Your Office Actually Be Cleaned?', img: '/images/office_cleaning.png', excerpt: 'Foot traffic, headcount, and floor type matter more than square footage. Here is how we scope frequency.' },
+  { tag: 'Eco-Friendly', title: 'Why HEPA Filtration Changes Indoor Air Quality', img: '/images/commercial_cleaning.png', excerpt: 'Standard vacuums recirculate fine particles. HEPA captures 99.97% of them — here is what that means for your team.' },
+  { tag: 'Move-Out', title: 'The Move-Out Checklist Landlords Actually Inspect', img: '/images/residential_cleaning.png', excerpt: 'Inside appliances, window tracks, and baseboards decide your deposit. Standard cleaning skips all three.' },
 ];
 
 function QuoteFormPanel() {
@@ -213,7 +213,7 @@ export default function Home() {
       {/* ---------- WHO WE ARE ---------- */}
       <section className="section-alt">
         <div className="container split">
-          <img src="https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg" alt="The Dozeles cleaning team at work" loading="lazy" />
+          <img src="/images/residential_cleaning.png" alt="The Dozeles cleaning team at work" loading="lazy" />
           <div className="prose">
             <div className="eyebrow">Who We Are</div>
             <h2 className="h2">The Best Option For a Sparkling Home or Office</h2>

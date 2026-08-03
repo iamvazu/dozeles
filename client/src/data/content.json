@@ -9,7 +9,7 @@
     "workingDays": "Working Days: Mon. – Fri.",
     "workingHours": "Working Hours: 9.00AM – 5.00PM",
     "address": "Daly City, CA",
-    "logo": "https://dozeles.com/wp-content/uploads/2024/01/dozeles-logo.png",
+    "logo": "/images/dozeles-logo.png",
     "social": {
       "facebook": "#",
       "twitter": "#",
@@ -57,7 +57,7 @@
   "home": {
     "heroTitle": "LOCAL BAY AREA CLEANERS",
     "heroText": "With the help of our expert cleaning services, enjoy the squeaky-perfect cleanliness. Proudly providing clean, healthy environments for homes and offices in the Bay Area for two decades.",
-    "heroImage": "https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg",
+    "heroImage": "/images/hero_main.png",
     "sustainability": {
       "heading": "Sustainable Practices Comes First",
       "blocks": [
@@ -70,7 +70,7 @@
           "text": "At Dozeles, we use HEPA filters in all our cleaning equipment to ensure superior air quality. These advanced filters capture 99.97% of airborne particles, creating a cleaner, healthier environment for you and your family."
         }
       ],
-      "image": "https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg"
+      "image": "/images/commercial_cleaning.png"
     },
     "process": {
       "heading": "Our Cleaning Process",
@@ -171,14 +171,14 @@
     "heading": "Comprehensive Cleaning Solutions for You",
     "intro": "Explore our full range of professional cleaning services, tailored to meet all your needs. From residential to commercial and government spaces, we ensure exceptional cleanliness and satisfaction every time.",
     "body": "At Dozeles Cleaning, we provide a wide array of expert cleaning services designed to maintain pristine environments. Our offerings include residential and commercial cleaning, janitorial services, government facility cleaning, move-in/move-out cleaning, and post-construction cleanups. Utilizing eco-friendly products and advanced techniques, we guarantee a thorough clean that exceeds industry standards. Trust us to deliver reliable, high-quality solutions tailored to your specific needs, ensuring a healthier, more inviting space for everyone.",
-    "image": "https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg"
+    "image": "/images/office_cleaning.png"
   },
   "about": {
     "heading": "Your Trusted Cleaners",
     "subheading": "Committed to excellence, Dozeles delivers unparalleled cleaning services with integrity and professionalism in every space we touch.",
     "body": "At Dozeles Cleaning, we pride ourselves on delivering exceptional cleaning services to the San Francisco Bay Area. With over 20 years of experience, our mission has always been to provide a cleaner, healthier environment for both residential and commercial clients. We specialize in detailed cleaning techniques using eco-friendly, green-certified products and advanced HEPA filters to ensure superior air quality. Whether it's regular residential cleaning, janitorial services for schools, or comprehensive commercial cleaning, our reliable team is dedicated to meeting your needs with punctuality and precision. Experience the difference of working with a professional cleaning service that values integrity and customer satisfaction.",
-    "image": "https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg",
-    "missionImage": "https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg",
+    "image": "/images/hero_main.png",
+    "missionImage": "/images/residential_cleaning.png",
     "mission": {
       "heading": "Our Mission",
       "text": "At Dozeles Cleaning, our mission is to deliver exceptional, eco-friendly cleaning services with integrity and precision. We aim to create healthier, spotless environments for our clients by using advanced techniques and maintaining the highest standards of professionalism.",
@@ -219,8 +219,8 @@
     "intro": "Reliable, certified cleaning company solutions tailored for government facilities, ensuring the highest standards of cleanliness and professionalism.",
     "body": "Dozeles Cleaning is proud to offer top-tier cleaning services tailored specifically for government contracts. With over 20 years of experience, we understand the unique requirements and high standards demanded by government facilities. We are a Certified Small Business (Cert. No. 2041212) and hold DIR Janitorial Registration JS-LR-1001274287 under California's Property Service Workers Protection Act, so agencies can verify our standing before award. Our team handles janitorial services, post-construction cleaning, and routine maintenance, ensuring all spaces are sanitary and presentable. As a women-certified business, we deliver eco-friendly, efficient, and reliable cleaning that meets the rigorous demands of public contracts while adhering strictly to regulations and guidelines.",
     "images": [
-      "https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg",
-      "https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg"
+      "/images/janitorial_services.png",
+      "/images/hero_commercial.png"
     ],
     "facilities": {
       "heading": "Government Facilities We Serve",

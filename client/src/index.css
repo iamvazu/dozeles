@@ -327,7 +327,7 @@ section { padding: 84px 0; }
 /* (How It Works responsive lives in the MOBILE LAYER at the end of this file) */
 
 /* hero */
-.hero { background: linear-gradient(100deg, rgba(10, 37, 64, 0.88) 30%, rgba(10, 37, 64, 0.55)), url('https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg') center/cover; color: #fff; padding: 130px 0 120px; }
+.hero { background: linear-gradient(100deg, rgba(10, 37, 64, 0.88) 30%, rgba(10, 37, 64, 0.55)), url('/images/hero_main.png') center/cover; color: #fff; padding: 130px 0 120px; }
 .hero h1 { color: #fff; font-size: clamp(3rem, 7.5vw, 5.4rem); margin-bottom: 20px; }
 .hero h1 .accent { color: #6FB1FF; }
 .hero p { max-width: 660px; font-size: 1.12rem; margin-bottom: 34px; color: #dbe7f3; }
@@ -335,7 +335,7 @@ section { padding: 84px 0; }
 .hero-badges span::before { content: '✓ '; color: #6FB1FF; }
 
 /* page banner */
-.banner { background: linear-gradient(rgba(10, 37, 64, 0.82), rgba(10, 37, 64, 0.82)), url('https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg') center/cover; color: #fff; padding: 84px 0; }
+.banner { background: linear-gradient(rgba(10, 37, 64, 0.82), rgba(10, 37, 64, 0.82)), url('/images/hero_residential.png') center/cover; color: #fff; padding: 84px 0; }
 .banner h1 { color: #fff; font-size: clamp(2.6rem, 5.5vw, 4rem); }
 .banner .crumbs { color: #a8c2d8; margin-top: 10px; font-size: 0.9rem; font-family: var(--font-body); }
 .banner .crumbs a:hover { color: #fff; }
