@@ -584,9 +584,9 @@ section { padding: 84px 0; }
 /* --- Split hero: copy left, image collage right --- */
 .chero { background: var(--surface); padding: 40px 0; min-height: calc(100vh - 130px); display: flex; align-items: center; overflow: hidden; }
 .chero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
-.chero h1 { font-size: clamp(2.8rem, 6vw, 4.9rem); margin-bottom: 20px; }
+.chero h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); margin-bottom: 16px; letter-spacing: -0.02em; }
 .chero h1 .accent { color: var(--blue); }
-.chero p.sub { font-size: 1.1rem; color: var(--muted); max-width: 520px; margin-bottom: 30px; }
+.chero p.sub { font-size: 1.05rem; color: var(--muted); max-width: 520px; margin-bottom: 24px; }
 .chero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
 
 /* feature pills under hero copy */
@@ -601,8 +601,45 @@ section { padding: 84px 0; }
 .review-badge .count { font-size: 0.8rem; color: var(--muted); }
 
 /* hero images */
-.hero-images { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.hero-images img { width: 100%; height: auto; aspect-ratio: 1/1; object-fit: cover; border-radius: 16px; box-shadow: var(--shadow); }
+.hero-images { 
+  position: relative; 
+  height: 520px; 
+  width: 100%; 
+  display: block; 
+}
+.hero-images img { 
+  position: absolute; 
+  object-fit: cover; 
+  border-radius: 20px; 
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+}
+.hero-images img:nth-child(1) { 
+  width: 65%; 
+  height: 75%; 
+  top: 0; 
+  left: 0; 
+  z-index: 2; 
+}
+.hero-images img:nth-child(2) { 
+  width: 58%; 
+  height: 68%; 
+  bottom: 0; 
+  right: 0; 
+  z-index: 3; 
+  border: 10px solid #fff; 
+}
+.hero-images::before {
+  content: "";
+  position: absolute;
+  width: 480px; 
+  height: 480px;
+  background: var(--blue);
+  opacity: 0.08;
+  border-radius: 50%;
+  top: -40px; 
+  right: -40px;
+  z-index: 1;
+}
 .collage img:first-child { grid-row: span 2; height: 100%; border-radius: 200px 200px 20px 20px; }
 
 /* ============================================================
@@ -1476,6 +1513,8 @@ img, video, iframe, table { max-width: 100%; }
   .chero-cta { grid-template-columns: 1fr; }
   .chero-cta .btn { padding: 16px; font-size: 0.92rem; }
   .chero h1 { font-size: clamp(1.85rem, 8.4vw, 2.5rem); }
+  .hero-images { height: 400px; margin-top: 24px; }
+  .hero-images::before { width: 340px; height: 340px; }
   .collage { grid-template-columns: 1fr 1fr; grid-template-rows: 110px 110px; }
 
   /* how it works */
