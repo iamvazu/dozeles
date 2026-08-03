@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
@@ -119,6 +119,14 @@ export default function Home() {
   const { site, stats } = useContent();
   const featured = FEATURED;
   const groups = citiesByRegion();
+  const [altHero, setAltHero] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAltHero((prev) => !prev);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -173,8 +181,33 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-images">
-            <img src="/images/hero_residential.png" alt="Professional residential cleaning in the Bay Area" />
-            <img src="/images/hero_commercial.png" alt="Professional commercial cleaning services" loading="lazy" />
+            <img 
+              src="/images/hero_residential.png" 
+              alt="Professional residential cleaning in the Bay Area" 
+              className="hero-bg"
+              style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }} 
+            />
+            <img 
+              src="/images/cannabis_store_cleaning.png" 
+              alt="Cannabis dispensary commercial cleaning" 
+              className="hero-bg"
+              style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }} 
+            />
+
+            <img 
+              src="/images/hero_commercial.png" 
+              alt="Professional commercial cleaning services" 
+              loading="lazy" 
+              className="hero-fg"
+              style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }} 
+            />
+            <img 
+              src="/images/corporate_lobby_cleaning.png" 
+              alt="Corporate building lobby cleaning" 
+              loading="lazy" 
+              className="hero-fg"
+              style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }} 
+            />
           </div>
         </div>
       </div>

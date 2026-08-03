@@ -613,14 +613,14 @@ section { padding: 84px 0; }
   border-radius: 20px; 
   box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
 }
-.hero-images img:nth-child(1) { 
+.hero-images img.hero-bg { 
   width: 65%; 
   height: 75%; 
   top: 0; 
   left: 0; 
   z-index: 2; 
 }
-.hero-images img:nth-child(2) { 
+.hero-images img.hero-fg { 
   width: 58%; 
   height: 68%; 
   bottom: 0; 
