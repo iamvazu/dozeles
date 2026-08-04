@@ -24,7 +24,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        navigateFallbackDenylist: [/^\/api/],
+        navigateFallbackDenylist: [/^\/api/, /sitemap\.xml$/, /robots\.txt$/],
         runtimeCaching: [
           {
             // cache images (including ones served from dozeles.com)
