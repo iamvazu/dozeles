@@ -10,6 +10,7 @@ import { CountUp } from '../components/Shared.jsx';
 import { api } from '../api.js';
 import { SERVICES, FEATURED } from '../data/services.js';
 import { CITIES, citiesByRegion } from '../data/cities.js';
+import { BLOG_POSTS } from '../data/blog.js';
 
 const HOME_FAQS = [
   {
@@ -60,12 +61,6 @@ const WHY = [
   { icon: 'leaf', title: 'Equipment & Supplies Provided', text: 'Green-certified products and HEPA-filtered equipment included in every job at no extra cost.' },
   { icon: 'shield', title: '100% Satisfaction Guarantee', text: "If you're not happy, we return and re-clean the missed areas free — no arguments, no invoice." },
   { icon: 'sparkles', title: 'Vetted & Background-Checked Crews', text: 'Every cleaner is background-checked, insured, and trained before setting foot in your space.' },
-];
-
-const BLOG = [
-  { tag: 'Commercial', title: 'How Often Should Your Office Actually Be Cleaned?', img: '/images/office_cleaning.png', excerpt: 'Foot traffic, headcount, and floor type matter more than square footage. Here is how we scope frequency.' },
-  { tag: 'Eco-Friendly', title: 'Why HEPA Filtration Changes Indoor Air Quality', img: '/images/commercial_cleaning.png', excerpt: 'Standard vacuums recirculate fine particles. HEPA captures 99.97% of them — here is what that means for your team.' },
-  { tag: 'Move-Out', title: 'The Move-Out Checklist Landlords Actually Inspect', img: '/images/residential_cleaning.png', excerpt: 'Inside appliances, window tracks, and baseboards decide your deposit. Standard cleaning skips all three.' },
 ];
 
 function QuoteFormPanel() {
@@ -469,14 +464,18 @@ export default function Home() {
             <h2 className="h2">Cleaning Tips From the Pros</h2>
           </Reveal>
           <div className="grid grid-3">
-            {BLOG.map((b, i) => (
-              <Reveal className="blog-card" key={b.title} delay={i * 110}>
-                <div className="thumb"><img src={b.img} alt={b.title} loading="lazy" /></div>
-                <div className="body">
-                  <span className="tag">{b.tag}</span>
-                  <h3>{b.title}</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: '0.92rem', marginTop: 8 }}>{b.excerpt}</p>
-                </div>
+            {BLOG_POSTS.map((post, i) => (
+              <Reveal key={post.slug} delay={(i % 3) * 110}>
+                <Link to={`/blog/${post.slug}`} className="blog-card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+                  <div className="img-wrap">
+                    <img src={post.img} alt={post.title} loading="lazy" />
+                  </div>
+                  <div style={{ padding: '0 10px' }}>
+                    <div className="cat">{post.tag} &bull; {post.date}</div>
+                    <h3>{post.title}</h3>
+                    <p>{post.excerpt}</p>
+                  </div>
+                </Link>
               </Reveal>
             ))}
           </div>

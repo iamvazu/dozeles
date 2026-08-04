@@ -127,6 +127,12 @@ export default function Header({ site }) {
             </div>
 
             <div className="nav-item">
+              <NavLink to="/blog" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                Blog
+              </NavLink>
+            </div>
+
+            <div className="nav-item">
               <NavLink to="/contact-us" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 Contact
               </NavLink>

@@ -14,6 +14,8 @@ import Reviews from './pages/Reviews.jsx';
 import BeforeAfter from './pages/BeforeAfter.jsx';
 import Contact from './pages/Contact.jsx';
 import Booking from './pages/Booking.jsx';
+import BlogIndex from './pages/BlogIndex.jsx';
+import BlogPost from './pages/BlogPost.jsx';
 import Admin from './admin/Admin.jsx';
 
 export default function App() {
@@ -35,6 +37,8 @@ export default function App() {
         <Route path="/government-contract" element={<Government />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/before-after" element={<BeforeAfter />} />
+        <Route path="/blog" element={<BlogIndex />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact-us" element={<Contact />} />
         <Route path="/book" element={<Booking />} />
         <Route path="*" element={<Home />} />

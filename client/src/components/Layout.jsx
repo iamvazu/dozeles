@@ -18,6 +18,7 @@ const COMPANY = [
   { to: '/government-contract', label: 'Government' },
   { to: '/reviews', label: 'Reviews & FAQ' },
   { to: '/before-after', label: 'Before & After' },
+  { to: '/blog', label: 'Blog' },
   { to: '/contact-us', label: 'Contact' },
 ];
 
