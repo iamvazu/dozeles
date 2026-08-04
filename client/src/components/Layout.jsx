@@ -7,6 +7,7 @@ import MobileBar from './MobileBar.jsx';
 import Icon from './Icon.jsx';
 import Social, { SOCIALS } from './Social.jsx';
 import { SERVICES } from '../data/services.js';
+import { INDUSTRIES } from '../data/industries.js';
 import { CITIES } from '../data/cities.js';
 
 const COMPANY = [
@@ -114,6 +115,15 @@ export default function Layout() {
               <div className="footer-links">
                 {SERVICES.map((s) => (
                   <Link key={s.slug} to={`/services/${s.slug}`}>{s.short}</Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h4>Industries</h4>
+              <div className="footer-links">
+                {INDUSTRIES.map((ind) => (
+                  <Link key={ind.slug} to={`/industries/${ind.slug}`}>{ind.short}</Link>
                 ))}
               </div>
             </div>

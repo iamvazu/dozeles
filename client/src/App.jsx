@@ -16,6 +16,7 @@ import Contact from './pages/Contact.jsx';
 import Booking from './pages/Booking.jsx';
 import BlogIndex from './pages/BlogIndex.jsx';
 import BlogPost from './pages/BlogPost.jsx';
+import IndustryDetail from './pages/IndustryDetail.jsx';
 import Admin from './admin/Admin.jsx';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/services/:service" element={<ServiceDetail />} />
         <Route path="/services/:service/:city" element={<ServiceCity />} />
         <Route path="/cleaning-services/:city" element={<CityPage />} />
+        <Route path="/industries/:industry" element={<IndustryDetail />} />
         <Route path="/locations" element={<Locations />} />
 
         <Route path="/pricing" element={<Pricing />} />

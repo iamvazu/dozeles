@@ -477,7 +477,7 @@ section { padding: 84px 0; }
 .subscribe input:focus { outline: 2px solid #6FB1FF; border-color: transparent; }
 
 /* main columns */
-.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1.15fr 1.15fr; gap: 44px; padding: 52px 0 46px; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 0.9fr 0.9fr 0.9fr 1fr; gap: 40px; padding: 52px 0 46px; }
 .footer-links { display: grid; gap: 10px; }
 .footer .logo-white {
   background: transparent; padding: 0; display: inline-block;
