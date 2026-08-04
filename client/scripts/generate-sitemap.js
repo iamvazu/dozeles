@@ -51,6 +51,9 @@ cities.forEach((c) => add(`/cleaning-services/${c}`, '0.8'));
 // Service × City combination pages — the bulk of the PSEO surface
 services.forEach((s) => cities.forEach((c) => add(`/services/${s}/${c}`, '0.7')));
 
+// Industry × City combination pages
+industries.forEach((ind) => cities.forEach((c) => add(`/industries/${ind}/${c}`, '0.7')));
+
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls
@@ -75,5 +78,5 @@ fs.writeFileSync(path.join(pub, 'sitemap.xml'), xml);
 fs.writeFileSync(path.join(pub, 'robots.txt'), robots);
 
 console.log(
-  `Sitemap generated: ${urls.length} URLs = ${coreCount} core + ${industries.length} industries + ${blogPosts.length} blog posts + ${services.length} service hubs + ${cities.length} city pages + ${services.length * cities.length} service×city pages`
+  `Sitemap generated: ${urls.length} URLs = ${coreCount} core + ${industries.length} industries + ${blogPosts.length} blog posts + ${services.length} service hubs + ${cities.length} city pages + ${services.length * cities.length} service×city pages + ${industries.length * cities.length} industry×city pages`
 );

@@ -26,6 +26,7 @@ blogPosts.forEach((b) => urls.push(`/blog/${b}`));
 services.forEach((s) => urls.push(`/services/${s}`));
 cities.forEach((c) => urls.push(`/cleaning-services/${c}`));
 services.forEach((s) => cities.forEach((c) => urls.push(`/services/${s}/${c}`)));
+industries.forEach((ind) => cities.forEach((c) => urls.push(`/industries/${ind}/${c}`)));
 
 async function prerender() {
   const app = express();

@@ -1,5 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { INDUSTRIES } from '../data/industries.js';
+import { CITIES } from '../data/cities.js';
 import Seo from '../seo.jsx';
 import { Testimonials } from '../components/Shared.jsx';
 import {
@@ -76,10 +77,10 @@ export default function IndustryDetail() {
         <div className="container text-center">
           <h3 className="h3">Major Cities We Serve in the Bay Area</h3>
           <div className="chip-row" style={{ marginTop: 30, justifyContent: 'center' }}>
-            {industry.cities && industry.cities.map((city, i) => (
-              <span key={i} className="chip">
-                {city}
-              </span>
+            {CITIES.slice(0, 30).map((city) => (
+              <Link key={city.slug} to={`/industries/${industry.slug}/${city.slug}`} className="chip">
+                {city.name}
+              </Link>
             ))}
           </div>
         </div>
