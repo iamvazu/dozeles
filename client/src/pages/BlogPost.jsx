@@ -1,6 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom';
 import Seo from '../seo.jsx';
-import { PageBanner } from '../components/Pseo.jsx';
+import { PageBanner } from '../components/Shared.jsx';
 import { getBlogPost } from '../data/blog.js';
 import Icon from '../components/Icon.jsx';
 

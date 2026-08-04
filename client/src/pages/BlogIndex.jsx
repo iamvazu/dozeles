@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import Seo from '../seo.jsx';
-import { PageBanner, Reveal } from '../components/Pseo.jsx';
+import { PageBanner } from '../components/Shared.jsx';
+import Reveal from '../components/Reveal.jsx';
 import { BLOG_POSTS } from '../data/blog.js';
 
 export default function BlogIndex() {
