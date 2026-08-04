@@ -3,6 +3,7 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import Icon from './Icon.jsx';
 import Social, { SOCIALS } from './Social.jsx';
 import { SERVICES } from '../data/services.js';
+import { INDUSTRIES } from '../data/industries.js';
 
 const ABOUT_LINKS = [
   { to: '/about-us', label: 'Who We Are', sub: '20+ years in Northern California', icon: 'users' },
@@ -97,10 +98,20 @@ export default function Header({ site }) {
               </div>
             </div>
 
-            <div className="nav-item">
-              <NavLink to="/locations" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                Locations
-              </NavLink>
+            <div className="nav-item wide">
+              <button className="nav-link" aria-haspopup="true">
+                Industries <Icon name="caret" size={11} />
+              </button>
+              <div className="drop mega">
+                {INDUSTRIES.map((ind) => (
+                  <Link key={ind.slug} to={`/industries/${ind.slug}`} className="drop-link">
+                    <span className="di"><Icon name={ind.icon} size={17} /></span>
+                    <span>
+                      {ind.short}
+                    </span>
+                  </Link>
+                ))}
+              </div>
             </div>
 
             <div className="nav-item">
@@ -190,7 +201,17 @@ export default function Header({ site }) {
             </Link>
           </div>
 
-          <NavLink to="/locations" className={({ isActive }) => (isActive ? 'active' : '')}>Locations</NavLink>
+          <button
+            className={`drawer-acc-btn ${acc === 'industries' ? 'open' : ''}`}
+            onClick={() => setAcc(acc === 'industries' ? null : 'industries')}
+          >
+            Industries <Icon name="caret" size={13} />
+          </button>
+          <div className={`drawer-sub ${acc === 'industries' ? 'open' : ''}`}>
+            {INDUSTRIES.map((ind) => (
+              <Link key={ind.slug} to={`/industries/${ind.slug}`}>{ind.short}</Link>
+            ))}
+          </div>
           <NavLink to="/pricing" className={({ isActive }) => (isActive ? 'active' : '')}>Pricing</NavLink>
 
           <button
