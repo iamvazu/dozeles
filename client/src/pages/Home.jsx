@@ -464,7 +464,7 @@ export default function Home() {
             <h2 className="h2">Cleaning Tips From the Pros</h2>
           </Reveal>
           <div className="grid grid-3">
-            {BLOG_POSTS.map((post, i) => (
+            {BLOG_POSTS.slice(0, 3).map((post, i) => (
               <Reveal key={post.slug} delay={(i % 3) * 110} style={{ display: 'flex', height: '100%' }}>
                 <Link to={`/blog/${post.slug}`} className="blog-card">
                   <div className="img-wrap">
@@ -478,6 +478,11 @@ export default function Home() {
                 </Link>
               </Reveal>
             ))}
+          </div>
+          <div className="center" style={{ marginTop: 44 }}>
+            <Link to="/blog" className="btn btn-outline">
+              View All Blog Articles
+            </Link>
           </div>
         </div>
       </section>
