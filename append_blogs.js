@@ -1,94 +1,7 @@
-export const BLOG_POSTS = [
-  {
-    slug: 'ultimate-guide-parking-garage-cleaning',
-    tag: 'Commercial',
-    title: 'The Ultimate Guide to Parking Garage Cleaning & Maintenance',
-    img: '/images/blog_garage.png',
-    excerpt: 'Your parking garage is the first thing clients see. Learn how professional sweeping, pressure washing, and oil stain removal protect your property value.',
-    date: '2026-08-01',
-    author: 'Dozeles Professional Cleaning Team',
-    keywords: ['parking garage cleaning', 'commercial sweeping', 'pressure washing', 'Bay Area parking maintenance', 'oil stain removal'],
-    content: `
-      <h2>Why Parking Garage Cleaning is Crucial for Commercial Properties</h2>
-      <p>Your parking facility is the first and last impression a client, tenant, or employee has of your building. Yet, <strong>parking garage cleaning</strong> is often overlooked until significant grime, oil stains, and debris have already caused long-term damage to the concrete surface.</p>
-      
-      <p>At Dozeles Professional Cleaning, we specialize in high-traffic <a href="/services/commercial-cleaning">commercial cleaning</a> and specialized facilities. A dirty garage doesn't just look unprofessional—it poses serious slip-and-fall hazards, attracts pests, and degrades the structural integrity of your paving over time.</p>
+const fs = require('fs');
+const path = require('path');
 
-      <h3>The 3 Pillars of Professional Garage Maintenance</h3>
-      
-      <h4>1. Power Sweeping and Debris Removal</h4>
-      <p>Wind and vehicle traffic constantly blow trash, leaves, and dirt into enclosed or semi-enclosed parking structures. A professional power sweeping schedule removes this abrasive dirt before it gets ground into the concrete, extending the life of your sealcoat and striping.</p>
-
-      <h4>2. Oil Stain Degreasing</h4>
-      <p>Leaking vehicles leave behind slick, hazardous oil spots. If left untreated, these chemicals seep deep into porous concrete, making them impossible to remove later and creating severe slip hazards. We use eco-friendly degreasers and hot-water extraction to lift these stains safely.</p>
-
-      <h4>3. High-Pressure Washing</h4>
-      <p>After sweeping and treating stains, a full high-pressure wash removes the remaining film of exhaust soot, salt, and grime. This restores the brightness of the concrete and makes your painted directional lines and parking spaces highly visible again.</p>
-
-      <h3>Protect Your Investment</h3>
-      <p>Regular maintenance is significantly cheaper than concrete resurfacing or defending against liability claims from accidents. Whether your facility is in <a href="/cleaning-services/san-francisco">San Francisco</a> or <a href="/cleaning-services/san-jose">San Jose</a>, setting up a routine sweeping and washing schedule is a smart business decision.</p>
-      
-      <p>Ready to upgrade your property's curb appeal? <a href="/book">Get a free quote</a> for our professional parking garage cleaning services today.</p>
-    `
-  },
-  {
-    slug: 'why-hiring-professional-janitorial-services-matters',
-    tag: 'Janitorial',
-    title: 'Why Hiring Professional Janitorial Services is a Game Changer for Your Business',
-    img: '/images/service_office.png',
-    excerpt: 'Discover how daily janitorial services reduce sick days, boost employee morale, and leave a lasting impression on your clients.',
-    date: '2026-07-28',
-    author: 'Dozeles Professional Cleaning Team',
-    keywords: ['janitorial services', 'office cleaning', 'commercial janitors', 'daily office cleaning', 'Bay Area janitorial company'],
-    content: `
-      <h2>The Hidden ROI of Professional Janitorial Services</h2>
-      <p>Many business owners view <strong>janitorial services</strong> as just another overhead expense. However, maintaining a spotless workplace is actually an investment in your company's productivity, brand image, and employee health.</p>
-
-      <p>When you hire a dedicated, professional <a href="/services/janitorial-services">janitorial team</a>, you are doing much more than emptying trash cans. You are fundamentally changing the environment your team works in every single day.</p>
-
-      <h3>1. Healthier Employees Mean Fewer Sick Days</h3>
-      <p>Offices are notorious breeding grounds for bacteria and viruses. Keyboards, door handles, breakroom microwaves, and elevator buttons are touched hundreds of times a day. Our rigorous daily janitorial services include disinfecting these high-touch points using hospital-grade, green-certified products. This proactive approach significantly reduces the spread of illness, saving your company thousands in lost productivity.</p>
-
-      <h3>2. Unmatched Professional Image</h3>
-      <p>Imagine a potential client walking into a lobby with dusty reception desks, overflowing trash, and smudged glass doors. It instantly undermines your credibility. A premium janitorial service ensures that your facility always reflects the high standards of your work. From gleaming floors to pristine restrooms, the details matter.</p>
-
-      <h3>3. Consistent, Reliable Cleaning</h3>
-      <p>Relying on employees to take out the trash or wipe down the kitchen rarely works—it builds resentment and distracts from their actual jobs. With a professional team, you get a written checklist and a guarantee that the job gets done right every single night.</p>
-
-      <h3>Trust the Experts at Dozeles Professional Cleaning</h3>
-      <p>Whether you manage a small startup space or a massive corporate campus in <a href="/cleaning-services/oakland">Oakland</a>, finding the right janitorial partner is critical. Dozeles Professional Cleaning provides vetted, background-checked crews who treat your business with the respect it deserves.</p>
-
-      <p><a href="/contact-us">Contact our team</a> today to discuss a custom janitorial schedule tailored to your facility's exact needs.</p>
-    `
-  },
-  {
-    slug: 'eco-friendly-commercial-cleaning-guide',
-    tag: 'Eco-Friendly',
-    title: 'The Future of Business is Green: A Guide to Eco-Friendly Commercial Cleaning',
-    img: '/images/service_move.png',
-    excerpt: 'Stop exposing your staff to harsh chemicals. Learn why green commercial cleaning is safer, more effective, and better for the environment.',
-    date: '2026-07-15',
-    author: 'Dozeles Professional Cleaning Team',
-    keywords: ['eco-friendly cleaning', 'commercial cleaning', 'green cleaning products', 'HEPA filtration', 'safe office cleaning'],
-    content: `
-      <h2>Why Commercial Cleaning Needs to Go Green</h2>
-      <p>For decades, the standard in <strong>commercial cleaning</strong> involved harsh bleach, ammonia, and artificial fragrances. While these chemicals might kill germs, they also leave behind toxic residues and volatile organic compounds (VOCs) that your employees breathe in for 8 hours a day.</p>
-
-      <p>At Dozeles Professional Cleaning, we believe that <a href="/services/commercial-cleaning">commercial cleaning</a> shouldn't come at the cost of your team's respiratory health or the environment. That's why we have completely transitioned to an eco-friendly cleaning model.</p>
-
-      <h3>The Benefits of Green Certified Products</h3>
-      <p>Green-certified products use natural enzymes and plant-based surfactants to break down grease, dirt, and bacteria. They are just as effective as traditional chemicals, but they do not off-gas harmful VOCs. This is especially important for modern, airtight office buildings where HVAC systems continuously recirculate the same indoor air.</p>
-
-      <h3>HEPA Filtration: Breathing Easier</h3>
-      <p>It's not just about the liquids we spray; it's about the equipment we use. Standard commercial vacuums suck up dirt but exhaust fine dust particles back into the air, triggering allergies and asthma. We mandate the use of HEPA-filtered vacuums across all our crews. These advanced filters trap 99.97% of airborne particles, including dust mites, pollen, and fine debris.</p>
-
-      <h3>A Better Workplace Environment</h3>
-      <p>Switching to eco-friendly commercial cleaning provides an immediate boost to your indoor air quality. Employees often report fewer headaches, reduced allergy symptoms, and a generally fresher-smelling office environment without the overwhelming scent of artificial pine or lemon bleach.</p>
-
-      <p>Are you ready to upgrade the health and safety of your workplace? Ask about our green cleaning protocols when you <a href="/book">request a free commercial cleaning quote</a> today.</p>
-    `
-  }
-
+const newPosts = `
   ,{
     slug: 'post-construction-cleaning-checklist-bay-area',
     tag: 'Construction',
@@ -98,7 +11,7 @@ export const BLOG_POSTS = [
     date: '2026-08-03',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['post-construction cleaning', 'Bay Area developers', 'new build cleaning', 'construction dust removal', 'commercial cleanup'],
-    content: `
+    content: \`
       <h2>Why General Cleaners Can't Handle Post-Construction Sites</h2>
       <p>Completing a commercial or residential build in the Bay Area is a massive achievement. However, handing over the keys before a proper <a href="/services/post-construction">post-construction cleaning</a> can ruin the client's first impression. Fine drywall dust, stray adhesives, and construction debris require specialized equipment and techniques.</p>
       
@@ -112,7 +25,7 @@ export const BLOG_POSTS = [
       <p>The final phase is a white-glove inspection. We polish floors, shine glass, and ensure the property is 100% move-in ready for your buyers or tenants.</p>
       
       <p>Don't let construction dust ruin your project's reveal. <a href="/contact-us">Contact us today</a> for expert post-construction cleaning in Northern California.</p>
-    `
+    \`
   },
   {
     slug: 'how-to-choose-commercial-cleaning-service-california',
@@ -123,7 +36,7 @@ export const BLOG_POSTS = [
     date: '2026-07-29',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['commercial cleaning California', 'hire office cleaners', 'janitorial company Bay Area', 'certified cleaning business', 'DIR janitorial registration'],
-    content: `
+    content: \`
       <h2>5 Factors to Consider When Hiring a Commercial Cleaner</h2>
       <p>Choosing the right <a href="/services/commercial-cleaning">commercial cleaning service</a> in California is critical for your facility's health and your company's liability. With strict state regulations, you need a partner you can trust.</p>
 
@@ -140,7 +53,7 @@ export const BLOG_POSTS = [
       <p>Your facility is unique. Whether you run a <a href="/industries/healthcare">healthcare facility</a> or a retail store, your cleaning provider should offer a customized plan that fits your schedule and specific hygiene requirements.</p>
 
       <p>Looking for a reliable partner in the Bay Area? <a href="/book">Get a free quote</a> from Dozeles Professional Cleaning today.</p>
-    `
+    \`
   },
   {
     slug: 'deep-cleaning-vs-regular-cleaning-office',
@@ -151,7 +64,7 @@ export const BLOG_POSTS = [
     date: '2026-07-22',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['deep cleaning vs regular cleaning', 'office deep clean', 'janitorial maintenance', 'commercial deep cleaning', 'workplace hygiene'],
-    content: `
+    content: \`
       <h2>Striking the Right Balance for Office Hygiene</h2>
       <p>Facility managers often wonder if their standard <a href="/services/janitorial-services">janitorial services</a> are enough, or if it's time to schedule a deep clean. Understanding the difference is key to maintaining a healthy environment and protecting your assets.</p>
 
@@ -165,7 +78,7 @@ export const BLOG_POSTS = [
       <p>For most commercial offices, a deep clean is recommended quarterly or bi-annually. However, high-traffic spaces like <a href="/industries/medical-facilities">medical facilities</a> or schools may require it more frequently to comply with health standards.</p>
 
       <p>Not sure what your facility needs? <a href="/contact-us">Reach out to our experts</a> for a free assessment of your workspace.</p>
-    `
+    \`
   },
   {
     slug: 'role-hepa-filtration-modern-office-cleaning',
@@ -176,7 +89,7 @@ export const BLOG_POSTS = [
     date: '2026-07-10',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['HEPA filtration', 'indoor air quality', 'office cleaning', 'commercial vacuums', 'dust removal'],
-    content: `
+    content: \`
       <h2>Why Indoor Air Quality Matters</h2>
       <p>Since 2020, indoor air quality (IAQ) has become a top priority for facility managers. But did you know that your cleaning company's equipment plays a massive role in the air your employees breathe?</p>
 
@@ -190,7 +103,7 @@ export const BLOG_POSTS = [
       <p>At Dozeles Professional Cleaning, we don't charge extra for clean air. HEPA filtration is a mandatory standard across all our crews. When paired with our green-certified products, it guarantees a healthier workspace.</p>
 
       <p>Ready to breathe easier? <a href="/book">Book your cleaning service</a> today.</p>
-    `
+    \`
   },
   {
     slug: '5-essential-airbnb-cleaning-tips-5-star-reviews',
@@ -201,7 +114,7 @@ export const BLOG_POSTS = [
     date: '2026-07-05',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['Airbnb cleaning', 'short-term rental cleaning', '5-star host tips', 'vacation rental cleaners', 'turnaround cleaning'],
-    content: `
+    content: \`
       <h2>Cleanliness Makes or Breaks Your Rental</h2>
       <p>In the short-term rental market, a single hair on the sheets or a smudge on the mirror can instantly drop your rating from 5 stars to 3. Flawless <a href="/services/airbnb">Airbnb cleaning</a> is the foundation of a profitable hosting business.</p>
 
@@ -219,7 +132,7 @@ export const BLOG_POSTS = [
 
       <h3>5. Hire Professionals</h3>
       <p>Managing turnarounds between guests is exhausting. Partnering with a professional team ensures your property is pristine, even on back-to-back bookings. <a href="/contact-us">Contact us</a> to handle your rental's cleaning and management.</p>
-    `
+    \`
   },
   {
     slug: 'how-often-deep-clean-commercial-kitchen',
@@ -230,7 +143,7 @@ export const BLOG_POSTS = [
     date: '2026-06-28',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['commercial kitchen cleaning', 'restaurant deep clean', 'kitchen hygiene', 'food safety cleaning', 'degreasing'],
-    content: `
+    content: \`
       <h2>Protecting Your Kitchen from Hazards and Violations</h2>
       <p>A commercial kitchen is the heart of any restaurant, catering business, or corporate cafeteria. However, the constant production of grease, smoke, and food waste requires more than just a nightly wipe-down.</p>
 
@@ -248,7 +161,7 @@ export const BLOG_POSTS = [
       <p>Food safety compliance is strict in the Bay Area. A professional <a href="/services/commercial-cleaning">commercial cleaning team</a> has the heavy-duty eco-friendly degreasers and high-pressure equipment necessary to sanitize your kitchen to health inspector standards.</p>
       
       <p>Don't risk a health code violation. <a href="/book">Schedule a commercial kitchen deep clean</a> today.</p>
-    `
+    \`
   },
   {
     slug: 'moving-out-why-you-need-professional-clean',
@@ -259,7 +172,7 @@ export const BLOG_POSTS = [
     date: '2026-06-20',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['move-out cleaning', 'security deposit cleaning', 'move-in cleaners', 'end of tenancy cleaning', 'Bay Area moving'],
-    content: `
+    content: \`
       <h2>Maximize Your Security Deposit Return</h2>
       <p>Moving is consistently ranked as one of life's most stressful events. Between packing, coordinating movers, and setting up utilities, the last thing you want to do is scrub baseboards and clean the inside of the oven. Yet, failing to leave the property spotless is the #1 reason landlords withhold security deposits.</p>
 
@@ -276,7 +189,7 @@ export const BLOG_POSTS = [
       <p>Whether you're a tenant trying to get your deposit back, or a landlord preparing for new occupants, a professional clean sets the right standard. It provides documented proof that the property was left in immaculate condition.</p>
 
       <p>Focus on your new home and let us handle the old one. <a href="/book">Book your move-out clean</a> with Dozeles Professional Cleaning.</p>
-    `
+    \`
   },
   {
     slug: 'benefits-certified-small-business-government-contracts',
@@ -287,7 +200,7 @@ export const BLOG_POSTS = [
     date: '2026-06-12',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['government cleaning contracts', 'Certified Small Business California', 'Women-Owned Business', 'municipal cleaning', 'DIR registered cleaners'],
-    content: `
+    content: \`
       <h2>Meeting Supplier Diversity Goals with Excellence</h2>
       <p>Government agencies and large prime contractors are under strict mandates to allocate a percentage of their budgets to Certified Small Businesses (SBE) and Women-Owned Business Enterprises (WBE). But the benefits of hiring these firms go far beyond simply checking a compliance box.</p>
 
@@ -301,7 +214,7 @@ export const BLOG_POSTS = [
       <p>Awarding contracts to local certified businesses keeps taxpayer dollars within the community, driving local economic growth and supporting fair labor practices.</p>
 
       <p>If you are an agency procurement officer in the Bay Area looking for a reliable partner, <a href="/contact-us">contact our team</a> to discuss your facility's requirements.</p>
-    `
+    \`
   },
   {
     slug: 'data-driven-cleaning-iot-revolutionizing-maintenance',
@@ -312,7 +225,7 @@ export const BLOG_POSTS = [
     date: '2026-06-05',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['data-driven cleaning', 'IoT facility maintenance', 'smart building cleaning', 'occupancy sensors', 'responsive cleaning'],
-    content: `
+    content: \`
       <h2>Moving Beyond the Calendar</h2>
       <p>For decades, the commercial cleaning industry operated on static schedules. Restrooms were cleaned every two hours, and floors were vacuumed every night, regardless of how many people actually used the space. In 2026, this outdated model is being replaced by <strong>Responsive, Data-Driven Cleaning</strong>.</p>
 
@@ -328,7 +241,7 @@ export const BLOG_POSTS = [
 
       <h3>Partnering with Forward-Thinking Cleaners</h3>
       <p>To leverage these smart building technologies, you need a <a href="/services/commercial-cleaning">commercial cleaning partner</a> who adapts to dynamic schedules and uses data to optimize their service. At Dozeles Professional Cleaning, we embrace technology to deliver superior results.</p>
-    `
+    \`
   },
   {
     slug: 'winterizing-commercial-property-bay-area-cleaning-tips',
@@ -339,7 +252,7 @@ export const BLOG_POSTS = [
     date: '2026-05-28',
     author: 'Dozeles Professional Cleaning Team',
     keywords: ['winterizing commercial property', 'Bay Area winter cleaning', 'floor care', 'preventative maintenance', 'commercial matting'],
-    content: `
+    content: \`
       <h2>Protecting Your Assets from Wet Weather</h2>
       <p>While the Bay Area doesn't face heavy snowstorms, our winters bring relentless rain, mud, and debris. If your facility isn't prepared, this moisture can destroy your flooring, create severe slip-and-fall hazards, and make your lobby look unkempt.</p>
 
@@ -356,10 +269,19 @@ export const BLOG_POSTS = [
       <p>Winter is peak cold and flu season. Shift your cleaning focus toward heavy disinfection of door handles, elevator buttons, and shared breakroom appliances to protect your staff.</p>
 
       <p>Need help preparing your property for the rainy season? <a href="/contact-us">Contact Dozeles Professional Cleaning</a> for a seasonal maintenance plan.</p>
-    `
+    \`
   }
-];
+`;
 
-export function getBlogPost(slug) {
-  return BLOG_POSTS.find(post => post.slug === slug);
+const blogPath = path.join(__dirname, 'client', 'src', 'data', 'blog.js');
+let content = fs.readFileSync(blogPath, 'utf8');
+
+// Find the last ]
+const insertIndex = content.lastIndexOf('];');
+if (insertIndex !== -1) {
+  content = content.slice(0, insertIndex) + newPosts + content.slice(insertIndex);
+  fs.writeFileSync(blogPath, content);
+  console.log('Successfully appended 10 posts');
+} else {
+  console.error('Could not find ];');
 }
