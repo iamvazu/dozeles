@@ -1,10 +1,9 @@
-import { useState } from 'react';
 import { useContent } from '../content.jsx';
 import { PageBanner, Testimonials, CtaBand, QuoteForm } from '../components/Shared.jsx';
+import { BeforeAfterSlider } from '../components/BeforeAfterSlider.jsx';
 
 export default function BeforeAfter() {
   const { beforeAfter } = useContent();
-  const [lightbox, setLightbox] = useState(null);
 
   return (
     <>
@@ -16,32 +15,23 @@ export default function BeforeAfter() {
             <div className="eyebrow">Our Work</div>
             <h2 className="h2">See the Dozeles Professional Cleaning Difference</h2>
           </div>
-          <div className="gallery">
-            {beforeAfter.map((img) => (
-              <img
-                key={img}
-                src={img}
-                alt="Before and after cleaning"
-                loading="lazy"
-                style={{ cursor: 'zoom-in' }}
-                onClick={() => setLightbox(img)}
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem'
+          }}>
+            {beforeAfter.map((item) => (
+              <BeforeAfterSlider 
+                key={item.id}
+                title={item.title}
+                beforeImage={item.before}
+                afterImage={item.after}
               />
             ))}
           </div>
         </div>
       </section>
-
-      {lightbox && (
-        <div
-          onClick={() => setLightbox(null)}
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(6,20,28,0.88)', zIndex: 100,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out', padding: 24,
-          }}
-        >
-          <img src={lightbox} alt="Enlarged" style={{ maxHeight: '90vh', maxWidth: '100%', borderRadius: 12 }} />
-        </div>
-      )}
 
       <Testimonials heading="What People Say" />
 

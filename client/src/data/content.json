@@ -350,14 +350,30 @@
     }
   ],
   "beforeAfter": [
-    "/images/commercial_cleaning.png",
-    "/images/janitorial_services.png",
-    "/images/office_cleaning.png",
-    "/images/residential_cleaning.png",
-    "/images/hero_residential.png",
-    "/images/hero_commercial.png",
-    "/images/hero_main.png",
-    "/images/hero_tr.png"
+    {
+      "id": "kitchen",
+      "title": "Kitchen Deep Clean",
+      "before": "/images/dirty_kitchen.png",
+      "after": "/images/clean_kitchen.png"
+    },
+    {
+      "id": "living_room",
+      "title": "Living Room Transformation",
+      "before": "/images/dirty_living_room.png",
+      "after": "/images/clean_living_room.png"
+    },
+    {
+      "id": "office",
+      "title": "Office Desk Organization",
+      "before": "/images/dirty_office.png",
+      "after": "/images/clean_office.png"
+    },
+    {
+      "id": "bathroom",
+      "title": "Bathroom Restoration",
+      "before": "/images/dirty_bathroom.png",
+      "after": "/images/clean_bathroom.png"
+    }
   ],
   "gallery": [
     "/images/office_desk_cleaning.png",
