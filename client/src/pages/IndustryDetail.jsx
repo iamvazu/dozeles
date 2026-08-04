@@ -61,27 +61,23 @@ export default function IndustryDetail() {
       <section>
         <div className="container">
           <div className="text-center" style={{ maxWidth: 700, margin: '0 auto 40px' }}>
-            <h3 className="h3">Services We Offer for {industry.short}</h3>
-            <p>Our cleaning crews are specifically trained in the following services tailored to the needs of {industry.name.toLowerCase()}:</p>
+            <h3 className="h3 text-center">Services We Offer for {industry.short}</h3>
+            <p className="text-center">Our cleaning crews are specifically trained in the following services tailored to the needs of {industry.name.toLowerCase()}:</p>
           </div>
-          <div className="grid-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+          <ul className="checklist two-col">
             {industry.servicesList && industry.servicesList.map((service, i) => (
-              <div key={i} className="card" style={{ display: 'flex', alignItems: 'center', gap: 15, padding: 20, background: '#fff', borderRadius: 12, boxShadow: 'var(--shadow-sm)' }}>
-                <span style={{ color: 'var(--blue)', flexShrink: 0 }}><Icon name="check" size={24} /></span>
-                <span style={{ fontWeight: 600 }}>{service}</span>
-              </div>
+              <li key={i}>{service}</li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <section className="bg-light">
-        <div className="container">
-          <h3 className="h3 text-center">Major Cities We Serve in the Bay Area</h3>
-          <div className="link-mesh" style={{ marginTop: 30, justifyContent: 'center' }}>
+        <div className="container text-center">
+          <h3 className="h3">Major Cities We Serve in the Bay Area</h3>
+          <div className="chip-row" style={{ marginTop: 30, justifyContent: 'center' }}>
             {industry.cities && industry.cities.map((city, i) => (
-              <span key={i} style={{ padding: '10px 20px', background: '#fff', borderRadius: 30, fontWeight: 500, boxShadow: 'var(--shadow-sm)' }}>
-                <Icon name="map-pin" size={14} style={{ marginRight: 8, color: 'var(--blue)' }} />
+              <span key={i} className="chip">
                 {city}
               </span>
             ))}
