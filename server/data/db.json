@@ -1,41 +1,79 @@
 {
   "site": {
-    "name": "Dozeles",
+    "name": "Dozeles Professional Cleaning",
     "tagline": "Local Bay Area Cleaners",
     "phone": "650 290 0280",
     "phoneRaw": "6502900280",
     "email": "dozelescleaning@gmail.com",
     "hours": "Mon-Sat: 9.00-18.00",
-    "workingDays": "Working Days: Mon. – Fri.",
-    "workingHours": "Working Hours: 9.00AM – 5.00PM",
+    "workingDays": "Working Days: Mon. \u2013 Fri.",
+    "workingHours": "Working Hours: 9.00AM \u2013 5.00PM",
     "address": "Daly City, CA",
-    "logo": "https://dozeles.com/wp-content/uploads/2024/01/dozeles-logo.png",
+    "logo": "/images/dozeles-logo.jpg",
     "social": {
       "facebook": "#",
       "twitter": "#",
       "youtube": "#",
       "instagram": "#"
     },
-    "mapEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d611477.0453521174!2d-122.60799794999998!3d37.68754245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f7fda4c5ba1bf%3A0x6b18037ee4bfd7c0!2sDozeles%20Professional%20Cleaning!5e1!3m2!1sen!2sin!4v1779869707926!5m2!1sen!2sin",
-    "footerText": "Dozeles Cleaning offers top-quality, eco-friendly cleaning services for homes and businesses in the Bay Area. With 20 years of experience, our professional team ensures a spotless, healthy environment with reliable, flexible solutions."
+    "mapEmbed": "https://maps.google.com/maps?q=Daly%20City,%20CA&t=&z=12&ie=UTF8&iwloc=&output=embed",
+    "footerText": "Dozeles Professional Cleaning offers top-quality, eco-friendly cleaning services for homes and businesses in the Bay Area. With 20 years of experience, our professional team ensures a spotless, healthy environment with reliable, flexible solutions.",
+    "googleRating": "5.0",
+    "googleReviewCount": "40",
+    "googleReviewUrl": "https://www.google.com/maps/place/Dozeles Professional Cleaning+Professional+Cleaning",
+    "certifications": [
+      {
+        "id": "small-business",
+        "label": "Certified Small Business",
+        "number": "2041212",
+        "numberLabel": "Cert. No.",
+        "image": "/images/logo_cagov.png",
+        "icon": "badge",
+        "note": "State of California certified small business enterprise"
+      },
+      {
+        "id": "dir",
+        "label": "DIR Janitorial Registration",
+        "number": "JS-LR-1001274287",
+        "numberLabel": "Reg. No.",
+        "image": "/images/logo_dir.png",
+        "icon": "shield",
+        "note": "Registered with the CA Department of Industrial Relations under the Property Service Workers Protection Act"
+      },
+      {
+        "id": "women",
+        "label": "Women-Certified Business",
+        "number": "",
+        "image": "/images/logo_wbe.png",
+        "icon": "star",
+        "note": "Women-owned business enterprise"
+      },
+      {
+        "id": "insured",
+        "label": "Licensed, Bonded & Insured",
+        "number": "",
+        "icon": "landmark",
+        "note": "General liability and workers compensation coverage"
+      }
+    ]
   },
   "home": {
     "heroTitle": "LOCAL BAY AREA CLEANERS",
     "heroText": "With the help of our expert cleaning services, enjoy the squeaky-perfect cleanliness. Proudly providing clean, healthy environments for homes and offices in the Bay Area for two decades.",
-    "heroImage": "https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg",
+    "heroImage": "/images/hero_main.png",
     "sustainability": {
       "heading": "Sustainable Practices Comes First",
       "blocks": [
         {
           "title": "Green Certified, Eco-friendly Cleaning Solutions",
-          "text": "At Dozeles, we prioritize your health and the environment by using green-certified, eco-friendly cleaning products. Our sustainable solutions ensure a thorough clean without harmful chemicals, creating a safer, healthier space for you, your kids, pets, colleagues, guests, visitors, and more."
+          "text": "At Dozeles Professional Cleaning, we prioritize your health and the environment by using green-certified, eco-friendly cleaning products. Our sustainable solutions ensure a thorough clean without harmful chemicals, creating a safer, healthier space for you, your kids, pets, colleagues, guests, visitors, and more."
         },
         {
           "title": "Hepa Filters for Cleaner, Healthier Air",
-          "text": "At Dozeles, we use HEPA filters in all our cleaning equipment to ensure superior air quality. These advanced filters capture 99.97% of airborne particles, creating a cleaner, healthier environment for you and your family."
+          "text": "At Dozeles Professional Cleaning, we use HEPA filters in all our cleaning equipment to ensure superior air quality. These advanced filters capture 99.97% of airborne particles, creating a cleaner, healthier environment for you and your family."
         }
       ],
-      "image": "https://dozeles.com/wp-content/uploads/2024/04/60-1024x683.jpg"
+      "image": "/images/commercial_cleaning.png"
     },
     "process": {
       "heading": "Our Cleaning Process",
@@ -135,18 +173,18 @@
   "servicesPage": {
     "heading": "Comprehensive Cleaning Solutions for You",
     "intro": "Explore our full range of professional cleaning services, tailored to meet all your needs. From residential to commercial and government spaces, we ensure exceptional cleanliness and satisfaction every time.",
-    "body": "At Dozeles Cleaning, we provide a wide array of expert cleaning services designed to maintain pristine environments. Our offerings include residential and commercial cleaning, janitorial services, government facility cleaning, move-in/move-out cleaning, and post-construction cleanups. Utilizing eco-friendly products and advanced techniques, we guarantee a thorough clean that exceeds industry standards. Trust us to deliver reliable, high-quality solutions tailored to your specific needs, ensuring a healthier, more inviting space for everyone.",
-    "image": "https://dozeles.com/wp-content/uploads/2024/01/hero-06.jpg"
+    "body": "At Dozeles Professional Cleaning, we provide a wide array of expert cleaning services designed to maintain pristine environments. Our offerings include residential and commercial cleaning, janitorial services, government facility cleaning, move-in/move-out cleaning, and post-construction cleanups. Utilizing eco-friendly products and advanced techniques, we guarantee a thorough clean that exceeds industry standards. Trust us to deliver reliable, high-quality solutions tailored to your specific needs, ensuring a healthier, more inviting space for everyone.",
+    "image": "/images/office_cleaning.png"
   },
   "about": {
     "heading": "Your Trusted Cleaners",
-    "subheading": "Committed to excellence, Dozeles delivers unparalleled cleaning services with integrity and professionalism in every space we touch.",
-    "body": "At Dozeles Cleaning, we pride ourselves on delivering exceptional cleaning services to the San Francisco Bay Area. With over 20 years of experience, our mission has always been to provide a cleaner, healthier environment for both residential and commercial clients. We specialize in detailed cleaning techniques using eco-friendly, green-certified products and advanced HEPA filters to ensure superior air quality. Whether it's regular residential cleaning, janitorial services for schools, or comprehensive commercial cleaning, our reliable team is dedicated to meeting your needs with punctuality and precision. Experience the difference of working with a professional cleaning service that values integrity and customer satisfaction.",
-    "image": "https://dozeles.com/wp-content/uploads/2024/01/hero-01.jpg",
-    "missionImage": "https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg",
+    "subheading": "Committed to excellence, Dozeles Professional Cleaning delivers unparalleled cleaning services with integrity and professionalism in every space we touch.",
+    "body": "At Dozeles Professional Cleaning, we pride ourselves on delivering exceptional cleaning services to the San Francisco Bay Area. With over 20 years of experience, our mission has always been to provide a cleaner, healthier environment for both residential and commercial clients. We specialize in detailed cleaning techniques using eco-friendly, green-certified products and advanced HEPA filters to ensure superior air quality. Whether it's regular residential cleaning, janitorial services for schools, or comprehensive commercial cleaning, our reliable team is dedicated to meeting your needs with punctuality and precision. Experience the difference of working with a professional cleaning service that values integrity and customer satisfaction.",
+    "image": "/images/hero_main.png",
+    "missionImage": "/images/residential_cleaning.png",
     "mission": {
       "heading": "Our Mission",
-      "text": "At Dozeles Cleaning, our mission is to deliver exceptional, eco-friendly cleaning services with integrity and precision. We aim to create healthier, spotless environments for our clients by using advanced techniques and maintaining the highest standards of professionalism.",
+      "text": "At Dozeles Professional Cleaning, our mission is to deliver exceptional, eco-friendly cleaning services with integrity and precision. We aim to create healthier, spotless environments for our clients by using advanced techniques and maintaining the highest standards of professionalism.",
       "points": [
         "Offer a wide range of affordable industrial solutions.",
         "Keep a comprehensive inventory of essential parts and products.",
@@ -159,7 +197,7 @@
     }
   },
   "stats": {
-    "heading": "Save your time — We Make It Easy",
+    "heading": "Save your time \u2014 We Make It Easy",
     "items": [
       {
         "label": "Projects Finished",
@@ -182,14 +220,14 @@
   "government": {
     "heading": "Premier Government Cleaning Services",
     "intro": "Reliable, certified cleaning company solutions tailored for government facilities, ensuring the highest standards of cleanliness and professionalism.",
-    "body": "Dozeles Cleaning is proud to offer top-tier cleaning services tailored specifically for government contracts. With over 20 years of experience, we understand the unique requirements and high standards demanded by government facilities. Our team is equipped to handle various cleaning tasks, including janitorial services, post-construction cleaning, and routine maintenance, ensuring that all spaces are sanitary and presentable. As a women-certified business, we are committed to delivering eco-friendly, efficient, and reliable cleaning solutions. Our services are designed to meet the rigorous demands of government contracts while maintaining strict adherence to regulations and guidelines. Partner with Dozeles Cleaning for a dependable, professional cleaning experience that upholds the highest standards of excellence.",
+    "body": "Dozeles Professional Cleaning is proud to offer top-tier cleaning services tailored specifically for government contracts. With over 20 years of experience, we understand the unique requirements and high standards demanded by government facilities. We are a Certified Small Business (Cert. No. 2041212) and hold DIR Janitorial Registration JS-LR-1001274287 under California's Property Service Workers Protection Act, so agencies can verify our standing before award. Our team handles janitorial services, post-construction cleaning, and routine maintenance, ensuring all spaces are sanitary and presentable. As a women-certified business, we deliver eco-friendly, efficient, and reliable cleaning that meets the rigorous demands of public contracts while adhering strictly to regulations and guidelines.",
     "images": [
-      "https://dozeles.com/wp-content/uploads/2024/01/woman-cleaning-sofa-with-yellow-vacuum-cleaner-co-2021-08-26-20-11-23-utc.jpg",
-      "https://dozeles.com/wp-content/uploads/2024/01/family-cleaning-the-room-e1679898797424.jpg"
+      "/images/janitorial_services.png",
+      "/images/hero_commercial.png"
     ],
     "facilities": {
       "heading": "Government Facilities We Serve",
-      "intro": "From municipal offices to federal buildings, Dozeles delivers compliant, secure, and consistent cleaning across every type of government facility.",
+      "intro": "From municipal offices to federal buildings, Dozeles Professional Cleaning delivers compliant, secure, and consistent cleaning across every type of government facility.",
       "items": [
         {
           "title": "Municipal & City Offices",
@@ -217,6 +255,8 @@
         }
       ],
       "compliance": [
+        "Certified Small Business \u2014 Cert. No. 2041212",
+        "DIR Janitorial Registration \u2014 JS-LR-1001274287",
         "Women-certified business enterprise",
         "Fully licensed, bonded, and insured",
         "Background-checked and trained cleaning staff",
@@ -231,55 +271,55 @@
       "id": "r1",
       "name": "Sarah Johnson",
       "rating": 5,
-      "image": "https://dozeles.com/wp-content/uploads/2024/08/d2.jpg",
-      "text": "I couldn't be happier with Dozeles Cleaning! Their attention to detail and commitment to using eco-friendly products made a huge difference in my home. The team was professional, punctual, and left everything sparkling clean. Highly recommend their services for anyone seeking top-notch cleaning!"
+      "image": "https://i.pravatar.cc/150?img=32",
+      "text": "I couldn't be happier with Dozeles Professional Cleaning! Their attention to detail and commitment to using eco-friendly products made a huge difference in my home. The team was professional, punctual, and left everything sparkling clean. Highly recommend their services for anyone seeking top-notch cleaning!"
     },
     {
       "id": "r2",
       "name": "Michael Brown",
       "rating": 5,
-      "image": "https://dozeles.com/wp-content/uploads/2024/01/people-2.jpg",
-      "text": "Dozeles Cleaning transformed our office space! Their team arrived on time and delivered a thorough cleaning, improving the overall environment for our employees. Their use of HEPA filters and green-certified products is a big plus. Exceptional service and highly reliable!"
+      "image": "https://i.pravatar.cc/150?img=47",
+      "text": "Dozeles Professional Cleaning transformed our office space! Their team arrived on time and delivered a thorough cleaning, improving the overall environment for our employees. Their use of HEPA filters and green-certified products is a big plus. Exceptional service and highly reliable!"
     },
     {
       "id": "r3",
       "name": "Emily Carter",
       "rating": 5,
-      "image": "https://dozeles.com/wp-content/uploads/2024/08/d3.jpg",
-      "text": "From booking to completion, Dozeles was fantastic. The biweekly cleaning service they provide is impeccable, and their flexibility to adjust schedules is incredibly convenient. Their team's dedication to maintaining a clean and healthy environment truly stands out. We're thrilled with their work!"
+      "image": "https://i.pravatar.cc/150?img=12",
+      "text": "From booking to completion, Dozeles Professional Cleaning was fantastic. The biweekly cleaning service they provide is impeccable, and their flexibility to adjust schedules is incredibly convenient. Their team's dedication to maintaining a clean and healthy environment truly stands out. We're thrilled with their work!"
     },
     {
       "id": "r4",
       "name": "David Lee",
       "rating": 5,
-      "image": "https://dozeles.com/wp-content/uploads/2024/01/people-4.jpg",
-      "text": "We hired Dozeles for a post-construction clean, and they exceeded our expectations. The crew tackled every mess with precision, and their use of advanced cleaning techniques ensured no dust was left behind. We are extremely satisfied with the results and would use them again."
+      "image": "https://i.pravatar.cc/150?img=31",
+      "text": "We hired Dozeles Professional Cleaning for a post-construction clean, and they exceeded our expectations. The crew tackled every mess with precision, and their use of advanced cleaning techniques ensured no dust was left behind. We are extremely satisfied with the results and would use them again."
     },
     {
       "id": "r5",
       "name": "Laura Mitchell",
       "rating": 5,
-      "image": "https://dozeles.com/wp-content/uploads/2024/08/d4.jpg",
-      "text": "As a busy professional, I appreciate the reliable service from Dozeles. Their residential cleaning team is efficient, friendly, and thorough. They made my home feel fresh and inviting, and their commitment to using eco-friendly products gives me peace of mind. Highly recommended!"
+      "image": "https://i.pravatar.cc/150?img=68",
+      "text": "As a busy professional, I appreciate the reliable service from Dozeles Professional Cleaning. Their residential cleaning team is efficient, friendly, and thorough. They made my home feel fresh and inviting, and their commitment to using eco-friendly products gives me peace of mind. Highly recommended!"
     },
     {
       "id": "r6",
       "name": "John Smith",
       "rating": 5,
-      "image": "https://dozeles.com/wp-content/uploads/2024/01/people-2.jpg",
-      "text": "Dozeles Cleaning has been a game-changer for our retail store. Their commercial cleaning service ensures a pristine shopping environment every day. Their team's attention to detail and punctuality is commendable. We trust them to keep our store in top shape. Great service all around!"
+      "image": "https://i.pravatar.cc/150?img=47",
+      "text": "Dozeles Professional Cleaning has been a game-changer for our retail store. Their commercial cleaning service ensures a pristine shopping environment every day. Their team's attention to detail and punctuality is commendable. We trust them to keep our store in top shape. Great service all around!"
     }
   ],
   "faqs": [
     {
       "category": "Getting Started",
-      "q": "How do I book a cleaning service with Dozeles Cleaning?",
-      "a": "Booking a cleaning service with Dozeles Cleaning is simple and straightforward. You can contact us via phone, email, or through our website's contact form. Our team will assist you in selecting the right service for your needs, scheduling a convenient time, and providing a transparent quote. We pride ourselves on punctuality and flexibility, ensuring that your cleaning appointment fits seamlessly into your busy schedule."
+      "q": "How do I book a cleaning service with Dozeles Professional Cleaning?",
+      "a": "Booking a cleaning service with Dozeles Professional Cleaning is simple and straightforward. You can contact us via phone, email, or through our website's contact form. Our team will assist you in selecting the right service for your needs, scheduling a convenient time, and providing a transparent quote. We pride ourselves on punctuality and flexibility, ensuring that your cleaning appointment fits seamlessly into your busy schedule."
     },
     {
       "category": "Getting Started",
       "q": "What areas do you serve?",
-      "a": "Dozeles Cleaning proudly serves the San Francisco Bay Area, offering comprehensive cleaning services to both residential and commercial clients. From bustling urban centers to quieter suburban neighborhoods, we are committed to delivering top-notch cleaning services wherever you are located."
+      "a": "Dozeles Professional Cleaning proudly serves the San Francisco Bay Area, offering comprehensive cleaning services to both residential and commercial clients. From bustling urban centers to quieter suburban neighborhoods, we are committed to delivering top-notch cleaning services wherever you are located."
     },
     {
       "category": "Getting Started",
@@ -313,21 +353,37 @@
     }
   ],
   "beforeAfter": [
-    "https://dozeles.com/wp-content/uploads/2024/03/e99db751e19644eb676db492f2.jpg.webp",
-    "https://dozeles.com/wp-content/uploads/2024/03/122.webp",
-    "https://dozeles.com/wp-content/uploads/2024/03/12.jpg",
-    "https://dozeles.com/wp-content/uploads/2024/03/s2.png",
-    "https://dozeles.com/wp-content/uploads/2024/03/s3.png",
-    "https://dozeles.com/wp-content/uploads/2024/03/s4.png",
-    "https://dozeles.com/wp-content/uploads/2024/03/s5.png",
-    "https://dozeles.com/wp-content/uploads/2024/03/s1-1.png"
+    {
+      "id": "kitchen",
+      "title": "Kitchen Deep Clean",
+      "before": "/images/dirty_kitchen.png",
+      "after": "/images/clean_kitchen.png"
+    },
+    {
+      "id": "living_room",
+      "title": "Living Room Transformation",
+      "before": "/images/dirty_living_room.png",
+      "after": "/images/clean_living_room.png"
+    },
+    {
+      "id": "office",
+      "title": "Office Desk Organization",
+      "before": "/images/dirty_office.png",
+      "after": "/images/clean_office.png"
+    },
+    {
+      "id": "bathroom",
+      "title": "Bathroom Restoration",
+      "before": "/images/dirty_bathroom.png",
+      "after": "/images/clean_bathroom.png"
+    }
   ],
   "gallery": [
-    "https://dozeles.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-27-at-1.24.30-PM-2-150x150.jpeg",
-    "https://dozeles.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-27-at-1.24.30-PM-1-150x150.jpeg",
-    "https://dozeles.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-27-at-1.24.30-PM-150x150.jpeg",
-    "https://dozeles.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-27-at-1.31.02-PM-150x150.jpeg",
-    "https://dozeles.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-27-at-1.31.01-PM-150x150.jpeg"
+    "/images/office_desk_cleaning.png",
+    "/images/deep_cleaning.png",
+    "/images/vacuum_cleaning.png",
+    "/images/family_cleaning.png",
+    "/images/hero_br.png"
   ],
   "bookings": [],
   "messages": [],

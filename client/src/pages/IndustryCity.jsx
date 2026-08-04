@@ -101,7 +101,7 @@ export default function IndustryCity() {
       </section>
 
       <IncludesGrid
-        items={industry.servicesList.map(s => ({ title: s, desc: `Specialized ${s.toLowerCase()} tailored for ${industry.short.toLowerCase()} properties in ${city.name}.` }))}
+        items={industry.servicesList}
         heading={`Specialized Services We Offer for ${city.name} ${industry.short}`}
         sub={`A comprehensive janitorial checklist designed specifically for ${industry.name.toLowerCase()} environments.`}
       />
