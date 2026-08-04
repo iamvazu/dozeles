@@ -465,12 +465,12 @@ export default function Home() {
           </Reveal>
           <div className="grid grid-3">
             {BLOG_POSTS.map((post, i) => (
-              <Reveal key={post.slug} delay={(i % 3) * 110}>
-                <Link to={`/blog/${post.slug}`} className="blog-card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
+              <Reveal key={post.slug} delay={(i % 3) * 110} style={{ display: 'flex', height: '100%' }}>
+                <Link to={`/blog/${post.slug}`} className="blog-card">
                   <div className="img-wrap">
                     <img src={post.img} alt={post.title} loading="lazy" />
                   </div>
-                  <div style={{ padding: '0 10px' }}>
+                  <div className="blog-card-body">
                     <div className="cat">{post.tag} &bull; {post.date}</div>
                     <h3>{post.title}</h3>
                     <p>{post.excerpt}</p>
