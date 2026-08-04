@@ -7,7 +7,7 @@ export const SERVICES = [
   {
     slug: 'commercial-cleaning',
     cardName: 'Office Cleaning',
-    cardImg: '/images/office_desk_cleaning.png',
+    cardImg: '/images/service_office.png',
     title: 'Commercial & Office Cleaning Services',
     short: 'Commercial & Office',
     icon: 'store',
@@ -154,7 +154,7 @@ export const SERVICES = [
   {
     slug: 'residential-cleaning',
     cardName: 'House Cleaning',
-    cardImg: '/images/hero_main.png',
+    cardImg: '/images/service_house.png',
     title: 'Residential House Cleaning',
     short: 'Residential Cleaning',
     icon: 'home',
@@ -219,7 +219,7 @@ export const SERVICES = [
   },
   {
     slug: 'deep-cleaning',
-    cardImg: '/images/vacuum_cleaning.png',
+    cardImg: '/images/service_deep.png',
     title: 'Deep Cleaning Services',
     short: 'Deep Cleaning',
     cardName: 'Deep Cleaning',
@@ -287,7 +287,7 @@ export const SERVICES = [
   {
     slug: 'move-in-move-out-cleaning',
     cardName: 'Move In Out Cleaning',
-    cardImg: '/images/family_cleaning.png',
+    cardImg: '/images/service_move.png',
     title: 'Move-In / Move-Out Cleaning',
     short: 'Move In / Move Out',
     icon: 'truck',
