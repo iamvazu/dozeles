@@ -156,26 +156,6 @@ export default function CityPage() {
       <FaqSection faqs={cityFaqs} city={city.name} heading={`Cleaning Services in ${city.name} — FAQs`} />
       <CtaStrip city={city.name} />
       <LinkMesh city={city} />
-
-      <section>
-        <div className="container">
-          <h3 className="h3">Other Cities We Serve in {city.region}</h3>
-          <div className="chip-row">
-            {CITIES.filter((c) => c.region === city.region && c.slug !== city.slug)
-              .slice(0, 18)
-              .map((c) => (
-                <Link className="chip" key={c.slug} to={`/cleaning-services/${c.slug}`}>
-                  {c.name}
-                </Link>
-              ))}
-          </div>
-          <p style={{ marginTop: 20 }}>
-            <Link to="/locations" style={{ color: 'var(--blue)', fontWeight: 700 }}>
-              View all {CITIES.length} service areas →
-            </Link>
-          </p>
-        </div>
-      </section>
     </>
   );
 }

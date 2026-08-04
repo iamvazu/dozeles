@@ -4,7 +4,7 @@ import { CITIES } from '../data/cities.js';
 import Seo from '../seo.jsx';
 import { Testimonials } from '../components/Shared.jsx';
 import {
-  CrumbStrip, PseoHero, WhyDozeles, CtaStrip
+  CrumbStrip, PseoHero, WhyDozeles, CtaStrip, LinkMesh
 } from '../components/Pseo.jsx';
 import Icon from '../components/Icon.jsx';
 
@@ -73,18 +73,7 @@ export default function IndustryDetail() {
         </div>
       </section>
 
-      <section className="bg-light">
-        <div className="container text-center">
-          <h3 className="h3">Major Cities We Serve in the Bay Area</h3>
-          <div className="chip-row" style={{ marginTop: 30, justifyContent: 'center' }}>
-            {CITIES.slice(0, 30).map((city) => (
-              <Link key={city.slug} to={`/industries/${industry.slug}/${city.slug}`} className="chip">
-                {city.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LinkMesh industry={industry} />
 
       <WhyDozeles city="Northern California" />
       <Testimonials heading="What Our Clients Say" />

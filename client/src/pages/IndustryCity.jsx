@@ -116,22 +116,7 @@ export default function IndustryCity() {
       />
       
       <CtaStrip city={city.name} service={`${industry.short.toLowerCase()} cleaning`} />
-      <LinkMesh city={city} />
-
-      <section>
-        <div className="container">
-          <h3 className="h3 text-center" style={{ marginBottom: 40 }}>
-            More {industry.short} Cleaning Locations
-          </h3>
-          <div className="chip-row">
-            {CITIES.slice(0, 30).map((c) => (
-              <Link key={c.slug} to={`/industries/${industry.slug}/${c.slug}`} className="chip">
-                {c.name}, CA
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LinkMesh city={city} industry={industry} />
     </>
   );
 }

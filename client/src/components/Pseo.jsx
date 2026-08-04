@@ -153,51 +153,85 @@ export function CtaStrip({ city, service }) {
   );
 }
 
-/** Internal link mesh — critical for PSEO crawl depth */
-export function LinkMesh({ service, city, limit = 24 }) {
+export function LinkMesh({ service, industry, city, limit = 24 }) {
   const cityList = CITIES.slice(0, limit);
   return (
-    <section className="section-alt">
+    <section className="section-alt" style={{ padding: '80px 0' }}>
       <div className="container">
-        {service && (
-          <>
-            <h3 className="h3">{service.short} By City</h3>
-            <div className="link-mesh" style={{ marginBottom: 40 }}>
-              {cityList.map((c) => (
-                <Link key={c.slug} to={`/services/${service.slug}/${c.slug}`}>
-                  {service.short} in {c.name}
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
-        {city && (
-          <>
-            <h3 className="h3">All Services in {city.name}</h3>
-            <div className="link-mesh" style={{ marginBottom: 40 }}>
-              {SERVICES.map((s) => (
-                <Link key={s.slug} to={`/services/${s.slug}/${city.slug}`}>
-                  {s.short} in {city.name}
-                </Link>
-              ))}
-            </div>
-            {city.neighbors?.length > 0 && (
-              <>
-                <h3 className="h3">Nearby Service Areas</h3>
-                <div className="chip-row">
+        <div className="center" style={{ marginBottom: 50 }}>
+          <div className="eyebrow">Explore More</div>
+          <h2 className="h2">Find Local Cleaning Services</h2>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '50px' }}>
+           {city && (
+             <div>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Services in {city.name}</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {SERVICES.map((s) => (
+                    <Link key={s.slug} to={`/services/${s.slug}/${city.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', borderBottom: '1px solid #eaeaea', paddingBottom: 10, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = 'var(--blue)'} onMouseLeave={(e) => e.target.style.color = 'var(--text)'}>
+                      {s.short} in {city.name}
+                    </Link>
+                  ))}
+                </div>
+             </div>
+           )}
+
+           {industry && (
+             <div>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>{industry.short} Locations</h3>
+                <div className="chip-row" style={{ gap: 10 }}>
+                  {cityList.map((c) => (
+                    <Link key={c.slug} to={`/industries/${industry.slug}/${c.slug}`} className="chip" style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
+                      {c.name}, CA
+                    </Link>
+                  ))}
+                </div>
+             </div>
+           )}
+
+           {service && (
+             <div>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>{service.short} Locations</h3>
+                <div className="chip-row" style={{ gap: 10 }}>
+                  {cityList.map((c) => (
+                    <Link key={c.slug} to={`/services/${service.slug}/${c.slug}`} className="chip" style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
+                      {c.name}, CA
+                    </Link>
+                  ))}
+                </div>
+             </div>
+           )}
+
+           {city && city.neighbors?.length > 0 && (
+             <div>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Nearby Areas</h3>
+                <div className="chip-row" style={{ gap: 10 }}>
                   {city.neighbors
                     .map((n) => CITIES.find((c) => c.slug === n))
                     .filter(Boolean)
                     .map((n) => (
-                      <Link className="chip" key={n.slug} to={`/cleaning-services/${n.slug}`}>
+                      <Link className="chip" key={n.slug} to={`/cleaning-services/${n.slug}`} style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
                         {n.name}
                       </Link>
                     ))}
                 </div>
-              </>
-            )}
-          </>
-        )}
+             </div>
+           )}
+
+           {!city && service && (
+             <div>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Other Services We Offer</h3>
+                <div className="chip-row" style={{ gap: 10 }}>
+                  {SERVICES.filter((s) => s.slug !== service.slug).map((s) => (
+                    <Link key={s.slug} to={`/services/${s.slug}`} className="chip" style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
+                      {s.short}
+                    </Link>
+                  ))}
+                </div>
+             </div>
+           )}
+        </div>
       </div>
     </section>
   );

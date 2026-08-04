@@ -76,17 +76,6 @@ export default function ServiceDetail() {
       />
       <CtaStrip service={service.short} />
       <LinkMesh service={service} />
-
-      <section>
-        <div className="container">
-          <h3 className="h3">Other Services We Offer</h3>
-          <div className="link-mesh">
-            {SERVICES.filter((s) => s.slug !== service.slug).map((s) => (
-              <Link key={s.slug} to={`/services/${s.slug}`}>{s.title}</Link>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }

@@ -94,20 +94,7 @@ export default function ServiceCity() {
         heading={`${service.short} in ${city.name} — FAQs`}
       />
       <CtaStrip city={city.name} service={service.short} />
-      <LinkMesh city={city} />
-
-      <section>
-        <div className="container">
-          <h3 className="h3">{service.short} Across {city.region}</h3>
-          <div className="link-mesh">
-            {SERVICES.map((s) => (
-              <Link key={s.slug} to={`/services/${s.slug}/${city.slug}`}>
-                {s.short} {city.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <LinkMesh city={city} service={service} />
     </>
   );
 }
