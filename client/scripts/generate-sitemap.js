@@ -14,6 +14,8 @@ const slugs = (src) => [...src.matchAll(/slug:\s*'([a-z0-9-]+)'/g)].map((m) => m
 
 const services = slugs(read('services.js'));
 const cities = slugs(read('cities.js'));
+const industries = slugs(read('industries.js'));
+const blogPosts = slugs(read('blog.js'));
 
 const urls = [];
 const add = (loc, priority, changefreq = 'weekly') =>
@@ -31,7 +33,14 @@ add('/reviews', '0.7', 'monthly');
 add('/before-after', '0.6', 'monthly');
 add('/contact-us', '0.7', 'monthly');
 add('/book', '0.8', 'monthly');
+add('/blog', '0.8', 'weekly');
 const coreCount = urls.length;
+
+// Industries pages
+industries.forEach((ind) => add(`/industries/${ind}`, '0.8'));
+
+// Blog posts
+blogPosts.forEach((b) => add(`/blog/${b}`, '0.7'));
 
 // Service hub pages
 services.forEach((s) => add(`/services/${s}`, '0.9'));
@@ -66,5 +75,5 @@ fs.writeFileSync(path.join(pub, 'sitemap.xml'), xml);
 fs.writeFileSync(path.join(pub, 'robots.txt'), robots);
 
 console.log(
-  `Sitemap generated: ${urls.length} URLs = ${coreCount} core + ${services.length} service hubs + ${cities.length} city pages + ${services.length * cities.length} service×city pages`
+  `Sitemap generated: ${urls.length} URLs = ${coreCount} core + ${industries.length} industries + ${blogPosts.length} blog posts + ${services.length} service hubs + ${cities.length} city pages + ${services.length * cities.length} service×city pages`
 );

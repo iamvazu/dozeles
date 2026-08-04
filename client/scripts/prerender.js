@@ -13,12 +13,16 @@ const slugs = (src) => [...src.matchAll(/slug:\s*'([a-z0-9-]+)'/g)].map((m) => m
 
 const services = slugs(read('services.js'));
 const cities = slugs(read('cities.js'));
+const industries = slugs(read('industries.js'));
+const blogPosts = slugs(read('blog.js'));
 
 const urls = [
   '/', '/services-offered', '/pricing', '/locations', '/government-contract', 
-  '/about-us', '/cleaning-process', '/reviews', '/before-after', '/contact-us', '/book'
+  '/about-us', '/cleaning-process', '/reviews', '/before-after', '/contact-us', '/book', '/blog'
 ];
 
+industries.forEach((ind) => urls.push(`/industries/${ind}`));
+blogPosts.forEach((b) => urls.push(`/blog/${b}`));
 services.forEach((s) => urls.push(`/services/${s}`));
 cities.forEach((c) => urls.push(`/cleaning-services/${c}`));
 services.forEach((s) => cities.forEach((c) => urls.push(`/services/${s}/${c}`)));
