@@ -30,7 +30,7 @@ function Login({ onLogin }) {
   return (
     <div className="admin-wrap">
       <form className="form card login-card" onSubmit={submit}>
-        <h2>Dozeles Admin</h2>
+        <h2>Dozeles Professional Cleaning Admin</h2>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button className="btn btn-green" type="submit">Sign In</button>
@@ -46,7 +46,7 @@ function Dashboard({ onLogout }) {
   return (
     <div className="admin-wrap">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h2>Dozeles Admin</h2>
+        <h2>Dozeles Professional Cleaning Admin</h2>
         <div>
           <Link to="/" style={{ marginRight: 16, color: 'var(--muted)' }}>View site</Link>
           <button className="btn btn-outline" onClick={onLogout}>Log out</button>

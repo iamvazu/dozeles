@@ -16,7 +16,7 @@ export default function About() {
             <p style={{ fontStyle: 'italic', fontWeight: 600, marginBottom: 16 }}>{about.subheading}</p>
             <p className="lead">{about.body}</p>
           </div>
-          <img src={about.image} alt="Dozeles cleaning team" loading="lazy" />
+          <img src={about.image} alt="Dozeles Professional Cleaning team" loading="lazy" />
         </div>
       </section>
 

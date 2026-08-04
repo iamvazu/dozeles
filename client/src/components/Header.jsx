@@ -168,7 +168,7 @@ export default function Header({ site }) {
       <div className={`drawer-back ${open ? 'show' : ''}`} onClick={() => setOpen(false)} />
       <aside className={`drawer ${open ? 'open' : ''}`}>
         <div className="drawer-head">
-          <img src={site.logo} alt="Dozeles" />
+          <img src={site.logo} alt="Dozeles Professional Cleaning" />
           <button className="drawer-close" onClick={() => setOpen(false)} aria-label="Close menu">×</button>
         </div>
 

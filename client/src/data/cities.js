@@ -260,7 +260,7 @@ export const CITIES = [
     landmarks: ['Downtown Davis', 'UC Davis area', 'South Davis'],
     neighbors: ['woodland', 'sacramento', 'vacaville'] },
   { slug: 'sacramento', name: 'Sacramento', county: 'Sacramento County', region: 'Sacramento Valley', pop: '525,000',
-    blurb: 'California’s capital has the largest concentration of government facilities in the state — precisely the compliant, documented, audit-ready cleaning work Dozeles is built for.',
+    blurb: 'California’s capital has the largest concentration of government facilities in the state — precisely the compliant, documented, audit-ready cleaning work Dozeles Professional Cleaning is built for.',
     landmarks: ['Downtown Sacramento', 'Midtown', 'Capitol Mall', 'Natomas', 'Arden'],
     neighbors: ['west-sacramento', 'elk-grove', 'roseville', 'davis'] },
   { slug: 'west-sacramento', name: 'West Sacramento', county: 'Yolo County', region: 'Sacramento Valley', pop: '54,000',

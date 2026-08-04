@@ -15,7 +15,7 @@ export default function BlogPost() {
   return (
     <>
       <Seo
-        title={`${post.title} | Dozeles Cleaning`}
+        title={`${post.title} | Dozeles Professional Cleaning`}
         description={post.excerpt}
         keywords={post.keywords}
         path={`/blog/${post.slug}`}
@@ -56,7 +56,7 @@ export default function BlogPost() {
           <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 20, padding: 30, boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
             <h3 style={{ fontSize: '1.3rem', marginBottom: 16 }}>Need Professional Cleaning?</h3>
             <p style={{ color: 'var(--muted)', marginBottom: 24, fontSize: '0.95rem' }}>
-              Dozeles provides highly rated commercial and residential cleaning across the Bay Area.
+              Dozeles Professional Cleaning provides highly rated commercial and residential cleaning across the Bay Area.
             </p>
             <ul className="checklist" style={{ marginBottom: 24 }}>
               <li>Fully Licensed & Insured</li>

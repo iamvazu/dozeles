@@ -26,7 +26,7 @@ export default function ServiceDetail() {
   return (
     <>
       <Seo
-        title={`${fill(service.metaTitle, 'Bay Area')} | Dozeles`}
+        title={`${fill(service.metaTitle, 'Bay Area')} | Dozeles Professional Cleaning`}
         description={fill(service.metaDesc, 'the Bay Area')}
         keywords={[
           ...service.keywords,

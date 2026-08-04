@@ -15,7 +15,7 @@ import { BLOG_POSTS } from '../data/blog.js';
 const HOME_FAQS = [
   {
     q: "What's included in a cleaning?",
-    a: 'Every Dozeles cleaning follows a written room-by-room checklist. For homes that means kitchens, bathrooms, bedrooms, and living areas — surfaces, floors, fixtures, baseboards, and high-touch points. For commercial and janitorial contracts it means restrooms, trash and recycling, floor care, break rooms, glass, and disinfection of shared surfaces. You get the checklist before we start, so nothing is ambiguous.',
+    a: 'Every Dozeles Professional Cleaning follows a written room-by-room checklist. For homes that means kitchens, bathrooms, bedrooms, and living areas — surfaces, floors, fixtures, baseboards, and high-touch points. For commercial and janitorial contracts it means restrooms, trash and recycling, floor care, break rooms, glass, and disinfection of shared surfaces. You get the checklist before we start, so nothing is ambiguous.',
   },
   {
     q: 'How much does cleaning cost in the Bay Area?',
@@ -27,11 +27,11 @@ const HOME_FAQS = [
   },
   {
     q: 'What areas of Northern California do you serve?',
-    a: `Dozeles serves ${CITIES.length}+ cities across the San Francisco Bay Area, East Bay, North Bay, Sacramento Valley, and Central Valley — including San Francisco, Oakland, San Jose, Daly City, Fremont, Walnut Creek, San Rafael, Santa Rosa, Napa, and Sacramento.`,
+    a: `Dozeles Professional Cleaning serves ${CITIES.length}+ cities across the San Francisco Bay Area, East Bay, North Bay, Sacramento Valley, and Central Valley — including San Francisco, Oakland, San Jose, Daly City, Fremont, Walnut Creek, San Rafael, Santa Rosa, Napa, and Sacramento.`,
   },
   {
     q: 'Are your cleaners background-checked and insured?',
-    a: 'Yes. Dozeles is licensed, bonded, and insured with general liability and workers compensation coverage, and we are a women-certified business enterprise. Every crew member is background-checked before their first shift. Certificates of insurance are provided before work begins.',
+    a: 'Yes. Dozeles Professional Cleaning is licensed, bonded, and insured with general liability and workers compensation coverage, and we are a women-certified business enterprise. Every crew member is background-checked before their first shift. Certificates of insurance are provided before work begins.',
   },
   {
     q: 'What times do you offer cleaning services?',
@@ -126,7 +126,7 @@ export default function Home() {
   return (
     <>
       <Seo
-        title="Commercial & Residential Janitorial Services Bay Area | Dozeles Cleaning"
+        title="Commercial & Residential Janitorial Services Bay Area | Dozeles Professional Cleaning"
         description="Top-rated commercial janitorial and residential cleaning services across the San Francisco Bay Area and Northern California. Office cleaning, house cleaning, move-out, post-construction & government facilities. Licensed, insured, eco-friendly. Free quote."
         keywords={[
           'commercial janitorial services bay area',
@@ -153,7 +153,7 @@ export default function Home() {
               Sparkling <span className="accent">Residential &amp; Commercial</span> Cleaning Services
             </h1>
             <p className="sub">
-              Stop spending your evenings and weekends cleaning. Dozeles has kept Bay Area homes,
+              Stop spending your evenings and weekends cleaning. Dozeles Professional Cleaning has kept Bay Area homes,
               offices, and public buildings spotless for over 20 years — eco-friendly, insured, and
               guaranteed.
             </p>
@@ -244,13 +244,13 @@ export default function Home() {
           <div className="who-images">
             <img 
               src="/images/residential_cleaning.png" 
-              alt="The Dozeles residential cleaning team at work" 
+              alt="The Dozeles Professional Cleaning residential cleaning team at work" 
               loading="lazy"
               style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
             />
             <img 
               src="/images/corporate_lobby_cleaning.png" 
-              alt="The Dozeles commercial cleaning team at work" 
+              alt="The Dozeles Professional Cleaning commercial cleaning team at work" 
               loading="lazy"
               style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }}
             />
@@ -259,7 +259,7 @@ export default function Home() {
             <div className="eyebrow">Who We Are</div>
             <h2 className="h2">The Best Option For a Sparkling Home or Office</h2>
             <p>
-              Dozeles is a women-certified, family-run cleaning company serving the San Francisco Bay
+              Dozeles Professional Cleaning is a women-certified, family-run cleaning company serving the San Francisco Bay
               Area and Northern California for more than two decades. Our mission is simple: connect
               you with exceptional, thoroughly vetted cleaners who deliver results you can see.
             </p>

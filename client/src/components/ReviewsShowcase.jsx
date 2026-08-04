@@ -103,7 +103,7 @@ export default function ReviewsShowcase() {
                   <img
                     key={s}
                     src={s}
-                    alt="Dozeles cleaning results in the Bay Area"
+                    alt="Dozeles Professional Cleaning results in the Bay Area"
                     className={i === shot ? 'on' : ''}
                     loading={i === 0 ? 'eager' : 'lazy'}
                   />

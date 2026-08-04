@@ -8,7 +8,7 @@ export default function BlogIndex() {
   return (
     <>
       <Seo
-        title="Commercial Cleaning & Janitorial Blog | Dozeles"
+        title="Commercial Cleaning & Janitorial Blog | Dozeles Professional Cleaning"
         description="Expert insights on commercial cleaning, janitorial services, eco-friendly practices, and property maintenance in the Bay Area."
         keywords={['cleaning blog', 'janitorial tips', 'commercial cleaning advice']}
         path="/blog"

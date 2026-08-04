@@ -116,8 +116,8 @@ export function WhyDozeles({ city }) {
     <section className="section-cream">
       <div className="container">
         <div className="center" style={{ marginBottom: 40 }}>
-          <div className="eyebrow">Why Dozeles</div>
-          <h2 className="h2">Why {city || 'Northern California'} Chooses Dozeles</h2>
+          <div className="eyebrow">Why Dozeles Professional Cleaning</div>
+          <h2 className="h2">Why {city || 'Northern California'} Chooses Dozeles Professional Cleaning</h2>
         </div>
         <div className="grid grid-3">
           {points.map((p) => (

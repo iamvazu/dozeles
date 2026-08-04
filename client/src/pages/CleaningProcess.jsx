@@ -130,8 +130,8 @@ export default function CleaningProcess() {
   return (
     <>
       <Seo
-        title="Our Cleaning Process | Room-by-Room Checklist — Dozeles Cleaning"
-        description="See exactly how Dozeles cleans: our 6-step process, a room-by-room checklist for kitchens, bathrooms, bedrooms, living areas and offices, plus tips to keep your space in top shape. Bay Area & Northern California."
+        title="Our Cleaning Process | Room-by-Room Checklist — Dozeles Professional Cleaning"
+        description="See exactly how Dozeles Professional Cleaning cleans: our 6-step process, a room-by-room checklist for kitchens, bathrooms, bedrooms, living areas and offices, plus tips to keep your space in top shape. Bay Area & Northern California."
         keywords={[
           'cleaning process',
           'house cleaning checklist',
@@ -234,7 +234,7 @@ export default function CleaningProcess() {
                   Get a Free Quote
                 </Link>
               </div>
-              <img src={room.img} alt={`${room.name} cleaning by Dozeles`} loading="lazy" />
+              <img src={room.img} alt={`${room.name} cleaning by Dozeles Professional Cleaning`} loading="lazy" />
             </div>
           </div>
         </div>
@@ -278,7 +278,7 @@ export default function CleaningProcess() {
             <div className="eyebrow">Tips</div>
             <h2 className="h2">Tips to Keep Your Space in Top Shape</h2>
             <p className="lead" style={{ marginBottom: 18 }}>
-              Dozeles recommends weekly service for most homes and nightly janitorial for offices
+              Dozeles Professional Cleaning recommends weekly service for most homes and nightly janitorial for offices
               over twenty staff. Between visits, these five habits do most of the work.
             </p>
             <Link to="/book" className="btn btn-blue">Get a Free Quote</Link>

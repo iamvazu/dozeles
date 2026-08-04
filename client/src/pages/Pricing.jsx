@@ -91,7 +91,7 @@ export default function Pricing() {
   return (
     <>
       <Seo
-        title="Cleaning Price Calculator & Rates | House & Commercial — Dozeles"
+        title="Cleaning Price Calculator & Rates | House & Commercial — Dozeles Professional Cleaning"
         description={`Instant cleaning price calculator for the Bay Area & Northern California. House cleaning from $${PUBLISHED.resStandardFrom}/visit, commercial janitorial from $${PUBLISHED.comPerSqFtMonthLow}/sq ft per month. No contracts, free quotes, satisfaction guaranteed.`}
         keywords={[
           'cleaning price calculator',
@@ -178,7 +178,7 @@ export default function Pricing() {
             <span className="icon"><Icon name="shield" size={38} /></span>
             <div>
               <strong style={{ color: 'var(--ink)', fontSize: '1.05rem' }}>
-                The Dozeles guarantee — zero risk to try us
+                The Dozeles Professional Cleaning guarantee — zero risk to try us
               </strong>
               <p style={{ color: 'var(--muted)', fontSize: '0.94rem', marginTop: 4 }}>
                 Not completely satisfied? Tell us within 24 hours and we re-clean the area free. No

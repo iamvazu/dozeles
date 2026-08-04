@@ -47,7 +47,7 @@ export default function CityPage() {
   const cityFaqs = [
     {
       q: `How much do cleaning services cost in ${city.name}?`,
-      a: `Cleaning costs in ${city.name} depend on the service. Recurring house cleaning typically runs $149–$329 per visit; commercial and janitorial contracts are billed monthly at roughly $0.10–$0.45 per square foot per month depending on facility type and frequency; move-out deep cleans run $280–$650. Every Dozeles quote in ${city.name} is fixed and written after a free walkthrough, so there are no hourly surprises.`,
+      a: `Cleaning costs in ${city.name} depend on the service. Recurring house cleaning typically runs $149–$329 per visit; commercial and janitorial contracts are billed monthly at roughly $0.10–$0.45 per square foot per month depending on facility type and frequency; move-out deep cleans run $280–$650. Every Dozeles Professional Cleaning quote in ${city.name} is fixed and written after a free walkthrough, so there are no hourly surprises.`,
     },
     {
       q: `Do you offer same-week service in ${city.name}?`,
@@ -55,7 +55,7 @@ export default function CityPage() {
     },
     {
       q: `Are your ${city.name} cleaners background-checked and insured?`,
-      a: `Every crew member serving ${city.name} is background-checked before their first shift, and Dozeles is fully licensed, bonded, and insured with general liability and workers compensation coverage. We provide certificates of insurance naming your business or property manager as additional insured.`,
+      a: `Every crew member serving ${city.name} is background-checked before their first shift, and Dozeles Professional Cleaning is fully licensed, bonded, and insured with general liability and workers compensation coverage. We provide certificates of insurance naming your business or property manager as additional insured.`,
     },
     {
       q: `What areas of ${city.name} do you serve?`,
@@ -70,7 +70,7 @@ export default function CityPage() {
   return (
     <>
       <Seo
-        title={`Cleaning & Janitorial Services in ${city.name}, CA | Dozeles`}
+        title={`Cleaning & Janitorial Services in ${city.name}, CA | Dozeles Professional Cleaning`}
         description={`Top-rated commercial and residential cleaning services in ${city.name}, CA. Janitorial, office, house, move-out, and post-construction cleaning. Licensed, insured, eco-friendly. Free quote — 650-290-0280.`}
         keywords={[
           `cleaning services ${city.name.toLowerCase()}`,
@@ -104,7 +104,7 @@ export default function CityPage() {
             <h2 className="h2">Your Local {city.name} Cleaning Company</h2>
             <p>{city.blurb}</p>
             <p>
-              Dozeles has provided commercial and residential cleaning services throughout{' '}
+              Dozeles Professional Cleaning has provided commercial and residential cleaning services throughout{' '}
               {city.region} for more than twenty years. In {city.name} we serve offices, retail
               storefronts, medical suites, government facilities, apartments, and single-family
               homes — with the same crews, the same checklists, and the same guarantee on every job.

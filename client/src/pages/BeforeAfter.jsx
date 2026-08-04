@@ -14,7 +14,7 @@ export default function BeforeAfter() {
         <div className="container">
           <div className="center" style={{ marginBottom: 40 }}>
             <div className="eyebrow">Our Work</div>
-            <h2 className="h2">See the Dozeles Difference</h2>
+            <h2 className="h2">See the Dozeles Professional Cleaning Difference</h2>
           </div>
           <div className="gallery">
             {beforeAfter.map((img) => (

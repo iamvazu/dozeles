@@ -10,8 +10,8 @@ export default function Services() {
   return (
     <>
       <Seo
-        title="Cleaning Services | Commercial Janitorial & Residential — Dozeles"
-        description="Explore all Dozeles cleaning services: commercial cleaning, janitorial, office cleaning, residential house cleaning, move-out, post-construction, government facilities, Airbnb turnover, and disinfection. Bay Area & Northern California."
+        title="Cleaning Services | Commercial Janitorial & Residential — Dozeles Professional Cleaning"
+        description="Explore all Dozeles Professional Cleaning services: commercial cleaning, janitorial, office cleaning, residential house cleaning, move-out, post-construction, government facilities, Airbnb turnover, and disinfection. Bay Area & Northern California."
         keywords={[
           'commercial cleaning services',
           'janitorial services',
@@ -38,7 +38,7 @@ export default function Services() {
             <div className="eyebrow">Complete Coverage</div>
             <h2 className="h2">Nine Specialized Cleaning Service Lines</h2>
             <p className="lead">
-              Dozeles provides commercial janitorial, office cleaning, residential house cleaning,
+              Dozeles Professional Cleaning provides commercial janitorial, office cleaning, residential house cleaning,
               and specialty services across {CITIES.length}+ cities in the San Francisco Bay Area
               and Northern California. Every service uses green-certified products, HEPA-filtered
               equipment, licensed and insured crews, and carries our free re-clean guarantee.

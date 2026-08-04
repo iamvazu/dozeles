@@ -28,7 +28,7 @@ export const SERVICES = [
       'building maintenance cleaning',
     ],
     intro:
-      'Dozeles delivers commercial and office cleaning services built around how your business actually operates. We clean offices, conference rooms, retail floors, showrooms, warehouses, medical suites, and mixed-use buildings on schedules that work around your hours — early morning, evenings, overnight, or weekends. Every contract is backed by documented checklists, supervisor walkthroughs, and a single point of contact who answers the phone.',
+      'Dozeles Professional Cleaning delivers commercial and office cleaning services built around how your business actually operates. We clean offices, conference rooms, retail floors, showrooms, warehouses, medical suites, and mixed-use buildings on schedules that work around your hours — early morning, evenings, overnight, or weekends. Every contract is backed by documented checklists, supervisor walkthroughs, and a single point of contact who answers the phone.',
     body: [
       'A dirty workplace costs more than most owners realize. Studies of office environments consistently link surface contamination to increased sick days, and customers form an opinion about your business within seconds of walking through the door. Our program removes that risk entirely: consistent crews, green-certified products, HEPA filtration capturing 99.97% of airborne particles, and a quality-control process that catches problems before you ever notice them.',
       'Modern offices have changed. Hot-desking, hybrid schedules, and shared equipment mean more people touch the same surfaces than ever. Our scope prioritizes high-touch disinfection — door handles, light switches, shared monitors and keyboards, conference tables, kitchen appliances — alongside the traditional vacuum-and-empty-trash work.',
@@ -77,7 +77,7 @@ export const SERVICES = [
       },
       {
         q: 'Are you licensed and insured for commercial work?',
-        a: 'Dozeles is fully licensed, bonded, and carries general liability and workers compensation coverage. We provide certificates of insurance naming your business or property manager as additional insured before the first cleaning, and we can meet elevated coverage requirements for larger properties.',
+        a: 'Dozeles Professional Cleaning is fully licensed, bonded, and carries general liability and workers compensation coverage. We provide certificates of insurance naming your business or property manager as additional insured before the first cleaning, and we can meet elevated coverage requirements for larger properties.',
       },
       {
         q: 'Can we change our cleaning schedule as our needs change?',
@@ -105,7 +105,7 @@ export const SERVICES = [
       'building janitorial contractor',
     ],
     intro:
-      'Janitorial service is a reliability business, not a cleaning business. Anyone can clean a building once — the hard part is doing it correctly on the 340th night in a row, when a crew member is out sick and the trash chute is backed up. Dozeles has run recurring janitorial programs across Northern California for two decades, with supervisor-verified checklists, cross-trained backup staff, and same-day response on anything that slips.',
+      'Janitorial service is a reliability business, not a cleaning business. Anyone can clean a building once — the hard part is doing it correctly on the 340th night in a row, when a crew member is out sick and the trash chute is backed up. Dozeles Professional Cleaning has run recurring janitorial programs across Northern California for two decades, with supervisor-verified checklists, cross-trained backup staff, and same-day response on anything that slips.',
     body: [
       'Our janitorial contracts are built around documented scopes of work. Every task is assigned a frequency — nightly, weekly, monthly, quarterly — and every completed visit is logged. When your facilities manager asks whether the stairwells were detailed this month, we can show them the record instead of guessing.',
       'Staffing is where most janitorial companies fail. We assign consistent crews to each building so your team sees the same faces, and we cross-train backup staff on your specific scope so coverage never depends on one person showing up. Every crew member is background-checked, trained on green-certified products and HEPA equipment, and supervised on a rotating walkthrough schedule.',
@@ -135,7 +135,7 @@ export const SERVICES = [
     faqs: [
       {
         q: 'What is the difference between janitorial services and commercial cleaning?',
-        a: 'Janitorial services are recurring maintenance — the nightly or weekly work that keeps a building consistently clean, including trash, restrooms, floors, and high-touch surfaces. Commercial cleaning often refers to broader or periodic projects like deep cleans, carpet extraction, and post-event cleanup. Dozeles provides both in {city}, usually bundled into one contract so you have a single vendor and a single invoice.',
+        a: 'Janitorial services are recurring maintenance — the nightly or weekly work that keeps a building consistently clean, including trash, restrooms, floors, and high-touch surfaces. Commercial cleaning often refers to broader or periodic projects like deep cleans, carpet extraction, and post-event cleanup. Dozeles Professional Cleaning provides both in {city}, usually bundled into one contract so you have a single vendor and a single invoice.',
       },
       {
         q: 'How often should our building be cleaned?',
@@ -147,7 +147,7 @@ export const SERVICES = [
       },
       {
         q: 'What happens if we are not happy with a cleaning?',
-        a: 'Call or email us and we will re-clean the area within one business day at no charge. Every Dozeles janitorial contract carries a satisfaction guarantee, and recurring issues trigger a supervisor walkthrough with you to correct the scope or the crew.',
+        a: 'Call or email us and we will re-clean the area within one business day at no charge. Every Dozeles Professional Cleaning janitorial contract carries a satisfaction guarantee, and recurring issues trigger a supervisor walkthrough with you to correct the scope or the crew.',
       },
     ],
   },
@@ -171,7 +171,7 @@ export const SERVICES = [
       'weekly house cleaners',
     ],
     intro:
-      'Dozeles residential cleaning gives you your weekends back. Our house cleaners work from a room-by-room checklist covering kitchens, bathrooms, bedrooms, and living areas, using eco-friendly products that are safe around children and pets. Same team every visit, so they learn your home and your preferences.',
+      'Dozeles Professional Cleaning residential cleaning gives you your weekends back. Our house cleaners work from a room-by-room checklist covering kitchens, bathrooms, bedrooms, and living areas, using eco-friendly products that are safe around children and pets. Same team every visit, so they learn your home and your preferences.',
     body: [
       'Most cleaning services rush. We schedule realistic time blocks so the work is actually done — baseboards wiped rather than skipped, shower grout scrubbed rather than sprayed, under furniture vacuumed rather than around it. That is why the majority of our {city} residential clients have been with us for years.',
       'Every cleaner is background-checked, insured, and trained on our residential checklist before entering a home. If you want extras like inside-the-oven, inside-the-fridge, interior windows, or laundry, they are available as add-ons — you are never upsold on the doorstep.',
@@ -368,7 +368,7 @@ export const SERVICES = [
       'renovation cleanup',
     ],
     intro:
-      'Construction dust is not normal dust. It is fine, abrasive, and it settles into every track, vent, and seam for weeks after the work stops. Dozeles post-construction cleaning is a systematic top-to-bottom process using HEPA filtration and commercial equipment — the only reliable way to get a newly built or renovated space genuinely handover-ready.',
+      'Construction dust is not normal dust. It is fine, abrasive, and it settles into every track, vent, and seam for weeks after the work stops. Dozeles Professional Cleaning post-construction cleaning is a systematic top-to-bottom process using HEPA filtration and commercial equipment — the only reliable way to get a newly built or renovated space genuinely handover-ready.',
     body: [
       'We work in the standard three phases contractors expect: rough clean during construction to keep the site safe and workable, final clean after trades are out, and touch-up right before walkthrough or handover. Most {city} general contractors book all three; some book only the final.',
       'Timing matters on construction projects, and we schedule around your punch list rather than our convenience. We can mobilize crews on short notice for delayed handovers, and we coordinate directly with your superintendent so cleaning does not become the thing holding up your certificate of occupancy.',
@@ -432,7 +432,7 @@ export const SERVICES = [
       'federal building cleaning',
     ],
     intro:
-      'Government cleaning contracts have requirements most janitorial companies cannot meet: documented processes, background-checked staff, certificate compliance, insurance thresholds, and reporting that survives an audit. Dozeles is a women-certified business with two decades of experience meeting exactly those standards across Northern California public facilities.',
+      'Government cleaning contracts have requirements most janitorial companies cannot meet: documented processes, background-checked staff, certificate compliance, insurance thresholds, and reporting that survives an audit. Dozeles Professional Cleaning is a women-certified business with two decades of experience meeting exactly those standards across Northern California public facilities.',
     body: [
       'We understand how public procurement works. We respond to RFPs and IFBs with complete documentation, we price transparently against the specified scope of work, and we maintain the records that contract administrators need at renewal time — completed task logs, inspection reports, incident documentation, and staff certifications.',
       'Security and discretion are non-negotiable in public buildings. Every crew member assigned to a government facility is background-checked and trained on site-specific access protocols, restricted-area procedures, and the handling of sensitive spaces such as courtrooms, evidence areas, and records rooms.',
@@ -462,7 +462,7 @@ export const SERVICES = [
     faqs: [
       {
         q: 'Are you certified to bid on government cleaning contracts?',
-        a: 'Yes. Dozeles is a women-certified business enterprise, fully licensed, bonded, and insured, with the documented processes and reporting that public agencies require. We regularly respond to RFPs and IFBs from municipalities and agencies throughout {city} and the wider Northern California region.',
+        a: 'Yes. Dozeles Professional Cleaning is a women-certified business enterprise, fully licensed, bonded, and insured, with the documented processes and reporting that public agencies require. We regularly respond to RFPs and IFBs from municipalities and agencies throughout {city} and the wider Northern California region.',
       },
       {
         q: 'Are your staff background-checked for secure facilities?',
@@ -496,7 +496,7 @@ export const SERVICES = [
       'rental property cleaning',
     ],
     intro:
-      'One bad cleaning review can cost a short-term rental thousands in future bookings. Dozeles runs turnovers on a hotel-grade checklist with photo verification on every visit, so you know the property is guest-ready without driving over to check.',
+      'One bad cleaning review can cost a short-term rental thousands in future bookings. Dozeles Professional Cleaning runs turnovers on a hotel-grade checklist with photo verification on every visit, so you know the property is guest-ready without driving over to check.',
     body: [
       'Same-day turnovers are the standard in {city}, and we build our schedules around checkout and check-in windows rather than convenient time blocks. Linen changes, restocking of consumables, staging to match your listing photos, and a damage-and-inventory report all happen in the same pass.',
       'For hosts with multiple properties, we assign a dedicated coordinator and can sync directly with your booking calendar so turnovers are scheduled automatically as reservations come in. Most multi-property hosts stop thinking about cleaning entirely within a month of onboarding.',
@@ -560,7 +560,7 @@ export const SERVICES = [
       'facility sanitizing',
     ],
     intro:
-      'Cleaning removes soil. Disinfection kills pathogens. They are different processes requiring different products, dwell times, and application methods — and most cleaning companies quietly skip the second one. Dozeles disinfection uses EPA-registered products applied with electrostatic sprayers that wrap surfaces evenly, including the sides and backs that wiping misses.',
+      'Cleaning removes soil. Disinfection kills pathogens. They are different processes requiring different products, dwell times, and application methods — and most cleaning companies quietly skip the second one. Dozeles Professional Cleaning disinfection uses EPA-registered products applied with electrostatic sprayers that wrap surfaces evenly, including the sides and backs that wiping misses.',
     body: [
       'We deploy disinfection three ways: as a scheduled add-on to recurring janitorial contracts, as a periodic deep treatment during cold and flu season, and as emergency response after a confirmed exposure in your facility. Emergency response is typically available within 24 hours across {city}.',
       'Dwell time is where disinfection succeeds or fails. Every EPA-registered product requires a specific wet contact period to actually kill pathogens, and we follow those specifications on every application — which is why our crews take longer than the companies that spray and immediately wipe.',

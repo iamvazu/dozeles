@@ -35,7 +35,7 @@ export default function Reviews() {
       <section className="section-alt">
         <div className="container">
           <div className="gallery" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
-            {gallery.map((g) => <img key={g} src={g} alt="Dozeles at work" loading="lazy" />)}
+            {gallery.map((g) => <img key={g} src={g} alt="Dozeles Professional Cleaning at work" loading="lazy" />)}
           </div>
         </div>
       </section>

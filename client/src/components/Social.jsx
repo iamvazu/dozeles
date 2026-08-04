@@ -17,7 +17,7 @@ export const SOCIALS = [
   {
     key: 'google',
     label: 'Google Business Profile',
-    url: 'https://www.google.com/maps/place/Dozeles+Professional+Cleaning',
+    url: 'https://www.google.com/maps/place/Dozeles Professional Cleaning+Professional+Cleaning',
   },
 ];
 

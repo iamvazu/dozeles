@@ -6,13 +6,13 @@ export const BLOG_POSTS = [
     img: '/images/hero_commercial.png',
     excerpt: 'Your parking garage is the first thing clients see. Learn how professional sweeping, pressure washing, and oil stain removal protect your property value.',
     date: '2026-08-01',
-    author: 'Dozeles Team',
+    author: 'Dozeles Professional Cleaning Team',
     keywords: ['parking garage cleaning', 'commercial sweeping', 'pressure washing', 'Bay Area parking maintenance', 'oil stain removal'],
     content: `
       <h2>Why Parking Garage Cleaning is Crucial for Commercial Properties</h2>
       <p>Your parking facility is the first and last impression a client, tenant, or employee has of your building. Yet, <strong>parking garage cleaning</strong> is often overlooked until significant grime, oil stains, and debris have already caused long-term damage to the concrete surface.</p>
       
-      <p>At Dozeles, we specialize in high-traffic <a href="/services/commercial-cleaning">commercial cleaning</a> and specialized facilities. A dirty garage doesn't just look unprofessional—it poses serious slip-and-fall hazards, attracts pests, and degrades the structural integrity of your paving over time.</p>
+      <p>At Dozeles Professional Cleaning, we specialize in high-traffic <a href="/services/commercial-cleaning">commercial cleaning</a> and specialized facilities. A dirty garage doesn't just look unprofessional—it poses serious slip-and-fall hazards, attracts pests, and degrades the structural integrity of your paving over time.</p>
 
       <h3>The 3 Pillars of Professional Garage Maintenance</h3>
       
@@ -38,7 +38,7 @@ export const BLOG_POSTS = [
     img: '/images/corporate_lobby_cleaning.png',
     excerpt: 'Discover how daily janitorial services reduce sick days, boost employee morale, and leave a lasting impression on your clients.',
     date: '2026-07-28',
-    author: 'Dozeles Team',
+    author: 'Dozeles Professional Cleaning Team',
     keywords: ['janitorial services', 'office cleaning', 'commercial janitors', 'daily office cleaning', 'Bay Area janitorial company'],
     content: `
       <h2>The Hidden ROI of Professional Janitorial Services</h2>
@@ -55,8 +55,8 @@ export const BLOG_POSTS = [
       <h3>3. Consistent, Reliable Cleaning</h3>
       <p>Relying on employees to take out the trash or wipe down the kitchen rarely works—it builds resentment and distracts from their actual jobs. With a professional team, you get a written checklist and a guarantee that the job gets done right every single night.</p>
 
-      <h3>Trust the Experts at Dozeles</h3>
-      <p>Whether you manage a small startup space or a massive corporate campus in <a href="/cleaning-services/oakland">Oakland</a>, finding the right janitorial partner is critical. Dozeles provides vetted, background-checked crews who treat your business with the respect it deserves.</p>
+      <h3>Trust the Experts at Dozeles Professional Cleaning</h3>
+      <p>Whether you manage a small startup space or a massive corporate campus in <a href="/cleaning-services/oakland">Oakland</a>, finding the right janitorial partner is critical. Dozeles Professional Cleaning provides vetted, background-checked crews who treat your business with the respect it deserves.</p>
 
       <p><a href="/contact-us">Contact our team</a> today to discuss a custom janitorial schedule tailored to your facility's exact needs.</p>
     `
@@ -68,13 +68,13 @@ export const BLOG_POSTS = [
     img: '/images/office_desk_cleaning.png',
     excerpt: 'Stop exposing your staff to harsh chemicals. Learn why green commercial cleaning is safer, more effective, and better for the environment.',
     date: '2026-07-15',
-    author: 'Dozeles Team',
+    author: 'Dozeles Professional Cleaning Team',
     keywords: ['eco-friendly cleaning', 'commercial cleaning', 'green cleaning products', 'HEPA filtration', 'safe office cleaning'],
     content: `
       <h2>Why Commercial Cleaning Needs to Go Green</h2>
       <p>For decades, the standard in <strong>commercial cleaning</strong> involved harsh bleach, ammonia, and artificial fragrances. While these chemicals might kill germs, they also leave behind toxic residues and volatile organic compounds (VOCs) that your employees breathe in for 8 hours a day.</p>
 
-      <p>At Dozeles, we believe that <a href="/services/commercial-cleaning">commercial cleaning</a> shouldn't come at the cost of your team's respiratory health or the environment. That's why we have completely transitioned to an eco-friendly cleaning model.</p>
+      <p>At Dozeles Professional Cleaning, we believe that <a href="/services/commercial-cleaning">commercial cleaning</a> shouldn't come at the cost of your team's respiratory health or the environment. That's why we have completely transitioned to an eco-friendly cleaning model.</p>
 
       <h3>The Benefits of Green Certified Products</h3>
       <p>Green-certified products use natural enzymes and plant-based surfactants to break down grease, dirt, and bacteria. They are just as effective as traditional chemicals, but they do not off-gas harmful VOCs. This is especially important for modern, airtight office buildings where HVAC systems continuously recirculate the same indoor air.</p>
