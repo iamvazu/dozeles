@@ -151,7 +151,11 @@ export default function Layout() {
           <div className="footer-certs">
             {(site.certifications || []).map((c) => (
               <div className="cert-card" key={c.id}>
-                <span className="cert-ico"><Icon name={c.icon} size={19} /></span>
+                {c.image ? (
+                  <img src={c.image} alt={c.label} style={{ height: 42, width: 'auto', maxWidth: 64, objectFit: 'contain', flexShrink: 0, borderRadius: 4 }} />
+                ) : (
+                  <span className="cert-ico"><Icon name={c.icon} size={19} /></span>
+                )}
                 <div>
                   <strong>{c.label}</strong>
                   {c.number && <span className="cert-no">{c.numberLabel} {c.number}</span>}

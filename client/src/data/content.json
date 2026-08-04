@@ -27,6 +27,7 @@
         "label": "Certified Small Business",
         "number": "2041212",
         "numberLabel": "Cert. No.",
+        "image": "/images/logo_cagov.png",
         "icon": "badge",
         "note": "State of California certified small business enterprise"
       },
@@ -35,6 +36,7 @@
         "label": "DIR Janitorial Registration",
         "number": "JS-LR-1001274287",
         "numberLabel": "Reg. No.",
+        "image": "/images/logo_dir.png",
         "icon": "shield",
         "note": "Registered with the CA Department of Industrial Relations under the Property Service Workers Protection Act"
       },
@@ -42,6 +44,7 @@
         "id": "women",
         "label": "Women-Certified Business",
         "number": "",
+        "image": "/images/logo_wbe.png",
         "icon": "star",
         "note": "Women-owned business enterprise"
       },
