@@ -59,22 +59,31 @@ async function notifyUser(to, subject, html) {
 }
 
 // ---------- auth ----------
-function requireAdmin(req, res, next) {
+function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
   if (!token) return res.status(401).json({ error: 'Not authenticated' });
   try {
-    req.admin = jwt.verify(token, JWT_SECRET);
+    req.user = jwt.verify(token, JWT_SECRET);
     next();
   } catch {
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 }
 
+function requireAdmin(req, res, next) {
+  requireAuth(req, res, () => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+    next();
+  });
+}
+
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body || {};
-  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-    const token = jwt.sign({ email, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
+  const user = db.users.find(u => u.email === email && u.password === password);
+  
+  if (user) {
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '12h' });
     return res.json({ token });
   }
   res.status(401).json({ error: 'Invalid credentials' });
@@ -99,6 +108,8 @@ app.post('/api/bookings', async (req, res) => {
     name, email: email || '', phone, service, date, time: time || '',
     address: address || '', notes: notes || '',
     status: 'pending',
+    price: 0,
+    internalNotes: [],
     createdAt: new Date().toISOString(),
   };
   db.bookings.push(booking);
@@ -165,22 +176,34 @@ app.post('/api/subscribe', (req, res) => {
 });
 
 // ---------- admin API ----------
-app.get('/api/admin/bookings', requireAdmin, (req, res) => res.json([...db.bookings].reverse()));
-app.patch('/api/admin/bookings/:id', requireAdmin, (req, res) => {
+app.get('/api/admin/bookings', requireAuth, (req, res) => res.json([...db.bookings].reverse()));
+app.patch('/api/admin/bookings/:id', requireAuth, (req, res) => {
   const b = db.bookings.find((x) => x.id === req.params.id);
   if (!b) return res.status(404).json({ error: 'Not found' });
   if (req.body.status) b.status = req.body.status;
+  if (req.body.price !== undefined) b.price = Number(req.body.price);
+  
+  if (req.body.addNote) {
+    if (!b.internalNotes) b.internalNotes = [];
+    b.internalNotes.push({
+      id: newId(),
+      text: req.body.addNote,
+      author: req.user.name,
+      createdAt: new Date().toISOString()
+    });
+  }
+  
   saveDb();
   res.json(b);
 });
-app.delete('/api/admin/bookings/:id', requireAdmin, (req, res) => {
+app.delete('/api/admin/bookings/:id', requireAuth, (req, res) => {
   db.bookings = db.bookings.filter((x) => x.id !== req.params.id);
   saveDb();
   res.json({ ok: true });
 });
 
-app.get('/api/admin/messages', requireAdmin, (req, res) => res.json([...db.messages].reverse()));
-app.patch('/api/admin/messages/:id', requireAdmin, (req, res) => {
+app.get('/api/admin/messages', requireAuth, (req, res) => res.json([...db.messages].reverse()));
+app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
   const m = db.messages.find((x) => x.id === req.params.id);
   if (!m) return res.status(404).json({ error: 'Not found' });
   if (typeof req.body.read === 'boolean') m.read = req.body.read;
@@ -189,6 +212,27 @@ app.patch('/api/admin/messages/:id', requireAdmin, (req, res) => {
 });
 
 app.get('/api/admin/subscribers', requireAdmin, (req, res) => res.json(db.subscribers));
+
+// Users CRUD
+app.get('/api/admin/users', requireAdmin, (req, res) => {
+  res.json(db.users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role, createdAt: u.createdAt })));
+});
+app.post('/api/admin/users', requireAdmin, (req, res) => {
+  const { email, password, name, role } = req.body;
+  if (!email || !password || !name) return res.status(400).json({ error: 'Missing fields' });
+  if (db.users.find(u => u.email === email)) return res.status(400).json({ error: 'Email already exists' });
+  
+  const user = { id: newId(), email, password, name, role: role === 'admin' ? 'admin' : 'staff', createdAt: new Date().toISOString() };
+  db.users.push(user);
+  saveDb();
+  res.status(201).json({ id: user.id, email: user.email, name: user.name, role: user.role, createdAt: user.createdAt });
+});
+app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
+  if (req.params.id === req.user.id) return res.status(400).json({ error: 'Cannot delete yourself' });
+  db.users = db.users.filter((u) => u.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
 
 // Content editing: replace a whole section (site, home, about, services, government, faqs, ...)
 const EDITABLE = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];

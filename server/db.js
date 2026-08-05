@@ -18,9 +18,24 @@ export function loadDb() {
     seed.bookings = [];
     seed.messages = [];
     seed.subscribers = [];
+    seed.users = [];
     fs.writeFileSync(DB_FILE, JSON.stringify(seed, null, 2));
   }
   db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  
+  if (!db.users) db.users = [];
+  if (db.users.length === 0) {
+    db.users.push({
+      id: newId(),
+      email: process.env.ADMIN_EMAIL || 'admin@dozeles.com',
+      password: process.env.ADMIN_PASSWORD || 'admin123',
+      name: 'Master Admin',
+      role: 'admin',
+      createdAt: new Date().toISOString()
+    });
+    saveDb();
+  }
+  
   return db;
 }
 

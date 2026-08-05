@@ -1,14 +1,38 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
-import { LayoutDashboard, CalendarCheck, MessageSquare, Users, Edit3, Star, LogOut, X, Mail } from 'lucide-react';
+import { LayoutDashboard, CalendarCheck, MessageSquare, Users, Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
 
 const SECTIONS = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
-const STATUSES = ['pending', 'confirmed', 'done', 'cancelled'];
+const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
+
+function decodeToken(token) {
+  if (!token) return null;
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 export default function Admin() {
   const [token, setToken] = useState(sessionStorage.getItem('dz_token'));
-  return token ? <Dashboard onLogout={() => { sessionStorage.removeItem('dz_token'); setToken(null); }} /> : <Login onLogin={setToken} />;
+  const user = decodeToken(token);
+
+  if (!token || !user) {
+    return <Login onLogin={setToken} />;
+  }
+
+  return (
+    <Dashboard 
+      user={user} 
+      onLogout={() => { 
+        sessionStorage.removeItem('dz_token'); 
+        setToken(null); 
+      }} 
+    />
+  );
 }
 
 function Login({ onLogin }) {
@@ -31,7 +55,7 @@ function Login({ onLogin }) {
   return (
     <div className="admin-layout" style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
       <form className="form card login-card" onSubmit={submit}>
-        <h2>Dozeles Admin</h2>
+        <h2>Dozeles CRM</h2>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button className="btn btn-blue" style={{ width: '100%' }} type="submit">Sign In</button>
@@ -42,22 +66,38 @@ function Login({ onLogin }) {
   );
 }
 
-function Dashboard({ onLogout }) {
+function Dashboard({ user, onLogout }) {
   const [tab, setTab] = useState('overview');
 
-  const navs = [
+  let navs = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
-    { id: 'bookings', label: 'Bookings', icon: <CalendarCheck /> },
-    { id: 'messages', label: 'Messages', icon: <MessageSquare /> },
-    { id: 'subscribers', label: 'Subscribers', icon: <Users /> },
-    { id: 'reviews', label: 'Reviews', icon: <Star /> },
-    { id: 'content', label: 'Content', icon: <Edit3 /> },
+    { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck /> }
   ];
+
+  if (user.role === 'admin') {
+    navs = navs.concat([
+      { id: 'messages', label: 'Messages', icon: <MessageSquare /> },
+      { id: 'reviews', label: 'Reviews', icon: <Star /> },
+      { id: 'users', label: 'Team & Staff', icon: <Shield /> },
+      { id: 'subscribers', label: 'Subscribers', icon: <Users /> },
+      { id: 'content', label: 'Website Content', icon: <Edit3 /> },
+    ]);
+  }
+
+  // Fallback if staff tries to access unauthorized tab
+  if (!navs.find(n => n.id === tab)) setTab('overview');
 
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
         <div className="admin-logo">Dozeles<span>.</span></div>
+        
+        <div style={{ padding: '0 18px', marginBottom: 20 }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Logged in as</div>
+          <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{user.name}</div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--blue)', fontWeight: 600, textTransform: 'uppercase' }}>{user.role}</div>
+        </div>
+
         <nav className="admin-nav">
           {navs.map(n => (
             <button
@@ -82,10 +122,11 @@ function Dashboard({ onLogout }) {
           <h1>{navs.find(n => n.id === tab)?.label || 'Dashboard'}</h1>
         </div>
 
-        {tab === 'overview' && <Overview setTab={setTab} />}
-        {tab === 'bookings' && <Bookings />}
+        {tab === 'overview' && <Overview user={user} setTab={setTab} />}
+        {tab === 'bookings' && <Bookings user={user} />}
         {tab === 'messages' && <Messages />}
         {tab === 'reviews' && <ReviewsAdmin />}
+        {tab === 'users' && <UsersAdmin user={user} />}
         {tab === 'subscribers' && <Subscribers />}
         {tab === 'content' && <ContentEditor />}
       </main>
@@ -93,43 +134,96 @@ function Dashboard({ onLogout }) {
   );
 }
 
-function Overview({ setTab }) {
+function Overview({ user, setTab }) {
   const [bookings, setBookings] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [subscribers, setSubscribers] = useState([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     api.get('/api/admin/bookings').then(setBookings).catch(console.error);
-    api.get('/api/admin/messages').then(setMessages).catch(console.error);
-    api.get('/api/admin/subscribers').then(setSubscribers).catch(console.error);
   }, []);
 
   const pendingBookings = useMemo(() => bookings.filter(b => b.status === 'pending').length, [bookings]);
-  const unreadMessages = useMemo(() => messages.filter(m => !m.read).length, [messages]);
+  const estimatedRevenue = useMemo(() => {
+    return bookings.reduce((sum, b) => {
+      // Only count revenue for jobs this month that aren't cancelled
+      if (b.status !== 'cancelled' && b.status !== 'pending' && b.price) {
+        const bDate = new Date(b.date);
+        if (isSameMonth(bDate, currentMonth)) {
+          return sum + Number(b.price);
+        }
+      }
+      return sum;
+    }, 0);
+  }, [bookings, currentMonth]);
+
+  // Calendar logic
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(monthStart);
+  const startDate = startOfWeek(monthStart);
+  const endDate = endOfWeek(monthEnd);
+
+  const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
 
   return (
-    <div className="kpi-grid">
-      <div className="kpi-card" onClick={() => setTab('bookings')} style={{ cursor: 'pointer' }}>
-        <div className="kpi-icon" style={{ background: '#fff4dd', color: '#a06a00' }}><CalendarCheck /></div>
-        <div className="kpi-value">{pendingBookings}</div>
-        <div className="kpi-label">Pending Bookings</div>
+    <>
+      <div className="kpi-grid">
+        <div className="kpi-card" onClick={() => setTab('bookings')} style={{ cursor: 'pointer' }}>
+          <div className="kpi-icon" style={{ background: '#fff4dd', color: '#a06a00' }}><CalendarCheck size={20} /></div>
+          <div className="kpi-info">
+            <div className="kpi-value">{pendingBookings}</div>
+            <div className="kpi-label">Pending Bookings</div>
+          </div>
+        </div>
+        
+        <div className="kpi-card">
+          <div className="kpi-icon" style={{ background: '#e8f1fd', color: '#0A4BB0' }}><CalendarCheck size={20} /></div>
+          <div className="kpi-info">
+            <div className="kpi-value">{bookings.length}</div>
+            <div className="kpi-label">Total Jobs</div>
+          </div>
+        </div>
+
+        {user.role === 'admin' && (
+          <div className="kpi-card">
+            <div className="kpi-icon" style={{ background: '#e8f7f0', color: '#138a4d' }}><DollarSign size={20} /></div>
+            <div className="kpi-info">
+              <div className="kpi-value">${estimatedRevenue.toLocaleString()}</div>
+              <div className="kpi-label">Est. Revenue ({format(currentMonth, 'MMM')})</div>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="kpi-card" onClick={() => setTab('messages')} style={{ cursor: 'pointer' }}>
-        <div className="kpi-icon" style={{ background: '#fdecec', color: '#b3261e' }}><MessageSquare /></div>
-        <div className="kpi-value">{unreadMessages}</div>
-        <div className="kpi-label">Unread Messages</div>
+
+      <div className="calendar-card">
+        <div className="calendar-header">
+          <h3 style={{ margin: 0, fontFamily: 'var(--font-body)' }}>{format(currentMonth, 'MMMM yyyy')}</h3>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn btn-outline" style={{ padding: 6 }} onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}><ChevronLeft size={20} /></button>
+            <button className="btn btn-outline" style={{ padding: 6 }} onClick={() => setCurrentMonth(new Date())}>Today</button>
+            <button className="btn btn-outline" style={{ padding: 6 }} onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}><ChevronRight size={20} /></button>
+          </div>
+        </div>
+
+        <div className="calendar-grid">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+            <div key={d} className="calendar-day-header">{d}</div>
+          ))}
+          {calendarDays.map(day => {
+            const dayBookings = bookings.filter(b => b.date === format(day, 'yyyy-MM-dd'));
+            return (
+              <div key={day.toString()} className={`calendar-day ${!isSameMonth(day, monthStart) ? 'other-month' : ''}`}>
+                <div className="calendar-day-num">{format(day, 'd')}</div>
+                {dayBookings.map(b => (
+                  <div key={b.id} className={`calendar-event ${b.status}`} title={`${b.service} - ${b.name}`}>
+                    {b.time || 'TBD'} - {b.name.split(' ')[0]}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div className="kpi-card" onClick={() => setTab('bookings')} style={{ cursor: 'pointer' }}>
-        <div className="kpi-icon"><CalendarCheck /></div>
-        <div className="kpi-value">{bookings.length}</div>
-        <div className="kpi-label">Total Bookings</div>
-      </div>
-      <div className="kpi-card" onClick={() => setTab('subscribers')} style={{ cursor: 'pointer' }}>
-        <div className="kpi-icon" style={{ background: '#e8eef2', color: '#47606f' }}><Users /></div>
-        <div className="kpi-value">{subscribers.length}</div>
-        <div className="kpi-label">Total Subscribers</div>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -149,18 +243,31 @@ function Modal({ title, onClose, children }) {
   );
 }
 
-function Bookings() {
+function Bookings({ user }) {
   const [rows, setRows] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
+  const [newNote, setNewNote] = useState('');
+  const [price, setPrice] = useState(0);
 
   const load = () => api.get('/api/admin/bookings').then(setRows).catch(console.error);
   useEffect(() => { load(); }, []);
 
-  async function setStatus(id, status) {
-    await api.patch(`/api/admin/bookings/${id}`, { status });
-    if (activeItem && activeItem.id === id) {
-      setActiveItem(prev => ({ ...prev, status }));
-    }
+  function viewItem(b) {
+    setActiveItem(b);
+    setPrice(b.price || 0);
+    setNewNote('');
+  }
+
+  async function updateBooking(field, value) {
+    const payload = {};
+    if (field === 'status') payload.status = value;
+    if (field === 'price') payload.price = value;
+    if (field === 'note') payload.addNote = value;
+
+    const res = await api.patch(`/api/admin/bookings/${activeItem.id}`, payload);
+    setActiveItem(res);
+    if (field === 'price') setPrice(res.price || 0);
+    if (field === 'note') setNewNote('');
     load();
   }
 
@@ -169,19 +276,18 @@ function Bookings() {
       <div className="table-card">
         <table className="table">
           <thead>
-            <tr><th>Date Requested</th><th>Customer</th><th>Service</th><th>Service Date</th><th>Status</th><th></th></tr>
+            <tr><th>Customer</th><th>Service</th><th>Service Date</th><th>Status</th><th></th></tr>
           </thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan="6">No bookings found.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan="5">No bookings found.</td></tr>}
             {rows.map((b) => (
               <tr key={b.id}>
-                <td>{new Date(b.createdAt).toLocaleDateString()}</td>
-                <td><strong>{b.name}</strong></td>
+                <td><strong>{b.name}</strong><br/><small style={{ color: 'var(--muted)' }}>{b.phone}</small></td>
                 <td>{b.service}</td>
                 <td>{b.date} {b.time}</td>
                 <td><span className={`pill ${b.status}`}>{b.status}</span></td>
                 <td style={{ textAlign: 'right' }}>
-                  <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => setActiveItem(b)}>View</button>
+                  <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => viewItem(b)}>Manage Job</button>
                 </td>
               </tr>
             ))}
@@ -190,7 +296,7 @@ function Bookings() {
       </div>
 
       {activeItem && (
-        <Modal title={`Booking: ${activeItem.service}`} onClose={() => setActiveItem(null)}>
+        <Modal title={`Manage Job: ${activeItem.service}`} onClose={() => setActiveItem(null)}>
           <div className="detail-grid">
             <div className="detail-row">
               <span className="detail-label">Customer</span>
@@ -208,31 +314,151 @@ function Bookings() {
                 <span className="detail-value">{activeItem.phone || 'N/A'}</span>
               </div>
             </div>
-            <div className="form-row">
-              <div className="detail-row">
-                <span className="detail-label">Service Date</span>
-                <span className="detail-value">{activeItem.date} {activeItem.time}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Status</span>
-                <div>
-                  <select className="form-select" value={activeItem.status} onChange={(e) => setStatus(activeItem.id, e.target.value)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }}>
-                    {STATUSES.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
-                  </select>
-                </div>
-              </div>
-            </div>
+            
             <div className="detail-row">
               <span className="detail-label">Address</span>
-              <div className="detail-value-box">{activeItem.address || 'Not provided'}</div>
+              <div className="detail-value-box" style={{ padding: 12 }}>{activeItem.address || 'Not provided'}</div>
             </div>
+            
             <div className="detail-row">
-              <span className="detail-label">Notes</span>
-              <div className="detail-value-box">{activeItem.notes || 'No notes provided.'}</div>
+              <span className="detail-label">Customer Request Notes</span>
+              <div className="detail-value-box" style={{ padding: 12, background: '#fff4dd', color: '#a06a00' }}>{activeItem.notes || 'No customer notes provided.'}</div>
             </div>
+
+            <hr style={{ border: 'none', borderTop: '1px dashed var(--line)', margin: '10px 0' }} />
+
+            <h4 style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '1.1rem' }}>Internal Workflow</h4>
+            
+            <div className="form-row" style={{ alignItems: 'flex-end' }}>
+              <div className="detail-row">
+                <span className="detail-label">Job Status</span>
+                <select className="form-select" value={activeItem.status} onChange={(e) => updateBooking('status', e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}>
+                  {STATUSES.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
+                </select>
+              </div>
+              {user.role === 'admin' && (
+                <div className="detail-row">
+                  <span className="detail-label">Quoted Price ($)</span>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input type="number" value={price} onChange={e => setPrice(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)', width: 100 }} />
+                    <button className="btn btn-blue" onClick={() => updateBooking('price', price)}>Save Price</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="detail-row">
+              <span className="detail-label">Team Notes / Updates</span>
+              
+              <div className="internal-notes">
+                {!activeItem.internalNotes || activeItem.internalNotes.length === 0 ? (
+                  <div style={{ fontSize: '0.85rem', color: 'var(--muted)', textAlign: 'center' }}>No internal notes yet.</div>
+                ) : (
+                  activeItem.internalNotes.map(n => (
+                    <div key={n.id} className="note-item">
+                      <div className="note-meta">
+                        <strong>{n.author}</strong>
+                        <span>{new Date(n.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div>{n.text}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                <input 
+                  type="text" 
+                  placeholder="Add a new update or note..." 
+                  value={newNote} 
+                  onChange={e => setNewNote(e.target.value)} 
+                  onKeyDown={e => { if (e.key === 'Enter') updateBooking('note', newNote) }}
+                  style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}
+                />
+                <button className="btn btn-outline" disabled={!newNote.trim()} onClick={() => updateBooking('note', newNote)}>Add Note</button>
+              </div>
+            </div>
+
           </div>
         </Modal>
       )}
+    </>
+  );
+}
+
+function UsersAdmin({ user }) {
+  const [users, setUsers] = useState([]);
+  const [draft, setDraft] = useState({ name: '', email: '', password: '', role: 'staff' });
+  const [err, setErr] = useState('');
+
+  const load = () => api.get('/api/admin/users').then(setUsers).catch(console.error);
+  useEffect(() => { load(); }, []);
+
+  async function add(e) {
+    e.preventDefault();
+    setErr('');
+    try {
+      await api.post('/api/admin/users', draft);
+      setDraft({ name: '', email: '', password: '', role: 'staff' });
+      load();
+    } catch (err) {
+      setErr(err.message);
+    }
+  }
+
+  async function remove(id) {
+    if (confirm('Remove this staff member?')) {
+      try {
+        await api.del(`/api/admin/users/${id}`);
+        load();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  }
+
+  return (
+    <>
+      <form className="form card" onSubmit={add} style={{ marginBottom: 30, maxWidth: 800 }}>
+        <h3 style={{ marginBottom: 16 }}>Add Team Member</h3>
+        <div className="form-row">
+          <input placeholder="Full Name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
+          <select value={draft.role} onChange={(e) => setDraft({ ...draft, role: e.target.value })} className="form-select" style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}>
+            <option value="staff">Staff (Bookings Only)</option>
+            <option value="admin">Admin (Full Access)</option>
+          </select>
+        </div>
+        <div className="form-row">
+          <input type="email" placeholder="Email Address" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} required />
+          <input type="password" placeholder="Temporary Password" value={draft.password} onChange={(e) => setDraft({ ...draft, password: e.target.value })} required />
+        </div>
+        <div>
+          <button className="btn btn-blue">Create User Account</button>
+          {err && <span style={{ color: '#b3261e', marginLeft: 16, fontSize: '0.85rem' }}>{err}</span>}
+        </div>
+      </form>
+      
+      <div className="table-card">
+        <table className="table">
+          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th></th></tr></thead>
+          <tbody>
+            {users.length === 0 && <tr><td colSpan="5">No users found.</td></tr>}
+            {users.map((u) => (
+              <tr key={u.id}>
+                <td><strong>{u.name}</strong></td>
+                <td>{u.email}</td>
+                <td><span className={`pill ${u.role === 'admin' ? 'done' : 'pending'}`}>{u.role}</span></td>
+                <td>{new Date(u.createdAt).toLocaleDateString()}</td>
+                <td style={{ textAlign: 'right' }}>
+                  {u.id !== user.id && (
+                    <button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '0.75rem', borderColor: '#b3261e', color: '#b3261e' }} onClick={() => remove(u.id)}>Delete</button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }
