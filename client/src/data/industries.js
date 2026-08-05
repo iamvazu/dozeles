@@ -187,8 +187,9 @@ export const INDUSTRIES = [
     icon: 'leaf',
     image: '/images/cannabis_store_cleaning.png',
     body: [
-      'The cannabis industry operates under strict regulatory scrutiny, requiring a cleaning partner who understands compliance, security protocols, and inventory protection. A spotless retail environment builds trust with customers, while pristine back-of-house areas ensure you pass state inspections without issue.',
-      'Dozeles Professional Cleaning provides specialized cleaning for dispensaries and cultivation facilities. Our background-checked crews follow your secure access protocols to the letter. We utilize HEPA-filtered vacuums to maintain air quality, neutralize odors, and ensure your storefront matches the premium quality of your products.'
+      'The cannabis industry operates under strict regulatory scrutiny from the BCC. You need a cleaning partner who understands compliance, inventory protection, and secure access protocols. A spotless retail environment builds immense trust with customers, while pristine back-of-house areas ensure you pass state inspections without issue.',
+      'Dozeles Professional Cleaning provides specialized cleaning tailored specifically for retail dispensaries, cultivation, and distribution facilities across Northern California. Our background-checked crews are trained to follow your exact secure access protocols, ensuring vault and inventory rooms are cleaned without disruption or risk.',
+      'Air quality and odor control are paramount. We utilize advanced HEPA-filtered vacuums and odor-neutralizing techniques to maintain a clean HVAC environment. In the front-of-house, we focus heavily on high-touch disinfection for budtender counters and flawless display glass polishing to ensure your storefront matches the premium quality of your product.'
     ],
     servicesList: [
       'Retail Storefront & Display Glass Polishing',

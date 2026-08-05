@@ -2,7 +2,7 @@ import { useParams, Navigate, Link } from 'react-router-dom';
 import { INDUSTRIES } from '../data/industries.js';
 import { CITIES } from '../data/cities.js';
 import Seo from '../seo.jsx';
-import { Testimonials } from '../components/Shared.jsx';
+import { Testimonials, ClientLogos } from '../components/Shared.jsx';
 import {
   CrumbStrip, PseoHero, WhyDozeles, CtaStrip, LinkMesh
 } from '../components/Pseo.jsx';
@@ -44,6 +44,8 @@ export default function IndustryDetail() {
         image={industry.image}
         city="the Bay Area"
       />
+
+      <ClientLogos />
 
       <section className="bg-light">
         <div className="container split">

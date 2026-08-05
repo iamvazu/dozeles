@@ -16,6 +16,24 @@ export function PageBanner({ title, crumb }) {
   );
 }
 
+export function ClientLogos() {
+  return (
+    <div style={{ padding: '60px 0', background: '#f8f9fa' }}>
+      <div className="container">
+        <p className="text-center" style={{ color: '#888', fontWeight: 600, letterSpacing: 1, marginBottom: 30, fontSize: '0.85rem', textTransform: 'uppercase' }}>
+          Trusted By Leading Facilities Across Northern California
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8%', flexWrap: 'wrap', opacity: 0.8, filter: 'grayscale(100%)' }}>
+          <img src="/images/clients/elevated.png" alt="Elevated SF" style={{ height: 80, width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply', margin: '10px 0' }} />
+          <img src="/images/clients/harmony.png" alt="Harmony Cannabis" style={{ height: 80, width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply', margin: '10px 0' }} />
+          <img src="/images/clients/rootd.png" alt="Root'd" style={{ height: 80, width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply', margin: '10px 0' }} />
+          <img src="/images/clients/greenleaf.png" alt="Green Leaf" style={{ height: 80, width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply', margin: '10px 0' }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function CtaBand() {
   return (
     <div className="cta-band">
