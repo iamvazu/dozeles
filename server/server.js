@@ -44,6 +44,20 @@ async function notify(subject, text) {
   }
 }
 
+async function notifyUser(to, subject, html) {
+  if (!mailer || !to) return;
+  try {
+    await mailer.sendMail({
+      from: `"Dozeles Professional Cleaning" <${process.env.SMTP_USER}>`,
+      to,
+      subject,
+      html,
+    });
+  } catch (e) {
+    console.error('User email notification failed:', e.message);
+  }
+}
+
 // ---------- auth ----------
 function requireAdmin(req, res, next) {
   const header = req.headers.authorization || '';
@@ -91,6 +105,24 @@ app.post('/api/bookings', async (req, res) => {
   saveDb();
   notify(`New booking request: ${service}`,
     `Name: ${name}\nPhone: ${phone}\nEmail: ${email || '-'}\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || '-'}\nNotes: ${notes || '-'}`);
+    
+  if (email) {
+    notifyUser(email, `Your Booking Request: ${service} - Dozeles Cleaning`, `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <h2 style="color: #0E5FD8;">Thank you for your request, ${name}!</h2>
+        <p>We have received your booking request for <strong>${service}</strong>.</p>
+        <p>Our team will review your details and contact you shortly to confirm your booking and provide a quote.</p>
+        <div style="background: #F3F5F2; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Request Summary</h3>
+          <p style="margin: 5px 0;"><strong>Service:</strong> ${service}</p>
+          <p style="margin: 5px 0;"><strong>Date:</strong> ${date} ${time || ''}</p>
+          <p style="margin: 5px 0;"><strong>Address:</strong> ${address || 'N/A'}</p>
+        </div>
+        <p>Best regards,<br><strong>Dozeles Professional Cleaning</strong></p>
+      </div>
+    `);
+  }
+  
   res.status(201).json({ ok: true, id: booking.id });
 });
 
@@ -104,6 +136,21 @@ app.post('/api/contact', async (req, res) => {
   db.messages.push(msg);
   saveDb();
   notify(`New contact message from ${name}`, `Name: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\n\n${message}`);
+  
+  if (email) {
+    notifyUser(email, `We received your message - Dozeles Cleaning`, `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <h2 style="color: #0E5FD8;">Hello ${name},</h2>
+        <p>Thank you for reaching out to Dozeles Professional Cleaning.</p>
+        <p>We have successfully received your message and our team will get back to you as soon as possible.</p>
+        <div style="background: #F3F5F2; padding: 15px; border-radius: 8px; margin: 20px 0; font-style: italic;">
+          "${message}"
+        </div>
+        <p>Best regards,<br><strong>Dozeles Professional Cleaning</strong></p>
+      </div>
+    `);
+  }
+
   res.status(201).json({ ok: true });
 });
 
