@@ -56,7 +56,7 @@ function Login({ onLogin }) {
     <div className="admin-layout" style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
       <form className="form card login-card" onSubmit={submit}>
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <img src="/images/dozeles-logo.png" alt="Dozeles Logo" style={{ maxHeight: 60 }} />
+          <img src="/images/dozeles-logo.jpg" alt="Dozeles Logo" style={{ maxHeight: 60 }} />
         </div>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
@@ -95,7 +95,7 @@ function Dashboard({ user, onLogout }) {
     <div className="admin-layout">
       <aside className={`admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="admin-logo">
-          <img src="/images/dozeles-logo.png" alt="Dozeles" />
+          <img src="/images/dozeles-logo.jpg" alt="Dozeles" />
         </div>
         
         <div className="admin-sidebar-user">
