@@ -109,6 +109,11 @@ app.get('/api/content', (req, res) => {
 });
 
 app.get('/api/pricing', (req, res) => res.json(db.pricing || {}));
+app.post('/api/pricing', requireAdmin, (req, res) => {
+  db.pricing = req.body;
+  saveDb();
+  res.json({ success: true });
+});
 app.get('/api/reviews', (req, res) => res.json(db.reviews));
 
 // ---------- bookings ----------

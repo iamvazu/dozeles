@@ -746,3 +746,76 @@ function ContentEditor() {
     </div>
   );
 }
+
+function PricingAdmin() {
+  const [config, setConfig] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    api.get('/api/pricing').then(c => {
+      setConfig(c);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleChange = (cat, key, value) => {
+    setConfig(c => ({ ...c, [cat]: { ...c[cat], [key]: Number(value) } }));
+  };
+
+  const handleComChange = (key, value) => {
+    setConfig(c => ({ ...c, [key]: Number(value) }));
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await api.post('/api/pricing', config);
+      alert('Pricing updated successfully!');
+    } catch (e) {
+      alert('Error saving pricing: ' + e.message);
+    }
+    setSaving(false);
+  };
+
+  if (loading) return <div>Loading pricing engine...</div>;
+
+  return (
+    <div className="card" style={{ maxWidth: 800 }}>
+      <h2 style={{ marginBottom: 20 }}>Pricing Engine</h2>
+      <div style={{ marginBottom: 30 }}>
+        <h3 style={{ color: 'var(--blue)', marginBottom: 15 }}>Residential Pricing</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15 }}>
+          <div>
+            <label className="form-note">Base Price ($)</label>
+            <input type="number" value={config?.RES?.BASE || 0} onChange={e => handleChange('RES', 'BASE', e.target.value)} />
+          </div>
+          <div>
+            <label className="form-note">Per Bedroom ($)</label>
+            <input type="number" value={config?.RES?.PER_BED || 0} onChange={e => handleChange('RES', 'PER_BED', e.target.value)} />
+          </div>
+          <div>
+            <label className="form-note">Per Bathroom ($)</label>
+            <input type="number" value={config?.RES?.PER_BATH || 0} onChange={e => handleChange('RES', 'PER_BATH', e.target.value)} />
+          </div>
+          <div>
+            <label className="form-note">Minimum Price ($)</label>
+            <input type="number" value={config?.RES?.MIN || 0} onChange={e => handleChange('RES', 'MIN', e.target.value)} />
+          </div>
+        </div>
+      </div>
+      
+      <div style={{ marginBottom: 30 }}>
+        <h3 style={{ color: 'var(--blue)', marginBottom: 15 }}>Commercial Pricing</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15 }}>
+          <div>
+            <label className="form-note">Minimum Monthly ($)</label>
+            <input type="number" value={config?.COM_MIN_MONTHLY || 0} onChange={e => handleComChange('COM_MIN_MONTHLY', e.target.value)} />
+          </div>
+        </div>
+      </div>
+      
+      <button className="btn btn-blue" onClick={save} disabled={saving}>{saving ? 'Saving...' : 'Save Pricing Config'}</button>
+    </div>
+  );
+}
