@@ -248,6 +248,7 @@ function Bookings({ user }) {
   const [activeItem, setActiveItem] = useState(null);
   const [newNote, setNewNote] = useState('');
   const [price, setPrice] = useState(0);
+  const [priceSaved, setPriceSaved] = useState(false);
 
   const load = () => api.get('/api/admin/bookings').then(setRows).catch(console.error);
   useEffect(() => { load(); }, []);
@@ -266,7 +267,11 @@ function Bookings({ user }) {
 
     const res = await api.patch(`/api/admin/bookings/${activeItem.id}`, payload);
     setActiveItem(res);
-    if (field === 'price') setPrice(res.price || 0);
+    if (field === 'price') {
+      setPrice(res.price || 0);
+      setPriceSaved(true);
+      setTimeout(() => setPriceSaved(false), 2000);
+    }
     if (field === 'note') setNewNote('');
     load();
   }
@@ -341,7 +346,13 @@ function Bookings({ user }) {
                   <span className="detail-label">Quoted Price ($)</span>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input type="number" value={price} onChange={e => setPrice(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)', width: 100 }} />
-                    <button className="btn btn-blue" onClick={() => updateBooking('price', price)}>Save Price</button>
+                    <button 
+                      className={`btn ${priceSaved ? 'btn-outline' : 'btn-blue'}`}
+                      style={priceSaved ? { borderColor: '#138a4d', color: '#138a4d' } : {}}
+                      onClick={() => updateBooking('price', price)}
+                    >
+                      {priceSaved ? 'Saved!' : 'Save Price'}
+                    </button>
                   </div>
                 </div>
               )}

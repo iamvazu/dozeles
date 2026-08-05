@@ -847,11 +847,13 @@ section { padding: 84px 0; }
 }
 .modal-content {
   background: #fff; border-radius: 20px; width: 100%; max-width: 600px;
-  box-shadow: 0 24px 48px rgba(0,0,0,0.2); overflow: hidden;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+  display: flex; flex-direction: column; max-height: 90vh;
 }
 .modal-header {
   padding: 24px 30px; border-bottom: 1px solid var(--line);
   display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
 }
 .modal-header h3 { font-family: var(--font-body); font-size: 1.25rem; font-weight: 700; text-transform: none; margin: 0; }
 .modal-close {
@@ -859,7 +861,7 @@ section { padding: 84px 0; }
   padding: 4px; border-radius: 6px; transition: 0.2s;
 }
 .modal-close:hover { background: var(--surface); color: var(--ink); }
-.modal-body { padding: 30px; }
+.modal-body { padding: 30px; overflow-y: auto; flex: 1; }
 .detail-grid { display: grid; gap: 20px; }
 .detail-row { display: grid; gap: 6px; }
 .detail-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
