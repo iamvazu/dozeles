@@ -178,5 +178,25 @@ export const INDUSTRIES = [
       'Eco-Friendly / Green Cleaning Compliance'
     ],
     cities: ['San Francisco', 'San Jose', 'Oakland', 'Sacramento', 'Berkeley', 'San Mateo', 'Richmond']
+  },
+  {
+    slug: 'cannabis-dispensaries',
+    name: 'Cannabis Dispensaries & Facilities',
+    short: 'Cannabis Dispensaries',
+    description: 'Compliant, secure, and spotless cleaning tailored for cannabis retail, cultivation, and distribution facilities.',
+    icon: 'leaf',
+    image: '/images/cannabis_store_cleaning.png',
+    body: [
+      'The cannabis industry operates under strict regulatory scrutiny, requiring a cleaning partner who understands compliance, security protocols, and inventory protection. A spotless retail environment builds trust with customers, while pristine back-of-house areas ensure you pass state inspections without issue.',
+      'Dozeles Professional Cleaning provides specialized cleaning for dispensaries and cultivation facilities. Our background-checked crews follow your secure access protocols to the letter. We utilize HEPA-filtered vacuums to maintain air quality, neutralize odors, and ensure your storefront matches the premium quality of your products.'
+    ],
+    servicesList: [
+      'Retail Storefront & Display Glass Polishing',
+      'Secure Vault & Inventory Room Cleaning',
+      'High-Touch Disinfection (Budtender Counters)',
+      'Odor Control & HEPA Filtration',
+      'After-Hours & Escorted Cleaning Service'
+    ],
+    cities: ['Oakland', 'San Francisco', 'San Jose', 'Santa Cruz', 'Berkeley', 'Hayward', 'Richmond']
   }
 ];
