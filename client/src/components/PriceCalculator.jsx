@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Icon from './Icon.jsx';
 import {
   RES_SERVICES, RES_FREQ, RES_ADDONS, COM_FACILITIES, COM_FREQ, COM_ADDONS,
-  calcResidential, calcCommercial,
+  calcResidential, calcCommercial, updatePricingConfig
 } from '../data/pricing.js';
+import { api } from '../api.js';
 
 /* animated number that eases to its new value */
 function Money({ value, prefix = '$' }) {
@@ -51,6 +52,21 @@ function Stepper({ label, value, set, min, max, suffix }) {
 export default function PriceCalculator({ defaultTab = 'residential' }) {
   const [tab, setTab] = useState(defaultTab);
   const navigate = useNavigate();
+  const [loadingConfig, setLoadingConfig] = useState(true);
+  const [dummyVal, setDummyVal] = useState(0); // For re-render after config load
+
+  useEffect(() => {
+    api.get('/api/pricing')
+      .then(config => {
+        updatePricingConfig(config);
+        setLoadingConfig(false);
+        setDummyVal(v => v + 1); // trigger re-render
+      })
+      .catch(e => {
+        console.error('Failed to load dynamic pricing', e);
+        setLoadingConfig(false);
+      });
+  }, []);
 
   // residential state
   const [beds, setBeds] = useState(3);
@@ -85,6 +101,10 @@ export default function PriceCalculator({ defaultTab = 'residential' }) {
           summary: `${sqft.toLocaleString()} sq ft ${com.facilityLabel} · ${com.freqLabel}${cAddons.length ? ` · ${cAddons.length} add-on(s)` : ''} · Estimated $${com.monthly.toLocaleString()}/month`,
         });
     navigate(`/book?${params.toString()}`);
+  }
+
+  if (loadingConfig) {
+    return <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted)' }}>Loading live estimate engine...</div>;
   }
 
   return (

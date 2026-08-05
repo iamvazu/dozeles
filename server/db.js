@@ -35,6 +35,23 @@ export function loadDb() {
     });
     saveDb();
   }
+
+  if (!db.pricing) {
+    db.pricing = {
+      RES: { BASE: 89, PER_BED: 28, PER_BATH: 32, MIN: 129 },
+      COM_FACILITIES: [
+        { id: 'office', label: 'Office', rate: 0.22, icon: 'building' },
+        { id: 'retail', label: 'Retail / showroom', rate: 0.2, icon: 'store' },
+        { id: 'medical', label: 'Medical / dental', rate: 0.29, icon: 'shield' },
+        { id: 'warehouse', label: 'Warehouse / industrial', rate: 0.12, icon: 'truck' },
+        { id: 'government', label: 'School / government', rate: 0.24, icon: 'landmark' },
+        { id: 'restaurant', label: 'Restaurant / food service', rate: 0.31, icon: 'spray' },
+      ],
+      COM_MIN_MONTHLY: 380,
+    };
+    saveDb();
+  }
+
   
   return db;
 }

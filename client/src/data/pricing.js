@@ -8,7 +8,7 @@
 /* ---------------- RESIDENTIAL ---------------- */
 // price = (BASE + beds*PER_BED + baths*PER_BATH) * serviceMultiplier
 //         then frequency discount, then flat add-ons
-export const RES = {
+export let RES = {
   BASE: 89,
   PER_BED: 28,
   PER_BATH: 32,
@@ -44,7 +44,7 @@ export const RES_ADDONS = [
 /* ---------------- COMMERCIAL ---------------- */
 // Commercial janitorial is contracted MONTHLY in this industry.
 // monthly = sqft * ratePerSqFtMonth(facility) * frequencyMultiplier
-export const COM_FACILITIES = [
+export let COM_FACILITIES = [
   { id: 'office', label: 'Office', rate: 0.22, icon: 'building' },
   { id: 'retail', label: 'Retail / showroom', rate: 0.2, icon: 'store' },
   { id: 'medical', label: 'Medical / dental', rate: 0.29, icon: 'shield' },
@@ -70,7 +70,14 @@ export const COM_ADDONS = [
   { id: 'daytime', label: 'Daytime porter (4 hrs/day)', price: 1450, unit: 'flat', per: 'monthly', icon: 'users' },
 ];
 
-export const COM_MIN_MONTHLY = 380;
+export let COM_MIN_MONTHLY = 380;
+
+export function updatePricingConfig(config) {
+  if (!config) return;
+  if (config.RES) RES = config.RES;
+  if (config.COM_FACILITIES) COM_FACILITIES = config.COM_FACILITIES;
+  if (config.COM_MIN_MONTHLY !== undefined) COM_MIN_MONTHLY = config.COM_MIN_MONTHLY;
+}
 
 /* ---------------- CALCULATORS ---------------- */
 export function calcResidential({ beds = 2, baths = 2, service = 'standard', frequency = 'biweekly', addons = [] }) {

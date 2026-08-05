@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
-import { LayoutDashboard, CalendarCheck, MessageSquare, Users, Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import { LayoutDashboard, CalendarCheck, MessageSquare, Users, Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, ChevronRight, DollarSign, Menu, Paperclip, FileText, Upload } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
 
 const SECTIONS = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
@@ -55,7 +55,9 @@ function Login({ onLogin }) {
   return (
     <div className="admin-layout" style={{ justifyContent: 'center', alignItems: 'flex-start' }}>
       <form className="form card login-card" onSubmit={submit}>
-        <h2>Dozeles CRM</h2>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <img src="/images/dozeles-logo.png" alt="Dozeles Logo" style={{ maxHeight: 60 }} />
+        </div>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button className="btn btn-blue" style={{ width: '100%' }} type="submit">Sign In</button>
@@ -68,6 +70,7 @@ function Login({ onLogin }) {
 
 function Dashboard({ user, onLogout }) {
   const [tab, setTab] = useState('overview');
+  const [collapsed, setCollapsed] = useState(false);
 
   let navs = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
@@ -80,6 +83,7 @@ function Dashboard({ user, onLogout }) {
       { id: 'reviews', label: 'Reviews', icon: <Star /> },
       { id: 'users', label: 'Team & Staff', icon: <Shield /> },
       { id: 'subscribers', label: 'Subscribers', icon: <Users /> },
+      { id: 'pricing', label: 'Pricing Engine', icon: <DollarSign /> },
       { id: 'content', label: 'Website Content', icon: <Edit3 /> },
     ]);
   }
@@ -89,10 +93,12 @@ function Dashboard({ user, onLogout }) {
 
   return (
     <div className="admin-layout">
-      <aside className="admin-sidebar">
-        <div className="admin-logo">Dozeles<span>.</span></div>
+      <aside className={`admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
+        <div className="admin-logo">
+          <img src="/images/dozeles-logo.png" alt="Dozeles" />
+        </div>
         
-        <div style={{ padding: '0 18px', marginBottom: 20 }}>
+        <div className="admin-sidebar-user">
           <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Logged in as</div>
           <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{user.name}</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--blue)', fontWeight: 600, textTransform: 'uppercase' }}>{user.role}</div>
@@ -105,21 +111,28 @@ function Dashboard({ user, onLogout }) {
               className={`admin-nav-item ${tab === n.id ? 'active' : ''}`}
               onClick={() => setTab(n.id)}
             >
-              {n.icon} {n.label}
+              {n.icon} <span>{n.label}</span>
             </button>
           ))}
         </nav>
         <div style={{ marginTop: 'auto', display: 'grid', gap: '8px' }}>
-          <Link to="/" className="admin-nav-item" style={{ justifyContent: 'center' }}>View Live Site</Link>
+          <Link to="/" target="_blank" rel="noopener noreferrer" className="admin-nav-item" style={{ justifyContent: 'center' }}>
+            <span>View Live Site</span>
+          </Link>
           <button className="admin-nav-item" style={{ color: '#b3261e' }} onClick={onLogout}>
-            <LogOut /> Log Out
+            <LogOut /> <span>Log Out</span>
           </button>
         </div>
       </aside>
       
       <main className="admin-main">
         <div className="admin-header">
-          <h1>{navs.find(n => n.id === tab)?.label || 'Dashboard'}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <button onClick={() => setCollapsed(!collapsed)} className="btn btn-outline" style={{ padding: '8px', border: 'none' }}>
+              <Menu size={20} />
+            </button>
+            <h1>{navs.find(n => n.id === tab)?.label || 'Dashboard'}</h1>
+          </div>
         </div>
 
         {tab === 'overview' && <Overview user={user} setTab={setTab} />}
@@ -128,6 +141,7 @@ function Dashboard({ user, onLogout }) {
         {tab === 'reviews' && <ReviewsAdmin />}
         {tab === 'users' && <UsersAdmin user={user} />}
         {tab === 'subscribers' && <Subscribers />}
+        {tab === 'pricing' && <PricingAdmin />}
         {tab === 'content' && <ContentEditor />}
       </main>
     </div>
@@ -249,6 +263,8 @@ function Bookings({ user }) {
   const [newNote, setNewNote] = useState('');
   const [price, setPrice] = useState(0);
   const [priceSaved, setPriceSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [invoiceSent, setInvoiceSent] = useState(false);
 
   const load = () => api.get('/api/admin/bookings').then(setRows).catch(console.error);
   useEffect(() => { load(); }, []);
@@ -274,6 +290,40 @@ function Bookings({ user }) {
     }
     if (field === 'note') setNewNote('');
     load();
+  }
+
+  async function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    try {
+      const res = await fetch(`/api/admin/bookings/${activeItem.id}/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${sessionStorage.getItem('dz_token')}` },
+        body: fd
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setActiveItem(data);
+      load();
+    } catch (err) {
+      alert(err.message);
+    }
+    setUploading(false);
+  }
+
+  async function generateInvoice() {
+    try {
+      const res = await api.post(`/api/admin/bookings/${activeItem.id}/invoice`, {});
+      setInvoiceSent(true);
+      setTimeout(() => setInvoiceSent(false), 3000);
+      setActiveItem(res.booking);
+      load();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   return (
@@ -356,6 +406,43 @@ function Bookings({ user }) {
                   </div>
                 </div>
               )}
+            </div>
+
+            {user.role === 'admin' && (
+              <div className="detail-row" style={{ marginTop: 10 }}>
+                <span className="detail-label">Customer Invoicing</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <button className="btn btn-outline" onClick={generateInvoice} disabled={!activeItem.email}>
+                    <FileText size={16} style={{ marginRight: 6 }} /> 
+                    {invoiceSent ? 'Invoice Sent!' : 'Generate & Email Invoice'}
+                  </button>
+                  {activeItem.invoiceSentAt && (
+                    <small style={{ color: 'var(--muted)' }}>Last sent: {new Date(activeItem.invoiceSentAt).toLocaleString()}</small>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className="detail-row">
+              <span className="detail-label">Job Attachments</span>
+              <div className="internal-notes" style={{ marginBottom: 12 }}>
+                {!activeItem.attachments || activeItem.attachments.length === 0 ? (
+                  <div style={{ fontSize: '0.85rem', color: 'var(--muted)', textAlign: 'center' }}>No files attached.</div>
+                ) : (
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    {activeItem.attachments.map(att => (
+                      <a key={att.id} href={att.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ fontSize: '0.8rem', padding: '6px 10px' }}>
+                        <Paperclip size={14} style={{ marginRight: 4 }} /> {att.originalName}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <label className="btn btn-outline" style={{ display: 'inline-flex', cursor: 'pointer' }}>
+                <Upload size={16} style={{ marginRight: 6 }} />
+                {uploading ? 'Uploading...' : 'Upload File'}
+                <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} disabled={uploading} />
+              </label>
             </div>
 
             <div className="detail-row">

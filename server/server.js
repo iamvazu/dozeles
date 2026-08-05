@@ -6,9 +6,21 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import multer from 'multer';
 import { loadDb, saveDb, newId } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + Date.now() + ext);
+  }
+});
+const upload = multer({ storage: storage });
 const app = express();
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
@@ -17,6 +29,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+app.use('/uploads', express.static(uploadsDir));
 
 const db = loadDb();
 
@@ -91,10 +104,11 @@ app.post('/api/auth/login', (req, res) => {
 
 // ---------- public content API ----------
 app.get('/api/content', (req, res) => {
-  const { bookings, messages, subscribers, ...content } = db;
+  const { bookings, messages, subscribers, users, ...content } = db;
   res.json(content);
 });
 
+app.get('/api/pricing', (req, res) => res.json(db.pricing || {}));
 app.get('/api/reviews', (req, res) => res.json(db.reviews));
 
 // ---------- bookings ----------
@@ -196,6 +210,89 @@ app.patch('/api/admin/bookings/:id', requireAuth, (req, res) => {
   saveDb();
   res.json(b);
 });
+
+app.post('/api/admin/bookings/:id/upload', requireAuth, upload.single('file'), (req, res) => {
+  const b = db.bookings.find((x) => x.id === req.params.id);
+  if (!b) return res.status(404).json({ error: 'Not found' });
+  
+  if (!b.attachments) b.attachments = [];
+  b.attachments.push({
+    id: newId(),
+    url: '/uploads/' + req.file.filename,
+    originalName: req.file.originalname,
+    author: req.user.name,
+    createdAt: new Date().toISOString()
+  });
+  
+  saveDb();
+  res.json(b);
+});
+
+app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
+  const b = db.bookings.find((x) => x.id === req.params.id);
+  if (!b) return res.status(404).json({ error: 'Not found' });
+  if (!b.email) return res.status(400).json({ error: 'Customer has no email address' });
+  
+  const taxRate = 0.0825;
+  const subtotal = b.price || 0;
+  const tax = subtotal * taxRate;
+  const total = subtotal + tax;
+  
+  const dueDateStr = new Date().toLocaleDateString();
+
+  const invoiceHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; border: 1px solid #eee; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0E5FD8; padding-bottom: 20px; margin-bottom: 20px;">
+        <h1 style="color: #0E5FD8; margin: 0;">INVOICE</h1>
+        <div style="text-align: right;">
+          <strong>Dozeles Professional Cleaning</strong><br>
+          contact@dozeles.com<br>
+          (650) 290-0280
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 30px;">
+        <p><strong>Billed To:</strong><br>
+        ${b.name}<br>
+        ${b.address || ''}</p>
+        <p><strong>Invoice Number:</strong> INV-${b.id.toUpperCase()}<br>
+        <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+        <strong>Due Date:</strong> ${dueDateStr} (Due upon receipt)</p>
+      </div>
+
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <thead>
+          <tr style="background: #F3F5F2; text-align: left;">
+            <th style="padding: 10px; border-bottom: 1px solid #ddd;">Description</th>
+            <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd;">${b.service}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">$${subtotal.toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="text-align: right; margin-bottom: 30px;">
+        <p style="margin: 5px 0;"><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
+        <p style="margin: 5px 0;"><strong>Tax (8.25%):</strong> $${tax.toFixed(2)}</p>
+        <p style="margin: 5px 0; font-size: 1.2em;"><strong>Total Due:</strong> <span style="color: #0E5FD8;">$${total.toFixed(2)}</span></p>
+      </div>
+      
+      <div style="text-align: center; margin-top: 40px; color: #777; font-size: 0.9em;">
+        Thank you for your business! Please remit payment upon receipt.
+      </div>
+    </div>
+  `;
+  
+  await notifyUser(b.email, `Invoice INV-${b.id.toUpperCase()} from Dozeles Cleaning`, invoiceHtml);
+  b.invoiceSentAt = new Date().toISOString();
+  saveDb();
+  res.json({ ok: true, message: 'Invoice sent successfully', booking: b });
+});
+
 app.delete('/api/admin/bookings/:id', requireAuth, (req, res) => {
   db.bookings = db.bookings.filter((x) => x.id !== req.params.id);
   saveDb();
@@ -242,6 +339,12 @@ app.put('/api/admin/content/:section', requireAdmin, (req, res) => {
   db[section] = req.body;
   saveDb();
   res.json({ ok: true, section });
+});
+
+app.put('/api/admin/pricing', requireAdmin, (req, res) => {
+  db.pricing = { ...db.pricing, ...req.body };
+  saveDb();
+  res.json({ ok: true, pricing: db.pricing });
 });
 
 // Reviews CRUD
