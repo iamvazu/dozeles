@@ -95,6 +95,20 @@ Express API with a JSON data store (no database server needed):
 
 ---
 
+## Recent Updates & Integrations
+
+- **Cannabis Dispensary Industry Page**: Added highly tailored BCC-compliant copy and a dedicated Client Logos section showing mockups for premium positioning in the industry.
+- **Client Logos Component**: A reusable `<ClientLogos />` component in `Shared.jsx` to build trust and authority on industry pages.
+- **CRM Integration**:
+  - The external **trycrmai** CRM runs on a Hostinger VPS via Docker (`crm-postgres` and `openclaw` containers).
+  - Admins (e.g., `dozelescleaning@gmail.com` and `rajjayadev@gmail.com`) can be securely added to the CRM's `user` and `member` tables directly via the PostgreSQL container using SSH.
+  - The CRM supports Google OAuth for team login, which routes through `nip.io` domains configured in Google Cloud.
+- **Email Notifications**:
+  - Automated HTML email confirmations to users and plain-text lead alerts to the admin (e.g., `Maialeticia@hotmail.com`).
+  - Requires generating a **Google App Password** for the sending account (e.g., `dozelescleaning@gmail.com`) and injecting it into `server/.env` under the `SMTP_` variables.
+
+---
+
 ## Ranking checklist (do these after launch)
 
 1. **Google Business Profile** — claim and fully complete it; add every service and service area. Local pack rankings depend on this more than the website.
