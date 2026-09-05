@@ -165,62 +165,38 @@ export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
         )}
       </div>
 
-      {/* Modern KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid #bbf7d0', position: 'relative' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Monthly Recurring Revenue
-              </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#15803d', marginTop: '4px' }}>
-                ${totalMonthlyContractValue.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#166534' }}>/mo</span>
-              </div>
+      {/* Sleek Compact Customer KPI Grid */}
+      <div className="modern-kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+        <div className="modern-kpi-card emerald">
+          <div className="kpi-icon-badge emerald"><DollarSign size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">MONTHLY RECURRING REVENUE</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">${totalMonthlyContractValue.toLocaleString()}</span>
+              <span className="kpi-label">/mo Contracted</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={22} color="#16a34a" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#166534', marginTop: '10px', fontWeight: 500 }}>
-            Active contracted janitorial agreements
           </div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Active Client Accounts
-              </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>
-                {customers.length}
-              </div>
+        <div className="modern-kpi-card blue">
+          <div className="kpi-icon-badge blue"><Building2 size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">ACTIVE CLIENT ACCOUNTS</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{customers.length}</span>
+              <span className="kpi-label">In Portfolio</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(26, 115, 232, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Building2 size={22} color="var(--blue)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            Commercial facilities in portfolio
           </div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Connected Field Sites
-              </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0284c7', marginTop: '4px' }}>
-                {totalConnectedProjects}
-              </div>
+        <div className="modern-kpi-card cyan">
+          <div className="kpi-icon-badge cyan"><Layers size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">CONNECTED FIELD SITES</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{totalConnectedProjects}</span>
+              <span className="kpi-label">Photo Stations</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Layers size={22} color="#0284c7" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            Field cleaning operations with photo logs
           </div>
         </div>
       </div>

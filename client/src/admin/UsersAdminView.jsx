@@ -188,78 +188,52 @@ export default function UsersAdminView({ user: currentUser }) {
         </div>
       </div>
 
-      {/* Analytics KPI Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-        {/* Card 1: Currently Online */}
-        <div className="card" style={{ padding: '18px 20px', background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)', border: '1px solid #bbf7d0', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Live Online Now</span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#15803d', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#22c55e', boxShadow: '0 0 10px #22c55e' }} />
+      {/* Sleek Compact Staff KPI Grid */}
+      <div className="modern-kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        <div className="modern-kpi-card emerald">
+          <div className="kpi-icon-badge emerald"><Activity size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">LIVE ONLINE NOW</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', boxShadow: '0 0 8px #22c55e' }} />
                 {onlineUsersCount}
-              </div>
+              </span>
+              <span className="kpi-label">Active Users</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Activity size={22} color="#16a34a" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#166534', marginTop: '10px' }}>
-            Active sessions in the last 15 minutes
           </div>
         </div>
 
-        {/* Card 2: Total Team Members */}
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Staff Accounts</span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>
-                {totalUsers}
-              </div>
+        <div className="modern-kpi-card blue">
+          <div className="kpi-icon-badge blue"><Users size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">TOTAL STAFF ACCOUNTS</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{totalUsers}</span>
+              <span className="kpi-label">{adminCount} Adm • {janitorCount} Field</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(26, 115, 232, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={22} color="var(--blue)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            {adminCount} Admins • {janitorCount} Field Janitors
           </div>
         </div>
 
-        {/* Card 3: Active in Last 24 Hours */}
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Active Today (24h)</span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#d97706', marginTop: '4px' }}>
-                {activeTodayCount}
-              </div>
+        <div className="modern-kpi-card amber">
+          <div className="kpi-icon-badge amber"><UserCheck size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">ACTIVE TODAY (24H)</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{activeTodayCount}</span>
+              <span className="kpi-label">{Math.round((activeTodayCount / (totalUsers || 1)) * 100)}% active</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <UserCheck size={22} color="#d97706" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            {Math.round((activeTodayCount / (totalUsers || 1)) * 100)}% daily team engagement
           </div>
         </div>
 
-        {/* Card 4: Field Janitors Station Access */}
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Field Janitors</span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0284c7', marginTop: '4px' }}>
-                {janitorCount}
-              </div>
+        <div className="modern-kpi-card cyan">
+          <div className="kpi-icon-badge cyan"><Smartphone size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">FIELD JANITORS</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{janitorCount}</span>
+              <span className="kpi-label">Field Station</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Smartphone size={22} color="#0284c7" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            Assigned to Field Photo Stations &amp; Check-ins
           </div>
         </div>
       </div>

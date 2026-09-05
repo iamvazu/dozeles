@@ -149,62 +149,38 @@ export default function ServiceQuote({ user, onBackToBookings }) {
         )}
       </div>
 
-      {/* Top KPI Bar */}
-      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid #bbf7d0' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Approved Contract Value
-              </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#15803d', marginTop: '4px' }}>
-                ${approvedQuotesValue.toLocaleString()}
-              </div>
+      {/* Sleek Compact Quotes KPI Grid */}
+      <div className="modern-kpi-grid no-print" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+        <div className="modern-kpi-card emerald">
+          <div className="kpi-icon-badge emerald"><CheckCircle2 size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">APPROVED CONTRACT VALUE</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">${approvedQuotesValue.toLocaleString()}</span>
+              <span className="kpi-label">Signed Value</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CheckCircle2 size={22} color="#16a34a" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#166534', marginTop: '10px', fontWeight: 500 }}>
-            Active signed client agreements
           </div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Total Quotes Generated
-              </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>
-                {quotes.length}
-              </div>
+        <div className="modern-kpi-card blue">
+          <div className="kpi-icon-badge blue"><FileText size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">TOTAL PROPOSALS</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{quotes.length}</span>
+              <span className="kpi-label">In History</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(26, 115, 232, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FileText size={22} color="var(--blue)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            Proposals in history
           </div>
         </div>
 
-        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Total Proposal Pipeline
-              </span>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--blue)', marginTop: '4px' }}>
-                ${totalQuotesValue.toLocaleString()}
-              </div>
+        <div className="modern-kpi-card cyan">
+          <div className="kpi-icon-badge cyan"><DollarSign size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">TOTAL PROPOSAL PIPELINE</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">${totalQuotesValue.toLocaleString()}</span>
+              <span className="kpi-label">Gross Value</span>
             </div>
-            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={22} color="var(--blue)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
-            Gross quote value across all states
           </div>
         </div>
       </div>

@@ -1001,6 +1001,9 @@ section { padding: 84px 0; }
 .modern-kpi-card.blue::before { background: #0e5fd8; }
 .modern-kpi-card.emerald::before { background: #10b981; }
 .modern-kpi-card.cyan::before { background: #00c0f3; }
+.modern-kpi-card.purple::before { background: #8b5cf6; }
+.modern-kpi-card.red::before, .modern-kpi-card.rose::before { background: #ef4444; }
+.modern-kpi-card.indigo::before { background: #6366f1; }
 
 .kpi-icon-badge {
   width: 42px;
@@ -1015,6 +1018,9 @@ section { padding: 84px 0; }
 .kpi-icon-badge.blue { background: #eff6ff; color: #0e5fd8; }
 .kpi-icon-badge.emerald { background: #ecfdf5; color: #047857; }
 .kpi-icon-badge.cyan { background: #e0f2fe; color: #0284c7; }
+.kpi-icon-badge.purple { background: #ede9fe; color: #7c3aed; }
+.kpi-icon-badge.red, .kpi-icon-badge.rose { background: #fee2e2; color: #dc2626; }
+.kpi-icon-badge.indigo { background: #e0e7ff; color: #4f46e5; }
 
 .kpi-info-col {
   display: flex;

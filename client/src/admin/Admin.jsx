@@ -611,23 +611,50 @@ function Bookings({ user, setTab }) {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Bookings</span>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>{counts.all}</div>
+      {/* Sleek Compact Bookings KPI Grid */}
+      <div className="modern-kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+        <div className="modern-kpi-card blue">
+          <div className="kpi-icon-badge blue"><Calendar size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">TOTAL BOOKINGS</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{counts.all}</span>
+              <span className="kpi-label">All Jobs</span>
+            </div>
+          </div>
         </div>
-        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #f59e0b' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#d97706', textTransform: 'uppercase' }}>Pending Review</span>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#d97706', marginTop: '4px' }}>{counts.pending}</div>
+
+        <div className="modern-kpi-card amber">
+          <div className="kpi-icon-badge amber"><Clock size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">PENDING REVIEW</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{counts.pending}</span>
+              <span className="kpi-label">Awaiting</span>
+            </div>
+          </div>
         </div>
-        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #0e5fd8' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0e5fd8', textTransform: 'uppercase' }}>Scheduled</span>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0e5fd8', marginTop: '4px' }}>{counts.scheduled}</div>
+
+        <div className="modern-kpi-card cyan">
+          <div className="kpi-icon-badge cyan"><CalendarCheck size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">SCHEDULED</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{counts.scheduled}</span>
+              <span className="kpi-label">Confirmed</span>
+            </div>
+          </div>
         </div>
-        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #10b981' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase' }}>Completed</span>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#059669', marginTop: '4px' }}>{counts.completed}</div>
+
+        <div className="modern-kpi-card emerald">
+          <div className="kpi-icon-badge emerald"><CheckCircle2 size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">COMPLETED</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{counts.completed}</span>
+              <span className="kpi-label">Fulfilled</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -898,15 +925,28 @@ function Messages({ onStartAudit }) {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Inquiries</span>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>{rows.length}</div>
+      {/* Sleek Compact Inquiries KPI Grid */}
+      <div className="modern-kpi-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        <div className="modern-kpi-card blue">
+          <div className="kpi-icon-badge blue"><MessageSquare size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">TOTAL INQUIRIES</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{rows.length}</span>
+              <span className="kpi-label">Received</span>
+            </div>
+          </div>
         </div>
-        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #ef4444' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase' }}>Unread Inquiries</span>
-          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#dc2626', marginTop: '4px' }}>{unreadCount}</div>
+
+        <div className="modern-kpi-card red">
+          <div className="kpi-icon-badge red"><Mail size={20} /></div>
+          <div className="kpi-info-col">
+            <span className="kpi-tag">UNREAD INQUIRIES</span>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{unreadCount}</span>
+              <span className="kpi-label">Need Response</span>
+            </div>
+          </div>
         </div>
       </div>
 
