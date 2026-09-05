@@ -16,6 +16,7 @@ import CustomersView from './CustomersView.jsx';
 import UsersAdminView from './UsersAdminView.jsx';
 import PricingAdminView from './PricingAdminView.jsx';
 import ContentEditorView from './ContentEditorView.jsx';
+import WalkthroughAuditView from './WalkthroughAuditView.jsx';
 import FacilityAuditsView from './FacilityAuditsView.jsx';
 
 const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
@@ -123,7 +124,7 @@ function Dashboard({ user, onLogout }) {
 
   if (user?.role === 'janitor') {
     navs = [
-      { id: 'audits', label: 'Facility Audits', icon: <Activity size={19} /> },
+      { id: 'audits', label: 'Walkthrough Audit', icon: <Sparkles size={19} color="#60a5fa" /> },
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
       { id: 'bookings', label: 'Assigned Schedule', icon: <CalendarCheck size={19} /> },
       { id: 'overview', label: 'Dashboard Overview', icon: <LayoutDashboard size={19} /> },
@@ -131,7 +132,7 @@ function Dashboard({ user, onLogout }) {
   } else {
     navs = [
       { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={19} /> },
-      { id: 'audits', label: '🔬 AI Facility Audits', icon: <Activity size={19} /> },
+      { id: 'audits', label: 'Walkthrough Audit', icon: <Sparkles size={19} color="#60a5fa" /> },
       { id: 'leads', label: 'Leads & Pipeline', icon: <Target size={19} /> },
       { id: 'customers', label: 'Customers & CRM', icon: <Users size={19} /> },
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
@@ -281,7 +282,7 @@ function Dashboard({ user, onLogout }) {
         <div className="modern-content-wrapper">
           {tab === 'overview' && <Overview user={user} setTab={setTab} />}
           {tab === 'audits' && (
-            <FacilityAuditsView 
+            <WalkthroughAuditView 
               user={user} 
               onOpenLeads={() => setTab('leads')} 
               initialLeadForAudit={selectedLeadForAudit} 
