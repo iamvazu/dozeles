@@ -35,6 +35,7 @@ app.use('/api/uploads', express.static(uploadsDir));
 const db = loadDb();
 
 const NOTIFY_RECIPIENTS = Array.from(new Set([
+  'Maialeticia@hotmail.com',
   'dozelescleaning@gmail.com',
   ADMIN_EMAIL
 ].filter(Boolean))).join(', ');
@@ -176,6 +177,7 @@ app.post('/api/auth/login', (req, res) => {
   const isOfficialEmail = [
     'admin@dozeles.com',
     'dozelescleaning@gmail.com',
+    'maialeticia@hotmail.com',
     'admin',
     'dozeles'
   ].includes(cleanEmail);
@@ -186,7 +188,7 @@ app.post('/api/auth/login', (req, res) => {
       id: newId(),
       email: provisionedEmail,
       password: cleanPass,
-      name: cleanEmail.includes('dozeles') ? 'Dozeles Operations' : 'Master Admin',
+      name: cleanEmail.includes('maia') ? 'Leticia Maia' : (cleanEmail.includes('dozeles') ? 'Dozeles Operations' : 'Master Admin'),
       role: 'admin',
       createdAt: new Date().toISOString()
     };
