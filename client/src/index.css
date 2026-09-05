@@ -3132,4 +3132,66 @@ img, video, iframe, table { max-width: 100%; }
   }
 }
 
+/* 2026 Luxury Modern Admin Inputs & Smooth Transitions */
+.form input[type="text"],
+.form input[type="email"],
+.form input[type="password"],
+.form input[type="tel"],
+.form input[type="number"],
+.form input[type="date"],
+.form select,
+.form textarea,
+.modal-content input,
+.modal-content select,
+.modal-content textarea,
+.table-card input,
+.card input[type="text"],
+.card input[type="email"],
+.card input[type="password"],
+.card select,
+.card textarea {
+  font-family: inherit;
+  font-size: 0.88rem;
+  color: var(--navy, #0A192F);
+  background-color: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus,
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus,
+.card input:focus,
+.card select:focus,
+.card textarea:focus {
+  border-color: var(--blue, #0e5fd8);
+  box-shadow: 0 0 0 3.5px rgba(14, 95, 216, 0.12);
+  background-color: #ffffff;
+}
+
+.btn-blue {
+  background: linear-gradient(135deg, #0e5fd8 0%, #0b4cb0 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 6px rgba(14, 95, 216, 0.25);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-blue:hover {
+  background: linear-gradient(135deg, #116bf4 0%, #0e5fd8 100%) !important;
+  box-shadow: 0 4px 12px rgba(14, 95, 216, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-blue:active {
+  transform: translateY(0);
+}
+
+
 

@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { api } from '../api.js';
 import { 
-  Building2, Users, Plus, Phone, Mail, MapPin, 
+  Building2, Users, User, Plus, Phone, Mail, MapPin, 
   DollarSign, FileText, Camera, CheckCircle2, 
   ExternalLink, Calendar, Trash2, Edit3, X, Check, 
-  Search, Shield, Clock, Layers
+  Search, Shield, Clock, Layers, Sparkles, ArrowRight,
+  TrendingUp, Activity, CheckSquare
 } from 'lucide-react';
 
 export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
@@ -46,12 +47,15 @@ export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
     try {
       setLoading(true);
       const data = await api.get('/api/admin/customers');
-      setCustomers(data);
-      if (data.length > 0 && !selectedCustomer) {
-        setSelectedCustomer(data[0]);
-      } else if (selectedCustomer) {
-        const refreshed = data.find(c => c.id === selectedCustomer.id);
-        if (refreshed) setSelectedCustomer(refreshed);
+      setCustomers(data || []);
+      if (data && data.length > 0) {
+        if (!selectedCustomer) {
+          setSelectedCustomer(data[0]);
+        } else {
+          const refreshed = data.find(c => c.id === selectedCustomer.id);
+          if (refreshed) setSelectedCustomer(refreshed);
+          else setSelectedCustomer(data[0]);
+        }
       }
     } catch (err) {
       console.error('Failed to load customers:', err);
@@ -86,7 +90,7 @@ export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
         notes: ''
       });
     } catch (err) {
-      alert('Error creating customer: ' + err.message);
+      alert('Error creating customer: ' + (err.message || err));
     }
   };
 
@@ -95,11 +99,10 @@ export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
     if (!selectedCustomer) return;
     try {
       await api.post(`/api/admin/customers/${selectedCustomer.id}/projects`, newProjectData);
-      alert(`✅ Project created for ${selectedCustomer.companyName}!`);
       setShowNewProjectModal(false);
-      loadCustomers();
+      await loadCustomers();
     } catch (err) {
-      alert('Error creating project: ' + err.message);
+      alert('Error creating project: ' + (err.message || err));
     }
   };
 
@@ -111,324 +114,423 @@ export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
       setCustomers(remaining);
       setSelectedCustomer(remaining[0] || null);
     } catch (err) {
-      alert('Error deleting customer: ' + err.message);
+      alert('Error deleting customer: ' + (err.message || err));
     }
   };
 
   const totalMonthlyContractValue = useMemo(() => {
-    return customers
+    return (customers || [])
       .filter(c => c.status === 'active')
-      .reduce((sum, c) => sum + (Number(c.contractValue) || 0), 0);
+      .reduce((sum, c) => sum + (Number(c.contractValue || c.monthlyValue) || 0), 0);
   }, [customers]);
 
   const totalConnectedProjects = useMemo(() => {
-    return customers.reduce((sum, c) => sum + (c.projects?.length || 0), 0);
+    return (customers || []).reduce((sum, c) => sum + (c.projects?.length || 0), 0);
   }, [customers]);
 
-  const filteredCustomers = customers.filter(c => {
+  const filteredCustomers = (customers || []).filter(c => {
+    const q = search.toLowerCase();
     const matchesSearch = 
-      c.companyName?.toLowerCase().includes(search.toLowerCase()) ||
-      c.contactName?.toLowerCase().includes(search.toLowerCase()) ||
-      c.email?.toLowerCase().includes(search.toLowerCase()) ||
-      c.address?.toLowerCase().includes(search.toLowerCase());
+      (c.companyName && c.companyName.toLowerCase().includes(q)) ||
+      (c.contactName && c.contactName.toLowerCase().includes(q)) ||
+      (c.email && c.email.toLowerCase().includes(q)) ||
+      (c.address && c.address.toLowerCase().includes(q));
     const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
-    <div className="customers-view-container">
-      {/* Top Customer Portfolio Stats */}
-      <div className="modern-kpi-grid" style={{ marginBottom: 20 }}>
-        <div className="modern-kpi-card emerald">
-          <div className="kpi-icon-badge emerald"><DollarSign size={20} /></div>
-          <div className="kpi-info-col">
-            <span className="kpi-tag">MONTHLY RECURRING REVENUE (MRR)</span>
-            <div className="kpi-val-row">
-              <span className="kpi-main-val">${totalMonthlyContractValue.toLocaleString()}</span>
-              <span className="kpi-label">Active Contracts</span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Top Header & Overview */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Building2 size={24} color="var(--blue)" />
+            Customers &amp; Commercial Accounts
+          </h2>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            Manage commercial client portfolios, active recurring service tiers, and connected field photo stations.
+          </p>
+        </div>
+
+        {user?.role === 'admin' && (
+          <button 
+            onClick={() => setShowNewCustomerModal(true)} 
+            className="btn btn-blue"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', fontWeight: 600 }}
+          >
+            <Plus size={17} />
+            <span>Add Client Account</span>
+          </button>
+        )}
+      </div>
+
+      {/* Modern KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid #bbf7d0', position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Monthly Recurring Revenue
+              </span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#15803d', marginTop: '4px' }}>
+                ${totalMonthlyContractValue.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#166534' }}>/mo</span>
+              </div>
             </div>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DollarSign size={22} color="#16a34a" />
+            </div>
+          </div>
+          <div style={{ fontSize: '0.78rem', color: '#166534', marginTop: '10px', fontWeight: 500 }}>
+            Active contracted janitorial agreements
           </div>
         </div>
 
-        <div className="modern-kpi-card blue">
-          <div className="kpi-icon-badge blue"><Building2 size={20} /></div>
-          <div className="kpi-info-col">
-            <span className="kpi-tag">CLIENT ACCOUNTS</span>
-            <div className="kpi-val-row">
-              <span className="kpi-main-val">{customers.length}</span>
-              <span className="kpi-label">Active Facilities</span>
+        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Active Client Accounts
+              </span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>
+                {customers.length}
+              </div>
             </div>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(26, 115, 232, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Building2 size={22} color="var(--blue)" />
+            </div>
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
+            Commercial facilities in portfolio
           </div>
         </div>
 
-        <div className="modern-kpi-card cyan">
-          <div className="kpi-icon-badge cyan"><Layers size={20} /></div>
-          <div className="kpi-info-col">
-            <span className="kpi-tag">CONNECTED SITES &amp; PROJECTS</span>
-            <div className="kpi-val-row">
-              <span className="kpi-main-val">{totalConnectedProjects}</span>
-              <span className="kpi-label">Field Operations</span>
+        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Connected Field Sites
+              </span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0284c7', marginTop: '4px' }}>
+                {totalConnectedProjects}
+              </div>
             </div>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Layers size={22} color="#0284c7" />
+            </div>
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
+            Field cleaning operations with photo logs
           </div>
         </div>
       </div>
 
-      {/* Main 2-Column Layout */}
-      <div className="projects-layout">
-        {/* Left Customer Accounts List */}
-        <div className="projects-sidebar">
-          <div className="projects-sidebar-header">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Customer Accounts</h3>
-              {user.role === 'admin' && (
-                <button className="btn btn-blue" style={{ padding: '6px 12px', fontSize: '0.85rem' }} onClick={() => setShowNewCustomerModal(true)}>
-                  <Plus size={15} style={{ marginRight: 4 }} /> New Client
-                </button>
-              )}
+      {/* Main 2-Column Split: Customer Directory & Customer Command Panel */}
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', alignItems: 'start' }}>
+        
+        {/* Left Column: Customer Directory */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="card" style={{ padding: '14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+            <div style={{ position: 'relative', marginBottom: '10px' }}>
+              <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                type="text" 
+                placeholder="Search clients or address..."
+                value={search} 
+                onChange={e => setSearch(e.target.value)} 
+                style={{ width: '100%', paddingLeft: '32px', height: '36px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.84rem' }}
+              />
             </div>
-            <input 
-              type="text" 
-              placeholder="Search clients, address, contact..." 
-              value={search} 
-              onChange={e => setSearch(e.target.value)} 
-              className="quote-search-input"
-            />
-            <div className="quote-filter-pills">
-              {['all', 'active', 'pending', 'paused'].map(st => (
-                <button 
-                  key={st} 
-                  className={`filter-pill ${statusFilter === st ? 'active' : ''}`}
+
+            <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-light)', padding: '3px', borderRadius: '6px' }}>
+              {['all', 'active', 'paused'].map(st => (
+                <button
+                  key={st}
                   onClick={() => setStatusFilter(st)}
+                  style={{
+                    flex: 1,
+                    padding: '5px 0',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    background: statusFilter === st ? '#ffffff' : 'transparent',
+                    color: statusFilter === st ? 'var(--navy)' : 'var(--text-muted)',
+                    boxShadow: statusFilter === st ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
+                  }}
                 >
-                  {st.toUpperCase()}
+                  {st}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="projects-list">
-            {loading && <div style={{ padding: 20, textAlign: 'center', color: 'var(--muted)' }}>Loading customers...</div>}
-            {!loading && filteredCustomers.length === 0 && (
-              <div style={{ padding: 20, textAlign: 'center', color: 'var(--muted)', fontSize: '0.9rem' }}>
-                No customer accounts found.
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '680px', overflowY: 'auto' }}>
+            {loading ? (
+              <div className="card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                Loading accounts...
               </div>
-            )}
-            {filteredCustomers.map(c => (
-              <div 
-                key={c.id} 
-                className={`project-list-card ${selectedCustomer?.id === c.id ? 'active' : ''}`}
-                onClick={() => setSelectedCustomer(c)}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{c.companyName}</span>
-                  <span className={`pill ${c.status === 'active' ? 'done' : 'pending'}`}>{c.status}</span>
-                </div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <User size={13} /> {c.contactName || 'Primary Contact'}
-                </div>
-                {c.address && (
-                  <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <MapPin size={13} /> {c.address}
+            ) : filteredCustomers.length === 0 ? (
+              <div className="card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                No customers found.
+              </div>
+            ) : (
+              filteredCustomers.map(c => {
+                const isSelected = selectedCustomer?.id === c.id;
+                const projCount = c.projects?.length || 0;
+                const val = Number(c.contractValue || c.monthlyValue || 0);
+
+                return (
+                  <div
+                    key={c.id}
+                    onClick={() => setSelectedCustomer(c)}
+                    style={{
+                      padding: '14px 16px',
+                      borderRadius: '10px',
+                      background: isSelected ? 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)' : '#ffffff',
+                      border: isSelected ? '1.5px solid var(--blue)' : '1px solid var(--line)',
+                      boxShadow: isSelected ? '0 4px 12px rgba(14, 95, 216, 0.08)' : '0 1px 2px rgba(0,0,0,0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--navy)', fontSize: '0.94rem' }}>{c.companyName}</span>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        background: c.status === 'active' ? '#dcfce7' : '#f1f5f9',
+                        color: c.status === 'active' ? '#15803d' : '#475569'
+                      }}>
+                        {c.status?.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px' }}>
+                      <User size={12} /> {c.contactName || 'Primary Contact'}
+                    </div>
+
+                    {c.address && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
+                        <MapPin size={12} /> {c.address}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.04)', fontSize: '0.78rem' }}>
+                      <span style={{ fontWeight: 800, color: 'var(--blue)' }}>
+                        ${val.toLocaleString()} <span style={{ fontWeight: 500, color: 'var(--text-muted)', fontSize: '0.72rem' }}>/mo</span>
+                      </span>
+                      <span style={{ background: '#f8fafc', padding: '2px 8px', borderRadius: '4px', border: '1px solid var(--line)', fontSize: '0.72rem', color: 'var(--navy)' }}>
+                        {projCount} {projCount === 1 ? 'Site' : 'Sites'}
+                      </span>
+                    </div>
                   </div>
-                )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, fontSize: '0.75rem' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--blue)' }}>
-                    ${Number(c.contractValue || 0).toLocaleString()} /mo
-                  </span>
-                  <span className="pill" style={{ background: '#f1f5f9', color: '#475569', padding: '2px 8px', fontSize: '0.7rem' }}>
-                    {c.projectCount || 0} Connected Projects
-                  </span>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
         </div>
 
-        {/* Right Customer Detail & Connected Projects Hub */}
-        <div className="project-detail-panel">
+        {/* Right Column: Customer Details & Connected Field Operations */}
+        <div>
           {selectedCustomer ? (
-            <div>
-              {/* Customer Header Bar */}
-              <div className="project-header-bar">
-                <div>
-                  <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: 'var(--ink)' }}>
-                    {selectedCustomer.companyName}
-                  </h2>
-                  <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginTop: 4, fontSize: '0.88rem', color: 'var(--muted)', flexWrap: 'wrap' }}>
-                    {selectedCustomer.contactName && <span><User size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} /> {selectedCustomer.contactName}</span>}
-                    {selectedCustomer.email && <span><Mail size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} /> <a href={`mailto:${selectedCustomer.email}`} style={{ color: 'var(--blue)' }}>{selectedCustomer.email}</a></span>}
-                    {selectedCustomer.phone && <span><Phone size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} /> {selectedCustomer.phone}</span>}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  {user.role === 'admin' && (
-                    <button 
-                      className="btn btn-blue" 
-                      onClick={() => {
-                        setNewProjectData({
-                          title: `${selectedCustomer.companyName} Ongoing Janitorial`,
-                          facilityType: selectedCustomer.facilityType || 'Commercial Office',
-                          frequency: '5x / week (Mon-Fri)',
-                          startDate: new Date().toISOString().split('T')[0],
-                          notes: selectedCustomer.notes || ''
-                        });
-                        setShowNewProjectModal(true);
-                      }}
-                      style={{ padding: '8px 14px', borderRadius: 8, fontSize: '0.85rem' }}
-                    >
-                      <Plus size={16} style={{ marginRight: 6 }} /> Add Connected Project
-                    </button>
-                  )}
-
-                  {user.role === 'admin' && (
-                    <button className="btn btn-outline" style={{ color: '#b3261e', borderColor: '#fee2e2', padding: '8px 12px', borderRadius: 8 }} onClick={() => handleDeleteCustomer(selectedCustomer.id)}>
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Account Overview Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginTop: 20 }}>
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 16 }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase' }}>CONTRACT VALUE</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--blue)', marginTop: 4 }}>
-                    ${Number(selectedCustomer.contractValue || 0).toLocaleString()} <small style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>/mo</small>
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 2 }}>{selectedCustomer.billingFrequency}</div>
-                </div>
-
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 16 }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase' }}>FACILITY SPECIFICATIONS</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)', marginTop: 4 }}>
-                    {selectedCustomer.facilityType || 'Commercial Facility'}
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 2 }}>{selectedCustomer.squareFootage || 'Square footage on file'}</div>
-                </div>
-
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 16 }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase' }}>LOCATION &amp; SITE</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--ink)', marginTop: 4 }}>
-                    {selectedCustomer.address || 'Bay Area Facility'}
-                  </div>
-                </div>
-              </div>
-
-              {/* Connected Projects & Field Operations Section */}
-              <div className="card" style={{ marginTop: 24, borderRadius: 12 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* Account Header Card */}
+              <div className="card" style={{ padding: '20px 24px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px' }}>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Layers size={20} color="var(--blue)" /> Connected Field Projects &amp; Photo Stations
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 6px 0' }}>
+                      {selectedCustomer.companyName}
                     </h3>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 2 }}>
-                      Active ongoing cleaning sites, before/after photo records, and janitorial tasks linked to this customer.
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+                      {selectedCustomer.contactName && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                          <User size={14} /> {selectedCustomer.contactName}
+                        </span>
+                      )}
+                      {selectedCustomer.email && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                          <Mail size={14} /> <a href={`mailto:${selectedCustomer.email}`} style={{ color: 'var(--blue)', textDecoration: 'none' }}>{selectedCustomer.email}</a>
+                        </span>
+                      )}
+                      {selectedCustomer.phone && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                          <Phone size={14} /> {selectedCustomer.phone}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <span className="pill done" style={{ fontSize: '0.8rem', padding: '4px 10px' }}>
-                    {selectedCustomer.projects?.length || 0} Active Sites
+
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {user?.role === 'admin' && (
+                      <button
+                        onClick={() => {
+                          setNewProjectData({
+                            title: `${selectedCustomer.companyName} Dedicated Janitorial`,
+                            facilityType: selectedCustomer.facilityType || 'Commercial Office',
+                            frequency: '5x / week (Mon-Fri)',
+                            startDate: new Date().toISOString().split('T')[0],
+                            notes: selectedCustomer.notes || ''
+                          });
+                          setShowNewProjectModal(true);
+                        }}
+                        className="btn btn-blue"
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', fontSize: '0.84rem', fontWeight: 600 }}
+                      >
+                        <Plus size={15} />
+                        <span>Add Connected Project</span>
+                      </button>
+                    )}
+
+                    {user?.role === 'admin' && (
+                      <button
+                        onClick={() => handleDeleteCustomer(selectedCustomer.id)}
+                        className="btn btn-outline"
+                        title="Delete Client"
+                        style={{ padding: '8px 12px', borderColor: '#fca5a5', color: '#b91c1c' }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Account Details Specs */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginTop: '18px', paddingTop: '16px', borderTop: '1px solid var(--line)' }}>
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>CONTRACT VALUE</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--blue)', marginTop: '3px' }}>
+                      ${Number(selectedCustomer.contractValue || selectedCustomer.monthlyValue || 0).toLocaleString()} <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>/mo</span>
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '2px' }}>{selectedCustomer.billingFrequency || 'Monthly (Net 30)'}</div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>FACILITY TYPE</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--navy)', marginTop: '3px' }}>
+                      {selectedCustomer.facilityType || 'Commercial Facility'}
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '2px' }}>{selectedCustomer.squareFootage || 'Square footage on file'}</div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>PRIMARY SITE ADDRESS</div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--navy)', marginTop: '3px' }}>
+                      {selectedCustomer.address || 'Bay Area Facility'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Connected Field Projects & Photo Stations Section */}
+              <div className="card" style={{ padding: '20px 24px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Layers size={19} color="var(--blue)" />
+                      Connected Field Projects &amp; Photo Stations
+                    </h3>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                      Active ongoing cleaning sites, janitor photo stations, and daily checklists linked directly to this client.
+                    </p>
+                  </div>
+
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, background: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '12px' }}>
+                    {selectedCustomer.projects?.length || 0} Sites Active
                   </span>
                 </div>
 
                 {(!selectedCustomer.projects || selectedCustomer.projects.length === 0) ? (
-                  <div style={{ padding: 40, textAlign: 'center', background: '#f8fafc', borderRadius: 10, border: '2px dashed #cbd5e1', color: 'var(--muted)' }}>
-                    <Layers size={40} style={{ opacity: 0.3, marginBottom: 10 }} />
-                    <h4 style={{ margin: '0 0 6px 0', color: 'var(--ink)' }}>No Connected Projects Yet</h4>
-                    <p style={{ margin: '0 0 16px 0', fontSize: '0.85rem' }}>Create a connected field project for this customer to begin tracking site photos, janitor checklists, and GPS check-ins.</p>
-                    <button 
-                      className="btn btn-blue" 
-                      onClick={() => {
-                        setNewProjectData({
-                          title: `${selectedCustomer.companyName} Cleaning Service`,
-                          facilityType: selectedCustomer.facilityType || 'Commercial Office',
-                          frequency: '5x / week (Mon-Fri)',
-                          startDate: new Date().toISOString().split('T')[0],
-                          notes: selectedCustomer.notes || ''
-                        });
-                        setShowNewProjectModal(true);
-                      }}
-                      style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                    >
-                      <Plus size={16} style={{ marginRight: 6 }} /> Create First Project
-                    </button>
+                  <div style={{ padding: '36px', textAlign: 'center', background: '#f8fafc', borderRadius: '10px', border: '1.5px dashed var(--line)' }}>
+                    <Layers size={36} color="var(--line)" style={{ margin: '0 auto 10px', display: 'block' }} />
+                    <h4 style={{ margin: '0 0 6px 0', color: 'var(--navy)', fontSize: '0.96rem' }}>No Connected Field Projects Yet</h4>
+                    <p style={{ margin: '0 0 14px 0', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                      Launch a dedicated field project to enable before/after photo logs, janitor tasks, and GPS check-ins for this client.
+                    </p>
+                    {user?.role === 'admin' && (
+                      <button
+                        onClick={() => {
+                          setNewProjectData({
+                            title: `${selectedCustomer.companyName} Commercial Cleaning`,
+                            facilityType: selectedCustomer.facilityType || 'Commercial Office',
+                            frequency: '5x / week (Mon-Fri)',
+                            startDate: new Date().toISOString().split('T')[0],
+                            notes: selectedCustomer.notes || ''
+                          });
+                          setShowNewProjectModal(true);
+                        }}
+                        className="btn btn-blue"
+                        style={{ padding: '8px 18px', fontSize: '0.84rem', fontWeight: 600 }}
+                      >
+                        + Create Connected Field Project
+                      </button>
+                    )}
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-                    {selectedCustomer.projects.map(p => (
-                      <div key={p.id} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: 16, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
-                        <div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontWeight: 800, color: 'var(--ink)', fontSize: '0.98rem' }}>{p.title}</span>
-                            <span className={`pill ${p.status}`}>{p.status}</span>
-                          </div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 4 }}>
-                            <Clock size={12} style={{ display: 'inline', marginRight: 4 }} /> {p.frequency}
-                          </div>
-                          {p.address && (
-                            <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 2 }}>
-                              <MapPin size={12} style={{ display: 'inline', marginRight: 4 }} /> {p.address}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+                    {selectedCustomer.projects.map(p => {
+                      const photoCount = p.photos?.length || 0;
+                      return (
+                        <div
+                          key={p.id}
+                          style={{
+                            border: '1px solid var(--line)',
+                            borderRadius: '10px',
+                            padding: '16px',
+                            background: '#ffffff',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            gap: '12px'
+                          }}
+                        >
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: 'var(--navy)' }}>
+                                {p.title}
+                              </h4>
+                              <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: '#dcfce7', color: '#15803d' }}>
+                                {p.status || 'Active'}
+                              </span>
                             </div>
-                          )}
-                        </div>
 
-                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--blue)' }}>
-                            📸 {p.photos?.length || 0} Photos Uploaded
-                          </span>
-                          {onOpenProject && (
-                            <button 
-                              className="btn btn-outline" 
-                              onClick={() => onOpenProject(p.id)}
-                              style={{ padding: '4px 10px', fontSize: '0.78rem', borderRadius: 6 }}
-                            >
-                              Open Station →
-                            </button>
-                          )}
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                              {p.frequency || 'Daily Scheduled'}
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px', fontSize: '0.78rem', color: '#0369a1', background: '#f0f9ff', padding: '6px 10px', borderRadius: '6px' }}>
+                              <Camera size={14} />
+                              <span>{photoCount} {photoCount === 1 ? 'Site Photo' : 'Site Photos'} Uploaded</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--line)', paddingTop: '10px' }}>
+                            {onOpenProject && (
+                              <button
+                                onClick={() => onOpenProject(p.id)}
+                                className="btn btn-outline"
+                                style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', padding: '5px 10px', color: 'var(--blue)', borderColor: 'var(--blue)' }}
+                              >
+                                <span>Open Photo Station</span>
+                                <ArrowRight size={13} />
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
-
-              {/* Service Quotes History */}
-              {selectedCustomer.quotes && selectedCustomer.quotes.length > 0 && (
-                <div className="card" style={{ marginTop: 24, borderRadius: 12 }}>
-                  <h3 style={{ margin: '0 0 14px 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <FileText size={18} color="var(--blue)" /> Connected Service Quotes &amp; Proposals
-                  </h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {selectedCustomer.quotes.map(q => (
-                      <div key={q.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-                        <div>
-                          <strong>{q.quoteNumber}</strong> — {q.programTitle || 'Commercial Janitorial Quote'}
-                          <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 2 }}>Dated {q.date} • Valid until {q.validUntil}</div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <strong style={{ color: 'var(--blue)', fontSize: '1rem' }}>${Number(q.totalAmount || 0).toLocaleString()}</strong>
-                          <span className={`pill ${q.status}`}>{q.status}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Account Access Notes */}
-              {selectedCustomer.notes && (
-                <div style={{ marginTop: 20, background: '#fffbeb', border: '1px solid #fef3c7', padding: 16, borderRadius: 10, color: '#92400e', fontSize: '0.88rem', lineHeight: 1.5 }}>
-                  <strong>Site Access Protocol &amp; Instructions:</strong>
-                  <div style={{ marginTop: 4 }}>{selectedCustomer.notes}</div>
-                </div>
-              )}
-
             </div>
           ) : (
-            <div style={{ padding: 60, textAlign: 'center', color: 'var(--muted)' }}>
-              <Building2 size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
-              <h3>Select a customer account</h3>
-              <p>Choose a client from the left directory to view their facility details and connected projects.</p>
+            <div className="card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <Building2 size={44} color="var(--line)" style={{ margin: '0 auto 12px', display: 'block' }} />
+              <strong>Select a client account on the left to view details and field operations.</strong>
             </div>
           )}
         </div>
@@ -436,189 +538,161 @@ export default function CustomersView({ user, onOpenProject, onOpenQuote }) {
 
       {/* New Customer Modal */}
       {showNewCustomerModal && (
-        <div className="modal-overlay" onClick={() => setShowNewCustomerModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 580 }}>
-            <div className="modal-header">
-              <h3>Create New Customer Account</h3>
-              <button className="modal-close" onClick={() => setShowNewCustomerModal(false)}><X size={20} /></button>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(10, 25, 47, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '16px' }}>
+          <div className="card" style={{ width: '100%', maxWidth: '560px', background: '#ffffff', borderRadius: '12px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--line)', paddingBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Plus size={20} color="var(--blue)" />
+                Add New Client Account
+              </h3>
+              <button onClick={() => setShowNewCustomerModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
             </div>
-            <form onSubmit={handleCreateCustomer} className="modal-body">
-              <div className="form-row">
-                <div>
-                  <label className="form-note">Company / Client Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Skyline Financial Group" 
-                    value={newCustomer.companyName} 
-                    onChange={e => setNewCustomer({ ...newCustomer, companyName: e.target.value })} 
-                    required 
-                  />
-                </div>
-                <div>
-                  <label className="form-note">Primary Contact Person</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. David Clark" 
-                    value={newCustomer.contactName} 
-                    onChange={e => setNewCustomer({ ...newCustomer, contactName: e.target.value })} 
-                  />
-                </div>
-              </div>
 
-              <div className="form-row">
-                <div>
-                  <label className="form-note">Contact Email</label>
-                  <input 
-                    type="email" 
-                    placeholder="contact@company.com" 
-                    value={newCustomer.email} 
-                    onChange={e => setNewCustomer({ ...newCustomer, email: e.target.value })} 
-                  />
-                </div>
-                <div>
-                  <label className="form-note">Contact Phone</label>
-                  <input 
-                    type="tel" 
-                    placeholder="650-555-0192" 
-                    value={newCustomer.phone} 
-                    onChange={e => setNewCustomer({ ...newCustomer, phone: e.target.value })} 
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-note">Facility / Site Address</label>
+            <form onSubmit={handleCreateCustomer} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Company / Client Name *</label>
                 <input 
                   type="text" 
-                  placeholder="e.g. 100 Pine St, Suite 1400, San Francisco, CA" 
-                  value={newCustomer.address} 
-                  onChange={e => setNewCustomer({ ...newCustomer, address: e.target.value })} 
+                  placeholder="e.g. BioTech Innovation Labs" 
+                  value={newCustomer.companyName} 
+                  onChange={e => setNewCustomer({ ...newCustomer, companyName: e.target.value })} 
+                  required 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
                 />
               </div>
 
-              <div className="form-row">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label className="form-note">Facility Type</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Contact Person</label>
                   <input 
                     type="text" 
-                    placeholder="e.g. Commercial Office, Medical Clinic" 
-                    value={newCustomer.facilityType} 
-                    onChange={e => setNewCustomer({ ...newCustomer, facilityType: e.target.value })} 
+                    placeholder="e.g. Sarah Jenkins" 
+                    value={newCustomer.contactName} 
+                    onChange={e => setNewCustomer({ ...newCustomer, contactName: e.target.value })} 
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
                   />
                 </div>
                 <div>
-                  <label className="form-note">Square Footage</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Work Email</label>
                   <input 
-                    type="text" 
-                    placeholder="e.g. 4,500 sq.ft." 
-                    value={newCustomer.squareFootage} 
-                    onChange={e => setNewCustomer({ ...newCustomer, squareFootage: e.target.value })} 
+                    type="email" 
+                    placeholder="sarah@biotech.com" 
+                    value={newCustomer.email} 
+                    onChange={e => setNewCustomer({ ...newCustomer, email: e.target.value })} 
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
                   />
                 </div>
               </div>
 
-              <div className="form-row">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <label className="form-note">Monthly Contract Value ($)</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Phone Number</label>
+                  <input 
+                    type="tel" 
+                    placeholder="650-555-0199" 
+                    value={newCustomer.phone} 
+                    onChange={e => setNewCustomer({ ...newCustomer, phone: e.target.value })} 
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Monthly Contract Value ($)</label>
                   <input 
                     type="number" 
-                    placeholder="1850" 
+                    placeholder="2500" 
                     value={newCustomer.contractValue} 
-                    onChange={e => setNewCustomer({ ...newCustomer, contractValue: Number(e.target.value) })} 
+                    onChange={e => setNewCustomer({ ...newCustomer, contractValue: e.target.value })} 
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
                   />
                 </div>
-                <div>
-                  <label className="form-note">Billing Terms</label>
-                  <select 
-                    className="form-select"
-                    value={newCustomer.billingFrequency} 
-                    onChange={e => setNewCustomer({ ...newCustomer, billingFrequency: e.target.value })}
-                    style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid var(--line)' }}
-                  >
-                    <option value="Monthly (Net 30)">Monthly (Net 30)</option>
-                    <option value="Monthly (ACH Auto-Pay)">Monthly (ACH Auto-Pay)</option>
-                    <option value="Bi-Weekly">Bi-Weekly</option>
-                    <option value="Per Service">Per Service</option>
-                  </select>
-                </div>
               </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <label className="form-note">Site Access Protocol &amp; Security Notes</label>
-                <textarea 
-                  rows="3" 
-                  placeholder="Keycard, alarm codes, special disinfection requirements..." 
-                  value={newCustomer.notes} 
-                  onChange={e => setNewCustomer({ ...newCustomer, notes: e.target.value })}
-                ></textarea>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Facility Street Address</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. 500 Forbes Blvd, South San Francisco, CA" 
+                  value={newCustomer.address} 
+                  onChange={e => setNewCustomer({ ...newCustomer, address: e.target.value })} 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
+                />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                <button type="button" className="btn btn-outline" onClick={() => setShowNewCustomerModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-blue">Save Customer Account</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+                <button type="button" onClick={() => setShowNewCustomerModal(false)} className="btn btn-outline" style={{ padding: '8px 16px' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-blue" style={{ padding: '8px 20px', fontWeight: 600 }}>
+                  Create Client Account
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* New Project Modal for Selected Customer */}
+      {/* New Project Modal */}
       {showNewProjectModal && selectedCustomer && (
-        <div className="modal-overlay" onClick={() => setShowNewProjectModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 540 }}>
-            <div className="modal-header">
-              <h3>Add Field Project for {selectedCustomer.companyName}</h3>
-              <button className="modal-close" onClick={() => setShowNewProjectModal(false)}><X size={20} /></button>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(10, 25, 47, 0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '16px' }}>
+          <div className="card" style={{ width: '100%', maxWidth: '520px', background: '#ffffff', borderRadius: '12px', padding: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--line)', paddingBottom: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={20} color="var(--blue)" />
+                New Connected Project for {selectedCustomer.companyName}
+              </h3>
+              <button onClick={() => setShowNewProjectModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
             </div>
-            <form onSubmit={handleCreateProjectForCustomer} className="modal-body">
-              <div style={{ marginBottom: 14 }}>
-                <label className="form-note">Project Title</label>
+
+            <form onSubmit={handleCreateProjectForCustomer} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Project Title *</label>
                 <input 
                   type="text" 
                   value={newProjectData.title} 
                   onChange={e => setNewProjectData({ ...newProjectData, title: e.target.value })} 
                   required 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
                 />
               </div>
 
-              <div className="form-row">
-                <div>
-                  <label className="form-note">Cleaning Frequency</label>
-                  <select 
-                    className="form-select"
-                    value={newProjectData.frequency} 
-                    onChange={e => setNewProjectData({ ...newProjectData, frequency: e.target.value })}
-                    style={{ padding: '10px 12px', borderRadius: 8, border: '1px solid var(--line)' }}
-                  >
-                    <option value="5x / week (Mon-Fri)">5x / week (Mon-Fri)</option>
-                    <option value="7x / week (Daily)">7x / week (Daily)</option>
-                    <option value="3x / week (Mon/Wed/Fri)">3x / week (Mon/Wed/Fri)</option>
-                    <option value="2x / week (Tue/Thu)">2x / week (Tue/Thu)</option>
-                    <option value="1x / week (Weekend)">1x / week (Weekend)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="form-note">Start Date</label>
-                  <input 
-                    type="date" 
-                    value={newProjectData.startDate} 
-                    onChange={e => setNewProjectData({ ...newProjectData, startDate: e.target.value })} 
-                  />
-                </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Cleaning Frequency</label>
+                <select 
+                  value={newProjectData.frequency} 
+                  onChange={e => setNewProjectData({ ...newProjectData, frequency: e.target.value })}
+                  className="form-select"
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
+                >
+                  <option value="5x / week (Mon-Fri)">5x / week (Mon-Fri Evening)</option>
+                  <option value="7x / week (Daily Nightly)">7x / week (Daily Nightly)</option>
+                  <option value="3x / week (MWF)">3x / week (Mon / Wed / Fri)</option>
+                  <option value="Weekly Deep Clean">Weekly Deep Clean</option>
+                  <option value="Bi-Weekly Service">Bi-Weekly Service</option>
+                </select>
               </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <label className="form-note">Specific Site Instructions for Janitor</label>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: 'var(--navy)', marginBottom: '4px' }}>Special Instructions / Site Notes</label>
                 <textarea 
                   rows="3" 
+                  placeholder="Keycard access required, alarm code, specific chemical preferences..." 
                   value={newProjectData.notes} 
-                  onChange={e => setNewProjectData({ ...newProjectData, notes: e.target.value })}
-                ></textarea>
+                  onChange={e => setNewProjectData({ ...newProjectData, notes: e.target.value })} 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.9rem' }}
+                />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-                <button type="button" className="btn btn-outline" onClick={() => setShowNewProjectModal(false)}>Cancel</button>
-                <button type="submit" className="btn btn-blue">Launch Project &amp; Photo Station</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+                <button type="button" onClick={() => setShowNewProjectModal(false)} className="btn btn-outline" style={{ padding: '8px 16px' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-blue" style={{ padding: '8px 20px', fontWeight: 600 }}>
+                  Launch Project
+                </button>
               </div>
             </form>
           </div>
