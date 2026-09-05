@@ -5,7 +5,8 @@ import {
   LayoutDashboard, CalendarCheck, Calendar, MessageSquare, Users, 
   Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, 
   ChevronRight, DollarSign, Menu, Paperclip, FileText, 
-  Upload, Building2, Download, Smartphone, Target, Briefcase, Layers
+  Upload, Building2, Download, Smartphone, Target, Briefcase, Layers,
+  Search, Filter, CheckCircle2, Clock, Trash2, Plus, ExternalLink, Send
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
 import ServiceQuote from './ServiceQuote.jsx';
@@ -13,8 +14,9 @@ import ProjectsView from './ProjectsView.jsx';
 import LeadsView from './LeadsView.jsx';
 import CustomersView from './CustomersView.jsx';
 import UsersAdminView from './UsersAdminView.jsx';
+import PricingAdminView from './PricingAdminView.jsx';
+import ContentEditorView from './ContentEditorView.jsx';
 
-const SECTIONS = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
 const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
 
 function decodeToken(token) {
@@ -79,7 +81,7 @@ function Login({ onLogin }) {
 }
 
 function Dashboard({ user, onLogout }) {
-  const initialTab = user.role === 'janitor' ? 'projects' : 'overview';
+  const initialTab = user?.role === 'janitor' ? 'projects' : 'overview';
   const [tab, setTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -117,7 +119,7 @@ function Dashboard({ user, onLogout }) {
 
   let navs = [];
 
-  if (user.role === 'janitor') {
+  if (user?.role === 'janitor') {
     navs = [
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
       { id: 'bookings', label: 'Assigned Schedule', icon: <CalendarCheck size={19} /> },
@@ -143,7 +145,7 @@ function Dashboard({ user, onLogout }) {
   if (!navs.find(n => n.id === tab)) setTab(navs[0].id);
 
   // User initials for avatar
-  const initials = (user.name || 'Admin')
+  const initials = (user?.name || 'Admin')
     .split(' ')
     .map(p => p[0])
     .join('')
@@ -224,9 +226,9 @@ function Dashboard({ user, onLogout }) {
             </div>
             {!collapsed && (
               <div className="user-info-text">
-                <div className="user-name-title">{user.name}</div>
-                <div className={`user-role-tag ${user.role}`}>
-                  {user.role === 'janitor' ? 'FIELD JANITOR' : 'ADMINISTRATOR'}
+                <div className="user-name-title">{user?.name || 'Administrator'}</div>
+                <div className={`user-role-tag ${user?.role || 'admin'}`}>
+                  {user?.role === 'janitor' ? 'FIELD JANITOR' : 'ADMINISTRATOR'}
                 </div>
               </div>
             )}
@@ -283,8 +285,8 @@ function Dashboard({ user, onLogout }) {
           {tab === 'reviews' && <ReviewsAdmin />}
           {tab === 'users' && <UsersAdminView user={user} />}
           {tab === 'subscribers' && <Subscribers />}
-          {tab === 'pricing' && <PricingAdmin />}
-          {tab === 'content' && <ContentEditor />}
+          {tab === 'pricing' && <PricingAdminView user={user} />}
+          {tab === 'content' && <ContentEditorView user={user} />}
         </div>
       </main>
     </div>
@@ -305,17 +307,6 @@ function Overview({ user, setTab }) {
 
   const pendingBookings = useMemo(() => bookings.filter(b => b.status === 'pending').length, [bookings]);
   const activeProjectsCount = useMemo(() => projects.filter(p => p.status !== 'completed').length, [projects]);
-  const estimatedRevenue = useMemo(() => {
-    return bookings.reduce((sum, b) => {
-      if (b.status !== 'cancelled' && b.status !== 'pending' && b.price) {
-        const bDate = new Date(b.date);
-        if (isSameMonth(bDate, currentMonth)) {
-          return sum + Number(b.price);
-        }
-      }
-      return sum;
-    }, 0);
-  }, [bookings, currentMonth]);
 
   // Calendar logic
   const monthStart = startOfMonth(currentMonth);
@@ -362,7 +353,7 @@ function Overview({ user, setTab }) {
           </div>
         </div>
 
-        {user.role === 'admin' && (
+        {user?.role === 'admin' && (
           <div className="modern-kpi-card cyan" onClick={() => setTab('quotes')}>
             <div className="kpi-icon-badge cyan"><FileText size={20} /></div>
             <div className="kpi-info-col">
@@ -432,12 +423,12 @@ function Overview({ user, setTab }) {
 function Modal({ title, onClose, children }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>{title}</h3>
-          <button className="modal-close" onClick={onClose}><X size={20} /></button>
+      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '680px', borderRadius: '12px' }}>
+        <div className="modal-header" style={{ padding: '18px 24px', borderBottom: '1px solid var(--line)' }}>
+          <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'var(--navy)' }}>{title}</h3>
+          <button className="modal-close" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
         </div>
-        <div className="modal-body">
+        <div className="modal-body" style={{ padding: '24px' }}>
           {children}
         </div>
       </div>
@@ -447,6 +438,8 @@ function Modal({ title, onClose, children }) {
 
 function Bookings({ user, setTab }) {
   const [rows, setRows] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [activeItem, setActiveItem] = useState(null);
   const [newNote, setNewNote] = useState('');
   const [price, setPrice] = useState(0);
@@ -522,7 +515,6 @@ function Bookings({ user, setTab }) {
       setActiveItem(null);
       setTab('quotes');
     } catch (err) {
-      // If already created, simply switch to quotes tab
       setActiveItem(null);
       setTab('quotes');
     } finally {
@@ -530,23 +522,153 @@ function Bookings({ user, setTab }) {
     }
   }
 
+  const filteredRows = useMemo(() => {
+    return rows.filter(r => {
+      const matchesSearch = !searchTerm || 
+        r.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.service?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.address?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
+      return matchesSearch && matchesStatus;
+    });
+  }, [rows, searchTerm, filterStatus]);
+
+  const counts = useMemo(() => ({
+    all: rows.length,
+    pending: rows.filter(r => r.status === 'pending').length,
+    scheduled: rows.filter(r => r.status === 'scheduled').length,
+    inProgress: rows.filter(r => r.status === 'in-progress').length,
+    completed: rows.filter(r => r.status === 'completed').length,
+  }), [rows]);
+
   return (
-    <>
-      <div className="table-card">
-        <table className="table">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <CalendarCheck size={24} color="var(--blue)" />
+            Bookings &amp; Service Jobs
+          </h2>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            Direct customer booking requests, appointments, site dispatches, and quote conversions.
+          </p>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Bookings</span>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>{counts.all}</div>
+        </div>
+        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #f59e0b' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#d97706', textTransform: 'uppercase' }}>Pending Review</span>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#d97706', marginTop: '4px' }}>{counts.pending}</div>
+        </div>
+        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #0e5fd8' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0e5fd8', textTransform: 'uppercase' }}>Scheduled</span>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0e5fd8', marginTop: '4px' }}>{counts.scheduled}</div>
+        </div>
+        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #10b981' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase' }}>Completed</span>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#059669', marginTop: '4px' }}>{counts.completed}</div>
+        </div>
+      </div>
+
+      {/* Search & Filter Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', background: '#ffffff', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '240px' }}>
+          <Search size={16} color="var(--text-muted)" />
+          <input 
+            type="text" 
+            placeholder="Search bookings by client, phone, email, service..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          {['all', 'pending', 'scheduled', 'in-progress', 'completed', 'cancelled'].map(st => (
+            <button
+              key={st}
+              onClick={() => setFilterStatus(st)}
+              style={{
+                padding: '5px 12px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                borderRadius: '6px',
+                border: '1px solid',
+                borderColor: filterStatus === st ? 'var(--blue)' : 'var(--line)',
+                background: filterStatus === st ? 'var(--blue)' : '#ffffff',
+                color: filterStatus === st ? '#ffffff' : 'var(--text-muted)',
+                cursor: 'pointer',
+                textTransform: 'capitalize'
+              }}
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Bookings Table */}
+      <div className="table-card" style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid var(--line)', overflow: 'hidden' }}>
+        <table className="table" style={{ margin: 0 }}>
           <thead>
-            <tr><th>Customer</th><th>Service</th><th>Service Date</th><th>Status</th><th></th></tr>
+            <tr style={{ background: '#f8fafc' }}>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>CUSTOMER</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>SERVICE TYPE</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>DATE &amp; TIME</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>PRICE</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>STATUS</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>ACTION</th>
+            </tr>
           </thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan="5">No bookings found.</td></tr>}
-            {rows.map((b) => (
-              <tr key={b.id}>
-                <td><strong>{b.name}</strong><br/><small style={{ color: 'var(--muted)' }}>{b.phone}</small></td>
-                <td>{b.service}</td>
-                <td>{b.date} {b.time}</td>
-                <td><span className={`pill ${b.status}`}>{b.status}</span></td>
-                <td style={{ textAlign: 'right' }}>
-                  <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => viewItem(b)}>Manage Job</button>
+            {filteredRows.length === 0 && (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  No bookings found matching current filters.
+                </td>
+              </tr>
+            )}
+            {filteredRows.map((b) => (
+              <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{b.name}</div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{b.phone} • {b.email}</div>
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--navy)' }}>{b.service}</span>
+                  {b.address && <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>{b.address}</div>}
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--navy)' }}>{b.date}</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{b.time || 'Flexible Time'}</div>
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{ fontWeight: 700, color: b.price ? '#15803d' : 'var(--text-muted)' }}>
+                    {b.price ? `$${Number(b.price).toLocaleString()}` : 'Unquoted'}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span className={`pill ${b.status}`} style={{ textTransform: 'uppercase', fontSize: '0.72rem', fontWeight: 700 }}>
+                    {b.status}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                  <button 
+                    className="btn btn-outline" 
+                    style={{ padding: '6px 14px', fontSize: '0.82rem', borderRadius: '6px', fontWeight: 600 }} 
+                    onClick={() => viewItem(b)}
+                  >
+                    Manage Job
+                  </button>
                 </td>
               </tr>
             ))}
@@ -556,146 +678,128 @@ function Bookings({ user, setTab }) {
 
       {activeItem && (
         <Modal title={`Manage Job: ${activeItem.service}`} onClose={() => setActiveItem(null)}>
-          <div className="detail-grid">
-            <div className="detail-row">
-              <span className="detail-label">Customer</span>
-              <span className="detail-value">{activeItem.name}</span>
-            </div>
-            <div className="form-row">
-              <div className="detail-row">
-                <span className="detail-label">Email</span>
-                <span className="detail-value">
-                  {activeItem.email ? <a href={`mailto:${activeItem.email}`} style={{ color: 'var(--blue)', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Mail size={14} /> {activeItem.email}</a> : 'N/A'}
-                </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: '#f8fafc', padding: '16px', borderRadius: '8px' }}>
+              <div>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>{activeItem.name}</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                  {activeItem.email && <a href={`mailto:${activeItem.email}`} style={{ color: 'var(--blue)', textDecoration: 'none', marginRight: '12px' }}>✉ {activeItem.email}</a>}
+                  {activeItem.phone && <span>📞 {activeItem.phone}</span>}
+                </div>
               </div>
-              <div className="detail-row">
-                <span className="detail-label">Phone</span>
-                <span className="detail-value">{activeItem.phone || 'N/A'}</span>
-              </div>
-            </div>
-            
-            <div className="detail-row">
-              <span className="detail-label">Address</span>
-              <div className="detail-value-box" style={{ padding: 12 }}>{activeItem.address || 'Not provided'}</div>
-            </div>
-            
-            <div className="detail-row">
-              <span className="detail-label">Customer Request Notes</span>
-              <div className="detail-value-box" style={{ padding: 12, background: '#fff4dd', color: '#a06a00' }}>{activeItem.notes || 'No customer notes provided.'}</div>
+              <span className={`pill ${activeItem.status}`} style={{ textTransform: 'uppercase', fontWeight: 700, fontSize: '0.75rem' }}>
+                {activeItem.status}
+              </span>
             </div>
 
-            <hr style={{ border: 'none', borderTop: '1px dashed var(--line)', margin: '10px 0' }} />
+            {activeItem.address && (
+              <div>
+                <label className="form-note" style={{ display: 'block', marginBottom: '4px', fontWeight: 600 }}>Service Address</label>
+                <div style={{ padding: '10px 14px', background: '#ffffff', border: '1px solid var(--line)', borderRadius: '6px', fontSize: '0.88rem' }}>
+                  {activeItem.address}
+                </div>
+              </div>
+            )}
 
-            <h4 style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: '1.1rem' }}>Internal Workflow</h4>
-            
-            <div className="form-row" style={{ alignItems: 'flex-end' }}>
-              <div className="detail-row">
-                <span className="detail-label">Job Status</span>
-                <select className="form-select" value={activeItem.status} onChange={(e) => updateBooking('status', e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}>
+            {activeItem.notes && (
+              <div>
+                <label className="form-note" style={{ display: 'block', marginBottom: '4px', fontWeight: 600 }}>Customer Request Notes</label>
+                <div style={{ padding: '12px 14px', background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e', borderRadius: '6px', fontSize: '0.88rem' }}>
+                  {activeItem.notes}
+                </div>
+              </div>
+            )}
+
+            <hr style={{ border: 'none', borderTop: '1px solid var(--line)', margin: '4px 0' }} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <div>
+                <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Update Status</label>
+                <select 
+                  value={activeItem.status} 
+                  onChange={(e) => updateBooking('status', e.target.value)} 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.88rem' }}
+                >
                   {STATUSES.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
                 </select>
               </div>
-              {user.role === 'admin' && (
-                <div className="detail-row">
-                  <span className="detail-label">Quoted Price ($)</span>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <input type="number" value={price} onChange={e => setPrice(e.target.value)} style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)', width: 100 }} />
+
+              {user?.role === 'admin' && (
+                <div>
+                  <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Quoted Price ($)</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type="number" 
+                      value={price} 
+                      onChange={e => setPrice(e.target.value)} 
+                      style={{ flex: 1, padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.88rem' }} 
+                    />
                     <button 
                       className={`btn ${priceSaved ? 'btn-outline' : 'btn-blue'}`}
-                      style={priceSaved ? { borderColor: '#138a4d', color: '#138a4d' } : {}}
+                      style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 600 }}
                       onClick={() => updateBooking('price', price)}
                     >
-                      {priceSaved ? 'Saved!' : 'Save Price'}
+                      {priceSaved ? 'Saved!' : 'Save'}
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {user.role === 'admin' && (
-              <div className="detail-row" style={{ marginTop: 10 }}>
-                <span className="detail-label">Quotes &amp; Invoicing</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                  <button className="btn btn-blue" onClick={handleGenerateOrOpenQuote} disabled={quoteGenerating}>
-                    <FileText size={16} style={{ marginRight: 6 }} /> 
-                    {quoteGenerating ? 'Opening Quote...' : 'Create / View Service Quote'}
-                  </button>
-                  <button className="btn btn-outline" onClick={generateInvoice} disabled={!activeItem.email}>
-                    <FileText size={16} style={{ marginRight: 6 }} /> 
-                    {invoiceSent ? 'Invoice Sent!' : 'Generate & Email Invoice'}
-                  </button>
-                  {activeItem.invoiceSentAt && (
-                    <small style={{ color: 'var(--muted)' }}>Last sent: {new Date(activeItem.invoiceSentAt).toLocaleString()}</small>
-                  )}
-                </div>
+            {user?.role === 'admin' && (
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
+                <button className="btn btn-blue" onClick={handleGenerateOrOpenQuote} disabled={quoteGenerating} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: 600 }}>
+                  <FileText size={15} /> 
+                  {quoteGenerating ? 'Generating...' : 'Convert to Service Quote'}
+                </button>
+                <button className="btn btn-outline" onClick={generateInvoice} disabled={!activeItem.email} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: 600 }}>
+                  <Send size={15} /> 
+                  {invoiceSent ? 'Invoice Sent!' : 'Send Invoice Email'}
+                </button>
               </div>
             )}
 
-            <div className="detail-row">
-              <span className="detail-label">Job Attachments</span>
-              <div className="internal-notes" style={{ marginBottom: 12 }}>
-                {!activeItem.attachments || activeItem.attachments.length === 0 ? (
-                  <div style={{ fontSize: '0.85rem', color: 'var(--muted)', textAlign: 'center' }}>No files attached.</div>
-                ) : (
-                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    {activeItem.attachments.map(att => (
-                      <a key={att.id} href={att.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline" style={{ fontSize: '0.8rem', padding: '6px 10px' }}>
-                        <Paperclip size={14} style={{ marginRight: 4 }} /> {att.originalName}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <label className="btn btn-outline" style={{ display: 'inline-flex', cursor: 'pointer' }}>
-                <Upload size={16} style={{ marginRight: 6 }} />
-                {uploading ? 'Uploading...' : 'Upload File'}
-                <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} disabled={uploading} />
-              </label>
-            </div>
-
-            <div className="detail-row">
-              <span className="detail-label">Team Notes / Updates</span>
-              
-              <div className="internal-notes">
-                {!activeItem.internalNotes || activeItem.internalNotes.length === 0 ? (
-                  <div style={{ fontSize: '0.85rem', color: 'var(--muted)', textAlign: 'center' }}>No internal notes yet.</div>
+            {/* Internal Notes */}
+            <div>
+              <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Internal Operations Log</label>
+              <div style={{ maxHeight: '160px', overflowY: 'auto', background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid var(--line)', marginBottom: '10px' }}>
+                {(!activeItem.internalNotes || activeItem.internalNotes.length === 0) ? (
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', textAlign: 'center', padding: '8px' }}>No internal notes recorded.</div>
                 ) : (
                   activeItem.internalNotes.map(n => (
-                    <div key={n.id} className="note-item">
-                      <div className="note-meta">
+                    <div key={n.id} style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid #e2e8f0' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         <strong>{n.author}</strong>
-                        <span>{new Date(n.createdAt).toLocaleString()}</span>
+                        <span>{new Date(n.createdAt).toLocaleDateString()}</span>
                       </div>
-                      <div>{n.text}</div>
+                      <div style={{ fontSize: '0.84rem', color: 'var(--navy)', marginTop: '2px' }}>{n.text}</div>
                     </div>
                   ))
                 )}
               </div>
-
-              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
                 <input 
                   type="text" 
-                  placeholder="Add a new update or note..." 
+                  placeholder="Add note for team..." 
                   value={newNote} 
                   onChange={e => setNewNote(e.target.value)} 
                   onKeyDown={e => { if (e.key === 'Enter') updateBooking('note', newNote) }}
-                  style={{ flex: 1, padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}
+                  style={{ flex: 1, padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.86rem' }}
                 />
-                <button className="btn btn-outline" disabled={!newNote.trim()} onClick={() => updateBooking('note', newNote)}>Add Note</button>
+                <button className="btn btn-outline" disabled={!newNote.trim()} onClick={() => updateBooking('note', newNote)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '0.82rem' }}>Add</button>
               </div>
             </div>
-
           </div>
         </Modal>
       )}
-    </>
+    </div>
   );
 }
 
-
-
 function Messages() {
   const [rows, setRows] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterRead, setFilterRead] = useState('all');
   const [activeItem, setActiveItem] = useState(null);
 
   const load = () => api.get('/api/admin/messages').then(setRows).catch(console.error);
@@ -710,23 +814,134 @@ function Messages() {
     load();
   }
 
+  const filtered = useMemo(() => {
+    return rows.filter(m => {
+      const matchSearch = !searchTerm || 
+        m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        m.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        m.message?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchRead = filterRead === 'all' || 
+        (filterRead === 'unread' && !m.read) || 
+        (filterRead === 'read' && m.read);
+
+      return matchSearch && matchRead;
+    });
+  }, [rows, searchTerm, filterRead]);
+
+  const unreadCount = rows.filter(m => !m.read).length;
+
   return (
-    <>
-      <div className="table-card">
-        <table className="table">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <MessageSquare size={24} color="var(--blue)" />
+            Inquiries &amp; Customer Messages
+          </h2>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            Messages received through the public contact form and quote inquiry requests.
+          </p>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Total Inquiries</span>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>{rows.length}</div>
+        </div>
+        <div className="card" style={{ padding: '16px 20px', background: '#ffffff', border: '1px solid var(--line)', borderLeft: '4px solid #ef4444' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase' }}>Unread Inquiries</span>
+          <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#dc2626', marginTop: '4px' }}>{unreadCount}</div>
+        </div>
+      </div>
+
+      {/* Search & Filter Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', background: '#ffffff', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '240px' }}>
+          <Search size={16} color="var(--text-muted)" />
+          <input 
+            type="text" 
+            placeholder="Search inquiries by sender, email, text..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {['all', 'unread', 'read'].map(f => (
+            <button
+              key={f}
+              onClick={() => setFilterRead(f)}
+              style={{
+                padding: '5px 14px',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                borderRadius: '6px',
+                border: '1px solid',
+                borderColor: filterRead === f ? 'var(--blue)' : 'var(--line)',
+                background: filterRead === f ? 'var(--blue)' : '#ffffff',
+                color: filterRead === f ? '#ffffff' : 'var(--text-muted)',
+                cursor: 'pointer',
+                textTransform: 'capitalize'
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Messages Table */}
+      <div className="table-card" style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid var(--line)', overflow: 'hidden' }}>
+        <table className="table" style={{ margin: 0 }}>
           <thead>
-            <tr><th>Received</th><th>Name</th><th>Email</th><th>Status</th><th></th></tr>
+            <tr style={{ background: '#f8fafc' }}>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>RECEIVED</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>SENDER</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>MESSAGE PREVIEW</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>STATUS</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>ACTION</th>
+            </tr>
           </thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan="5">No messages yet.</td></tr>}
-            {rows.map((m) => (
-              <tr key={m.id} style={{ opacity: m.read ? 0.6 : 1 }}>
-                <td>{new Date(m.createdAt).toLocaleDateString()}</td>
-                <td><strong>{m.name}</strong></td>
-                <td>{m.email}</td>
-                <td>{m.read ? <span className="pill done">Read</span> : <span className="pill pending">New</span>}</td>
-                <td style={{ textAlign: 'right' }}>
-                  <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => { setActiveItem(m); if (!m.read) toggleRead(m); }}>Read</button>
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  No messages found.
+                </td>
+              </tr>
+            )}
+            {filtered.map((m) => (
+              <tr key={m.id} style={{ background: m.read ? '#ffffff' : '#f0f9ff', borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '14px 16px', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                  {new Date(m.createdAt).toLocaleDateString()}
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{m.name}</div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{m.email} {m.phone ? `• ${m.phone}` : ''}</div>
+                </td>
+                <td style={{ padding: '14px 16px', maxWidth: '300px' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--navy)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {m.message}
+                  </div>
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span className={`pill ${m.read ? 'done' : 'pending'}`} style={{ textTransform: 'uppercase', fontSize: '0.72rem', fontWeight: 700 }}>
+                    {m.read ? 'READ' : 'NEW'}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                  <button 
+                    className="btn btn-outline" 
+                    style={{ padding: '6px 14px', fontSize: '0.82rem', borderRadius: '6px', fontWeight: 600 }} 
+                    onClick={() => { setActiveItem(m); if (!m.read) toggleRead(m); }}
+                  >
+                    Read
+                  </button>
                 </td>
               </tr>
             ))}
@@ -736,219 +951,294 @@ function Messages() {
 
       {activeItem && (
         <Modal title={`Message from ${activeItem.name}`} onClose={() => setActiveItem(null)}>
-          <div className="detail-grid">
-            <div className="form-row">
-              <div className="detail-row">
-                <span className="detail-label">Email</span>
-                <span className="detail-value">
-                  <a href={`mailto:${activeItem.email}`} style={{ color: 'var(--blue)', display: 'inline-flex', alignItems: 'center', gap: 4 }}><Mail size={14} /> {activeItem.email}</a>
-                </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', background: '#f8fafc', padding: '14px', borderRadius: '8px' }}>
+              <div>
+                <span className="form-note" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600 }}>Email Address</span>
+                <a href={`mailto:${activeItem.email}`} style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '0.88rem', textDecoration: 'none' }}>
+                  {activeItem.email}
+                </a>
               </div>
-              <div className="detail-row">
-                <span className="detail-label">Phone</span>
-                <span className="detail-value">{activeItem.phone || 'N/A'}</span>
+              <div>
+                <span className="form-note" style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600 }}>Phone Number</span>
+                <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--navy)' }}>{activeItem.phone || 'Not provided'}</span>
               </div>
             </div>
-            <div className="detail-row">
-              <span className="detail-label">Message</span>
-              <div className="detail-value-box" style={{ whiteSpace: 'pre-wrap' }}>{activeItem.message}</div>
+
+            <div>
+              <span className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Message Content</span>
+              <div style={{ padding: '14px', background: '#ffffff', border: '1px solid var(--line)', borderRadius: '8px', fontSize: '0.9rem', lineHeight: '1.5', whiteSpace: 'pre-wrap', color: 'var(--navy)' }}>
+                {activeItem.message}
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
-              <button className="btn btn-outline" onClick={() => toggleRead(activeItem)}>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+              <a href={`mailto:${activeItem.email}?subject=Dozeles Cleaning Services Follow-Up`} className="btn btn-blue" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: 600 }}>
+                <Mail size={15} /> Reply via Email
+              </a>
+              <button className="btn btn-outline" onClick={() => toggleRead(activeItem)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '0.82rem' }}>
                 Mark as {activeItem.read ? 'Unread' : 'Read'}
               </button>
             </div>
           </div>
         </Modal>
       )}
-    </>
+    </div>
   );
 }
 
 function ReviewsAdmin() {
   const [rows, setRows] = useState([]);
   const [draft, setDraft] = useState({ name: '', rating: 5, text: '', image: '' });
+  const [submitting, setSubmitting] = useState(false);
   const load = () => api.get('/api/reviews').then(setRows).catch(console.error);
   useEffect(() => { load(); }, []);
 
   async function add(e) {
     e.preventDefault();
-    await api.post('/api/admin/reviews', { ...draft, rating: Number(draft.rating) });
-    setDraft({ name: '', rating: 5, text: '', image: '' });
-    load();
+    setSubmitting(true);
+    try {
+      await api.post('/api/admin/reviews', { ...draft, rating: Number(draft.rating) });
+      setDraft({ name: '', rating: 5, text: '', image: '' });
+      load();
+    } catch (err) {
+      alert('Error saving review: ' + err.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
+
   async function remove(id) {
-    if (confirm('Delete this review?')) { await api.del(`/api/admin/reviews/${id}`); load(); }
+    if (confirm('Delete this verified review?')) { 
+      await api.del(`/api/admin/reviews/${id}`); 
+      load(); 
+    }
   }
 
   return (
-    <>
-      <form className="form card" onSubmit={add} style={{ marginBottom: 30, maxWidth: 800 }}>
-        <h3 style={{ marginBottom: 16 }}>Add New Review</h3>
-        <div className="form-row">
-          <input placeholder="Customer Name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
-          <input type="number" min="1" max="5" placeholder="Rating (1-5)" value={draft.rating} onChange={(e) => setDraft({ ...draft, rating: e.target.value })} />
-        </div>
-        <input placeholder="Reviewer Photo URL (optional)" value={draft.image} onChange={(e) => setDraft({ ...draft, image: e.target.value })} />
-        <textarea placeholder="Review text" value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} required style={{ minHeight: 100 }} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <button className="btn btn-blue">Save Review</button>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Star size={24} color="#f59e0b" />
+            Client Reviews &amp; Testimonials
+          </h2>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            Manage featured customer testimonials and public star reviews displayed on the website.
+          </p>
         </div>
-      </form>
+      </div>
+
+      {/* Add Review Card */}
+      <div className="card" style={{ padding: '24px', background: '#ffffff', border: '1px solid var(--line)', borderRadius: '10px' }}>
+        <h3 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: 700, color: 'var(--navy)' }}>Add Verified Testimonial</h3>
+        <form onSubmit={add} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+            <div>
+              <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Customer Name</label>
+              <input 
+                placeholder="e.g. Sarah Jenkins" 
+                value={draft.name} 
+                onChange={(e) => setDraft({ ...draft, name: e.target.value })} 
+                required 
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.88rem' }}
+              />
+            </div>
+
+            <div>
+              <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Star Rating (1 - 5)</label>
+              <select 
+                value={draft.rating} 
+                onChange={(e) => setDraft({ ...draft, rating: e.target.value })}
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.88rem' }}
+              >
+                <option value="5">★★★★★ (5 Stars - Exceptional)</option>
+                <option value="4">★★★★☆ (4 Stars - Great)</option>
+                <option value="3">★★★☆☆ (3 Stars - Average)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Reviewer Photo URL (Optional)</label>
+              <input 
+                placeholder="https://..." 
+                value={draft.image} 
+                onChange={(e) => setDraft({ ...draft, image: e.target.value })} 
+                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.88rem' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="form-note" style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Review / Testimonial Text</label>
+            <textarea 
+              placeholder="What did the client say about Dozeles cleaning services?" 
+              value={draft.text} 
+              onChange={(e) => setDraft({ ...draft, text: e.target.value })} 
+              required 
+              rows={3}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.88rem' }} 
+            />
+          </div>
+
+          <div>
+            <button className="btn btn-blue" disabled={submitting} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '6px', fontWeight: 600 }}>
+              <Plus size={16} /> {submitting ? 'Saving...' : 'Publish Testimonial'}
+            </button>
+          </div>
+        </form>
+      </div>
       
-      <div className="table-card">
-        <table className="table">
-          <thead><tr><th>Name</th><th>Rating</th><th>Text</th><th></th></tr></thead>
+      {/* Reviews Table */}
+      <div className="table-card" style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid var(--line)', overflow: 'hidden' }}>
+        <table className="table" style={{ margin: 0 }}>
+          <thead>
+            <tr style={{ background: '#f8fafc' }}>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>CLIENT</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>RATING</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>FEEDBACK</th>
+              <th style={{ padding: '12px 16px', textAlign: 'right' }}>ACTION</th>
+            </tr>
+          </thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan="4">No reviews yet.</td></tr>}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  No reviews published yet.
+                </td>
+              </tr>
+            )}
             {rows.map((r) => (
-              <tr key={r.id}>
-                <td><strong>{r.name}</strong></td>
-                <td style={{ color: '#f5b301', letterSpacing: 2 }}>{'★'.repeat(r.rating || 5)}</td>
-                <td><small>{r.text}</small></td>
-                <td style={{ textAlign: 'right' }}><button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '0.75rem', borderColor: '#b3261e', color: '#b3261e' }} onClick={() => remove(r.id)}>Delete</button></td>
+              <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--navy)' }}>{r.name}</div>
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span style={{ color: '#f59e0b', fontSize: '1rem', letterSpacing: '2px' }}>
+                    {'★'.repeat(r.rating || 5)}
+                  </span>
+                </td>
+                <td style={{ padding: '14px 16px', maxWidth: '400px' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--navy)', lineHeight: '1.4' }}>{r.text}</div>
+                </td>
+                <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                  <button 
+                    className="btn btn-outline" 
+                    style={{ padding: '4px 10px', fontSize: '0.78rem', borderColor: '#ef4444', color: '#ef4444', borderRadius: '6px' }} 
+                    onClick={() => remove(r.id)}
+                  >
+                    <Trash2 size={13} style={{ marginRight: '4px' }} /> Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
 
 function Subscribers() {
   const [rows, setRows] = useState([]);
-  useEffect(() => { api.get('/api/admin/subscribers').then(setRows).catch(console.error); }, []);
-  return (
-    <div className="table-card">
-      <table className="table">
-        <thead><tr><th>Email Address</th><th>Date Subscribed</th></tr></thead>
-        <tbody>
-          {rows.length === 0 && <tr><td colSpan="2">No subscribers yet.</td></tr>}
-          {rows.map((s) => (
-            <tr key={s.email}>
-              <td><strong>{s.email}</strong></td>
-              <td>{new Date(s.createdAt).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+  const [searchTerm, setSearchTerm] = useState('');
 
-function ContentEditor() {
-  const [section, setSection] = useState('site');
-  const [text, setText] = useState('');
-  const [msg, setMsg] = useState(null);
-
-  useEffect(() => {
-    api.get('/api/content').then((c) => setText(JSON.stringify(c[section], null, 2))).catch(console.error);
-    setMsg(null);
-  }, [section]);
-
-  async function save() {
-    try {
-      const parsed = JSON.parse(text);
-      await api.put(`/api/admin/content/${section}`, parsed);
-      setMsg({ ok: true, msg: 'Saved successfully! The live site has been updated.' });
-    } catch (e) {
-      setMsg({ ok: false, msg: 'Invalid JSON format: ' + e.message });
-    }
-  }
-
-  return (
-    <div style={{ maxWidth: 1000 }}>
-      <p style={{ marginBottom: 20, color: 'var(--muted)', fontSize: '0.95rem' }}>
-        Select a section of the website to edit its content via JSON. Make sure the JSON syntax is valid before saving.
-      </p>
-      <div className="admin-tabs">
-        {SECTIONS.map((s) => (
-          <button key={s} className={section === s ? 'on' : ''} onClick={() => setSection(s)} style={{ textTransform: 'capitalize' }}>
-            {s.replace(/([A-Z])/g, ' $1')}
-          </button>
-        ))}
-      </div>
-      <textarea className="admin-json" value={text} onChange={(e) => setText(e.target.value)} spellCheck="false" />
-      <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button className="btn btn-blue" onClick={save} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-          <Edit3 size={16} /> Save Changes
-        </button>
-        {msg && <div className={`form-note ${msg.ok ? 'ok' : 'err'}`} style={{ margin: 0 }}>{msg.msg}</div>}
-      </div>
-    </div>
-  );
-}
-
-function PricingAdmin() {
-  const [config, setConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    api.get('/api/pricing').then(c => {
-      setConfig(c);
-      setLoading(false);
-    });
+  useEffect(() => { 
+    api.get('/api/admin/subscribers').then(setRows).catch(console.error); 
   }, []);
 
-  const handleChange = (cat, key, value) => {
-    setConfig(c => ({ ...c, [cat]: { ...c[cat], [key]: Number(value) } }));
+  const exportCSV = () => {
+    if (rows.length === 0) return alert('No subscribers to export.');
+    const csvContent = 'data:text/csv;charset=utf-8,' + ['Email,Subscribed Date'].concat(rows.map(s => `${s.email},${new Date(s.createdAt).toISOString()}`)).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `dozeles-subscribers-${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const handleComChange = (key, value) => {
-    setConfig(c => ({ ...c, [key]: Number(value) }));
-  };
-
-  const save = async () => {
-    setSaving(true);
-    try {
-      await api.post('/api/pricing', config);
-      alert('Pricing updated successfully!');
-    } catch (e) {
-      alert('Error saving pricing: ' + e.message);
-    }
-    setSaving(false);
-  };
-
-  if (loading) return <div>Loading pricing engine...</div>;
+  const filtered = rows.filter(s => !searchTerm || s.email?.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="card" style={{ maxWidth: 800 }}>
-      <h2 style={{ marginBottom: 20 }}>Pricing Engine</h2>
-      <div style={{ marginBottom: 30 }}>
-        <h3 style={{ color: 'var(--blue)', marginBottom: 15 }}>Residential Pricing</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15 }}>
-          <div>
-            <label className="form-note">Base Price ($)</label>
-            <input type="number" value={config?.RES?.BASE || 0} onChange={e => handleChange('RES', 'BASE', e.target.value)} />
-          </div>
-          <div>
-            <label className="form-note">Per Bedroom ($)</label>
-            <input type="number" value={config?.RES?.PER_BED || 0} onChange={e => handleChange('RES', 'PER_BED', e.target.value)} />
-          </div>
-          <div>
-            <label className="form-note">Per Bathroom ($)</label>
-            <input type="number" value={config?.RES?.PER_BATH || 0} onChange={e => handleChange('RES', 'PER_BATH', e.target.value)} />
-          </div>
-          <div>
-            <label className="form-note">Minimum Price ($)</label>
-            <input type="number" value={config?.RES?.MIN || 0} onChange={e => handleChange('RES', 'MIN', e.target.value)} />
-          </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Mail size={24} color="var(--blue)" />
+            Newsletter Subscribers &amp; Email List
+          </h2>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            Subscribers who opted in via the website footer newsletter subscription form.
+          </p>
+        </div>
+
+        <button 
+          onClick={exportCSV}
+          className="btn btn-outline"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '9px 18px', borderRadius: '8px', fontWeight: 600 }}
+        >
+          <Download size={16} /> Export CSV List
+        </button>
+      </div>
+
+      {/* KPI & Search Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', background: '#ffffff', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '240px' }}>
+          <Search size={16} color="var(--text-muted)" />
+          <input 
+            type="text" 
+            placeholder="Search email subscribers..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.9rem' }}
+          />
+        </div>
+
+        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--navy)' }}>
+          {rows.length} Total Registered Subscribers
         </div>
       </div>
-      
-      <div style={{ marginBottom: 30 }}>
-        <h3 style={{ color: 'var(--blue)', marginBottom: 15 }}>Commercial Pricing</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15 }}>
-          <div>
-            <label className="form-note">Minimum Monthly ($)</label>
-            <input type="number" value={config?.COM_MIN_MONTHLY || 0} onChange={e => handleComChange('COM_MIN_MONTHLY', e.target.value)} />
-          </div>
-        </div>
+
+      {/* Subscribers Table */}
+      <div className="table-card" style={{ background: '#ffffff', borderRadius: '10px', border: '1px solid var(--line)', overflow: 'hidden' }}>
+        <table className="table" style={{ margin: 0 }}>
+          <thead>
+            <tr style={{ background: '#f8fafc' }}>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>EMAIL ADDRESS</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>JOIN DATE</th>
+              <th style={{ padding: '12px 16px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  No subscribers found.
+                </td>
+              </tr>
+            )}
+            {filtered.map((s) => (
+              <tr key={s.email} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <td style={{ padding: '14px 16px', fontWeight: 600, color: 'var(--navy)' }}>
+                  <a href={`mailto:${s.email}`} style={{ color: 'var(--navy)', textDecoration: 'none' }}>
+                    {s.email}
+                  </a>
+                </td>
+                <td style={{ padding: '14px 16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  {new Date(s.createdAt).toLocaleDateString()}
+                </td>
+                <td style={{ padding: '14px 16px' }}>
+                  <span className="pill done" style={{ fontSize: '0.72rem', fontWeight: 700 }}>ACTIVE</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      
-      <button className="btn btn-blue" onClick={save} disabled={saving}>{saving ? 'Saving...' : 'Save Pricing Config'}</button>
     </div>
   );
 }
