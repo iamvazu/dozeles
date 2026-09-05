@@ -95,6 +95,40 @@ export default function ProjectsView({ user }) {
     uploadPhoto(file);
   };
 
+  const [checkingIn, setCheckingIn] = useState(false);
+
+  const handleGPSCheckin = () => {
+    if (!activeProject) return;
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your device browser.');
+      return;
+    }
+    setCheckingIn(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await api.post(`/api/admin/projects/${activeProject.id}/checkin`, {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: Math.round(pos.coords.accuracy)
+          });
+          setActiveProject(res.project);
+          setProjects(projects.map(p => p.id === res.project.id ? res.project : p));
+          alert(`✅ Verified check-in recorded at ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}!`);
+        } catch (err) {
+          alert('Check-in failed: ' + err.message);
+        } finally {
+          setCheckingIn(false);
+        }
+      },
+      (err) => {
+        setCheckingIn(false);
+        alert('Could not retrieve GPS location: ' + err.message + '\nPlease allow location access.');
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const uploadPhoto = async (file) => {
     if (!file || !activeProject) return;
 
@@ -161,8 +195,8 @@ export default function ProjectsView({ user }) {
     }
   };
 
-  const completedCount = activeProject?.checklist?.filter(c => c.completed).length || 0;
-  const totalChecklist = activeProject?.checklist?.length || 0;
+  const completedCount = (activeProject?.checklist || []).filter(c => c.completed).length;
+  const totalChecklist = (activeProject?.checklist || []).length;
   const progressPercent = totalChecklist > 0 ? Math.round((completedCount / totalChecklist) * 100) : 0;
 
   const filteredProjects = projects.filter(p => {
@@ -176,23 +210,20 @@ export default function ProjectsView({ user }) {
 
   return (
     <div className="projects-layout">
-      {/* Sidebar List */}
+      {/* Sidebar List of Projects */}
       <div className="projects-sidebar">
         <div className="projects-sidebar-header">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)' }}>Field Projects</h3>
-              <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 2 }}>{projects.length} Active Sites</div>
-            </div>
+            <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Active Projects</h3>
             {user.role === 'admin' && (
-              <button className="btn btn-blue" style={{ padding: '6px 12px', fontSize: '0.82rem', borderRadius: 8 }} onClick={() => setShowNewModal(true)}>
+              <button className="btn btn-blue" style={{ padding: '6px 12px', fontSize: '0.85rem' }} onClick={() => setShowNewModal(true)}>
                 <Plus size={15} style={{ marginRight: 4 }} /> New Site
               </button>
             )}
           </div>
           <input 
             type="text" 
-            placeholder="Search facility or client..." 
+            placeholder="Search projects or clients..." 
             value={search} 
             onChange={e => setSearch(e.target.value)} 
             className="quote-search-input"
@@ -204,7 +235,7 @@ export default function ProjectsView({ user }) {
                 className={`filter-pill ${filterStatus === st ? 'active' : ''}`}
                 onClick={() => setFilterStatus(st)}
               >
-                {st.replace('-', ' ').toUpperCase()}
+                {st.toUpperCase()}
               </button>
             ))}
           </div>
@@ -217,52 +248,65 @@ export default function ProjectsView({ user }) {
               No projects found.
             </div>
           )}
-          {filteredProjects.map(p => (
-            <div 
-              key={p.id} 
-              className={`project-list-card ${activeProject?.id === p.id ? 'active' : ''}`}
-              onClick={() => setActiveProject(p)}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--ink)' }}>{p.title}</span>
-                <span className={`pill ${p.status}`}>{p.status}</span>
-              </div>
-              <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Building2 size={13} color="var(--blue)" /> {p.clientName}
-              </div>
-              {p.address && (
-                <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <MapPin size={13} /> {p.address}
+          {filteredProjects.map(p => {
+            const pCompleted = (p.checklist || []).filter(c => c.completed).length;
+            const pTotal = (p.checklist || []).length;
+            return (
+              <div 
+                key={p.id} 
+                className={`project-list-card ${activeProject?.id === p.id ? 'active' : ''}`}
+                onClick={() => setActiveProject(p)}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{p.title}</span>
+                  <span className={`pill ${p.status}`}>{p.status}</span>
                 </div>
-              )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, fontSize: '0.75rem', borderTop: '1px solid #f1f5f9', paddingTop: 8 }}>
-                <span style={{ color: 'var(--blue)', fontWeight: 600 }}>📸 {p.photos?.length || 0} photos</span>
-                <span style={{ color: 'var(--muted)' }}>{p.frequency}</span>
+                <div style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Building2 size={13} /> {p.clientName}
+                </div>
+                {p.address && (
+                  <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <MapPin size={13} /> {p.address}
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, fontSize: '0.75rem', color: 'var(--muted)' }}>
+                  <span>{p.photos?.length || 0} photos uploaded</span>
+                  <span>{p.frequency}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Main Project Details & Photo Upload Hub */}
-      <div className="projects-main">
+      {/* Main Project Details & Photo Station */}
+      <div className="project-detail-panel">
         {activeProject ? (
-          <div className="project-detail-view">
-            {/* Header */}
+          <div>
+            {/* Top Project Action Header */}
             <div className="project-header-bar">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--ink)' }}>{activeProject.title}</h2>
-                  <span className={`pill ${activeProject.status}`}>{activeProject.status}</span>
-                </div>
-                <div style={{ color: 'var(--muted)', marginTop: 6, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                  <span><strong>Client:</strong> {activeProject.clientName}</span>
-                  {activeProject.address && <span><strong>Site:</strong> {activeProject.address}</span>}
-                  <span><strong>Schedule:</strong> {activeProject.frequency}</span>
+                <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: 'var(--ink)' }}>
+                  {activeProject.title}
+                </h2>
+                <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginTop: 4, fontSize: '0.88rem', color: 'var(--muted)', flexWrap: 'wrap' }}>
+                  <span><Building2 size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} /> {activeProject.clientName}</span>
+                  {activeProject.address && <span><MapPin size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} /> {activeProject.address}</span>}
+                  <span><Clock size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 3 }} /> {activeProject.frequency}</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <button 
+                  className="btn btn-blue" 
+                  onClick={handleGPSCheckin} 
+                  disabled={checkingIn} 
+                  style={{ padding: '8px 14px', borderRadius: 8, fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                >
+                  <MapPin size={16} />
+                  <span>{checkingIn ? 'Locating GPS...' : '📍 Log GPS Check-In'}</span>
+                </button>
+
                 <select 
                   className="form-select"
                   value={activeProject.status} 
@@ -372,7 +416,6 @@ export default function ProjectsView({ user }) {
                             alt={ph.caption || 'Project photo'} 
                             loading="lazy"
                             onError={(e) => {
-                              // If /uploads failed, try direct /api/uploads prefix
                               if (!e.target.dataset.tried) {
                                 e.target.dataset.tried = 'true';
                                 e.target.src = ph.url.startsWith('/api') ? ph.url : '/api' + ph.url;
@@ -400,7 +443,7 @@ export default function ProjectsView({ user }) {
               </div>
             </div>
 
-            {/* Checklist & Site Access Grid */}
+            {/* Checklist & GPS Location Grid */}
             <div className="project-bottom-grid" style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
               
               {/* Daily Checklist for Janitors */}
@@ -451,11 +494,11 @@ export default function ProjectsView({ user }) {
                 </div>
               </div>
 
-              {/* Site Notes & Keycard Instructions */}
+              {/* Site Notes & GPS Check-In History */}
               <div className="card" style={{ borderRadius: 10 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                   <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--ink)' }}>
-                    Site &amp; Access Protocol
+                    📍 Field Check-Ins &amp; Site Access
                   </h3>
                   <button 
                     className="btn btn-outline" 
@@ -467,23 +510,50 @@ export default function ProjectsView({ user }) {
                     }}
                   >
                     {copiedNote ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
-                    {copiedNote ? 'Copied' : 'Copy'}
+                    {copiedNote ? 'Copied' : 'Copy Notes'}
                   </button>
                 </div>
 
-                <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: 16, borderRadius: 8, color: '#92400e', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: 16 }}>
-                  {activeProject.notes || 'Standard commercial access. Keycard provided. Ensure alarm is armed upon departure.'}
+                <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: 14, borderRadius: 8, color: '#92400e', fontSize: '0.88rem', lineHeight: 1.5, marginBottom: 14 }}>
+                  <strong>Access Protocol:</strong> {activeProject.notes || 'Standard commercial access. Keycard provided. Ensure alarm is armed upon departure.'}
                 </div>
 
-                <div style={{ fontSize: '0.85rem', color: 'var(--muted)', background: '#f8fafc', padding: 14, borderRadius: 8 }}>
-                  <div style={{ marginBottom: 6 }}><strong>Assigned Janitors:</strong> {activeProject.assignedJanitors?.join(', ') || 'Field Crew'}</div>
-                  <div style={{ marginBottom: 6 }}><strong>Facility:</strong> {activeProject.facilityType}</div>
-                  <div><strong>Schedule:</strong> {activeProject.frequency}</div>
+                {/* GPS Checkin Logs */}
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--ink)', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.5px' }}>
+                    Recent GPS Check-Ins:
+                  </div>
+                  {(!activeProject.checkins || activeProject.checkins.length === 0) ? (
+                    <div style={{ fontSize: '0.82rem', color: 'var(--muted)', background: '#f8fafc', padding: '10px 12px', borderRadius: 6 }}>
+                      No check-ins logged yet today. Tap <strong>📍 Log GPS Check-In</strong> above when arriving on site.
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 160, overflowY: 'auto' }}>
+                      {activeProject.checkins.map(chk => (
+                        <div key={chk.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 12px', borderRadius: 6, fontSize: '0.8rem' }}>
+                          <div>
+                            <strong style={{ color: '#15803d' }}>📍 {chk.staffName}</strong> ({chk.staffRole})
+                            <div style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>
+                              {new Date(chk.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(chk.timestamp).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <a 
+                            href={`https://www.google.com/maps?q=${chk.latitude},${chk.longitude}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '0.75rem', textDecoration: 'underline' }}
+                          >
+                            View Map ↗
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+
               </div>
 
             </div>
-
           </div>
         ) : (
           <div style={{ padding: 60, textAlign: 'center', color: 'var(--muted)' }}>

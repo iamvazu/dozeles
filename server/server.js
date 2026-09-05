@@ -562,6 +562,31 @@ app.post('/api/admin/projects/:id/photos', requireAuth, upload.single('photo'), 
   res.status(201).json({ ok: true, photo: photoEntry, project: proj });
 });
 
+app.post('/api/admin/projects/:id/checkin', requireAuth, (req, res) => {
+  if (!db.projects) db.projects = [];
+  const proj = db.projects.find(x => x.id === req.params.id);
+  if (!proj) return res.status(404).json({ error: 'Project not found' });
+
+  const { latitude, longitude, accuracy, note } = req.body;
+  if (!proj.checkins) proj.checkins = [];
+
+  const checkinEntry = {
+    id: newId(),
+    staffName: req.user.name || 'Field Staff',
+    staffRole: req.user.role || 'janitor',
+    latitude: Number(latitude),
+    longitude: Number(longitude),
+    accuracy: accuracy ? Number(accuracy) : null,
+    note: note || '',
+    timestamp: new Date().toISOString()
+  };
+
+  proj.checkins.unshift(checkinEntry);
+  proj.updatedAt = new Date().toISOString();
+  saveDb();
+  res.json({ ok: true, checkin: checkinEntry, project: proj });
+});
+
 app.delete('/api/admin/projects/:id', requireAdmin, (req, res) => {
   if (!db.projects) db.projects = [];
   db.projects = db.projects.filter(x => x.id !== req.params.id);

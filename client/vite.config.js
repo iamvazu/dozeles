@@ -7,17 +7,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.png'],
+      includeAssets: ['favicon.png', 'pwa-192.png', 'pwa-512.png'],
       manifest: {
-        name: 'Dozeles Professional Cleaning',
-        short_name: 'Dozeles',
+        name: 'Dozeles Operations & Admin',
+        short_name: 'Dozeles Pro',
         description:
-          'Commercial & residential janitorial and cleaning services across the Bay Area and Northern California.',
-        theme_color: '#0A2540',
-        background_color: '#ffffff',
+          'Dozeles Field Operations, Janitor Photo Station, Schedule & Service Quotes Management.',
+        theme_color: '#0A192F',
+        background_color: '#0A192F',
         display: 'standalone',
         orientation: 'portrait-primary',
-        start_url: '/',
+        start_url: '/admin',
+        scope: '/',
         categories: ['business', 'productivity', 'utilities'],
         shortcuts: [
           {
@@ -28,10 +29,10 @@ export default defineConfig({
             icons: [{ src: '/pwa-192.png', sizes: '192x192' }]
           },
           {
-            name: 'Book a Service',
-            short_name: 'Book',
-            description: 'Schedule a cleaning service',
-            url: '/book',
+            name: 'Field Projects & Photos',
+            short_name: 'Photos',
+            description: 'Janitor Photo Station & Checklists',
+            url: '/admin',
             icons: [{ src: '/pwa-192.png', sizes: '192x192' }]
           }
         ],
