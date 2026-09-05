@@ -1,130 +1,359 @@
-# Dozeles — React PWA + Node.js + Programmatic SEO Engine
+# Dozeles — Commercial, Residential & Governmental Cleaning Platform
 
-A full rebuild of [dozeles.com](https://dozeles.com) off WordPress: React (Vite) progressive web app, Node.js/Express backend, and a programmatic SEO engine generating **749 indexable pages**.
+A high-performance, full-stack enterprise cleaning services platform: **React (Vite) Progressive Web App (PWA)**, **Node.js/Express API**, **2026 Luxury Admin & Operations CRM**, and a **Programmatic SEO (pSEO) Engine generating 1,500+ indexable landing pages**.
 
----
-
-## The SEO engine (the core of this build)
-
-| Page type | URL pattern | Count |
-|---|---|---|
-| Core pages | `/`, `/pricing`, `/locations`, … | 10 |
-| Service hubs | `/services/<service>` | 9 |
-| City pages | `/cleaning-services/<city>` | 73 |
-| **Service × City** | `/services/<service>/<city>` | **657** |
-| **Total** | | **749** |
-
-**9 services** — commercial cleaning, janitorial services, office cleaning, residential house cleaning, move-in/move-out, post-construction, government facility, Airbnb/vacation rental, disinfection.
-
-**73 cities** across the Bay Area, East Bay, North Bay, Sacramento Valley, and Central Valley.
-
-Every generated page has:
-
-- Unique `<title>`, meta description, and keyword set built from service × city tokens
-- Unique on-page copy — each city carries its own `blurb`, neighborhoods, county, region, and population, so pages are not thin duplicates
-- Canonical URL, Open Graph, and Twitter Card tags
-- **JSON-LD schema**: LocalBusiness, Service, BreadcrumbList, and FAQPage (rich-result eligible)
-- City-specific FAQs with real pricing ranges — the answers Google surfaces directly
-- An internal link mesh (service→city, city→service, neighbor cities) so crawlers reach every page
-
-`sitemap.xml` and `robots.txt` regenerate automatically on every build via `client/scripts/generate-sitemap.js`.
-
-**Adding a city takes one line** in `client/src/data/cities.js` — that instantly generates 10 new pages (1 city page + 9 service×city pages) and adds them to the sitemap.
+Live Production: [https://dozeles.com](https://dozeles.com) | Admin Portal: [https://dozeles.com/admin](https://dozeles.com/admin)
 
 ---
 
-## Design system
-
-Extracted directly from the ThemeForest **clanyeco** theme files in this folder:
-
-- **Bebas Neue** condensed uppercase display headings + **Inter** body — the theme's exact typographic pairing
-- Ink black `#191919` text, off-white `#F3F5F2` surfaces, warm cream `#F3EDE3`, hairline `#DEDEDE` borders — the theme's real palette values, pulled from `elementor-global-defaults.json`
-- Flat, bold, full-bleed section rhythm matching the theme's layout language
-
-**The accent is blue only.** The theme ships a red/yellow accent; that has been replaced throughout with a blue scale (`#0E5FD8` action blue, `#0A2540` deep navy, `#EAF1FB` tint). No green anywhere in the build.
-
----
-
-## Pricing psychology
-
-The `/pricing` page applies six deliberate techniques:
-
-1. **Anchoring** — the $279 Signature tier makes $189 Complete read as reasonable
-2. **Center-stage effect** — the target plan sits in the middle, enlarged, badged "Most Popular"
-3. **Decoy framing** — greyed-out missing features on the entry tier push buyers up
-4. **Charm pricing** — $149 / $189 / $279, never round numbers
-5. **Loss aversion** — struck-through "was" pricing on every residential tier
-6. **Risk reversal** — the guarantee block sits immediately below the cards, where hesitation peaks
-
-Residential and commercial tiers are tabbed so buyers never see more than three options at once.
+## Table of Contents
+1. [System Architecture & Capabilities](#system-architecture--capabilities)
+2. [Programmatic SEO Engine (1,500+ Pages)](#programmatic-seo-engine-1500-pages)
+3. [2026 Luxury Admin Portal & CRM](#2026-luxury-admin-portal--crm)
+4. [Role-Based Access Control (RBAC)](#role-based-access-control-rbac)
+5. [Complete File Structure](#complete-file-structure)
+6. [Hosting, Server & Deployment Guide](#hosting-server--deployment-guide)
+7. [Local Development Setup](#local-development-setup)
+8. [API Reference](#api-reference)
 
 ---
 
-## Run it
+## System Architecture & Capabilities
 
-```bash
-# Backend
-cd server
-cp .env.example .env      # set ADMIN_PASSWORD and JWT_SECRET
-npm install
-npm start                 # http://localhost:4000
-
-# Frontend (dev)
-cd client
-npm install
-npm run dev               # http://localhost:5173
+```
+                       ┌──────────────────────────────────────────────┐
+                       │            Clients & Public Users            │
+                       │    (Responsive Mobile, Tablet & Desktop)     │
+                       └──────────────────────┬───────────────────────┘
+                                              │
+                                              ▼
+                       ┌──────────────────────────────────────────────┐
+                       │       React (Vite) PWA Client                │
+                       │  • Service Worker & Offline Caching          │
+                       │  • PWA Add-to-Home Screen Installation       │
+                       │  • Programmatic SEO Route Mesh               │
+                       │  • 2026 Luxury Admin & Operations CRM        │
+                       └──────────────────────┬───────────────────────┘
+                                              │  REST API (JWT Bearer)
+                                              ▼
+                       ┌──────────────────────────────────────────────┐
+                       │           Node.js / Express API              │
+                       │  • Port 4000 (PM2 Managed: dozeles-api)      │
+                       │  • Role-Based Access Control (Admin/Janitor) │
+                       │  • JSON Data Store with Atomic Disk Writes   │
+                       │  • Multi-part File Uploads & PDF Invoicing   │
+                       └──────────────────────┬───────────────────────┘
+                                              │
+                    ┌─────────────────────────┴─────────────────────────┐
+                    ▼                                                   ▼
+     ┌─────────────────────────────┐                     ┌─────────────────────────────┐
+     │      Persistent JSON DB     │                     │     Static Media & Uploads  │
+     │  (users, leads, customers,  │                     │  (before/after, progress,   │
+     │  projects, quotes, bookings)│                     │  attachments, seed data)    │
+     └─────────────────────────────┘                     └─────────────────────────────┘
 ```
 
-**Production:** `cd client && npm run build` (regenerates the sitemap, then builds), then `cd ../server && npm start` — the Node server serves the built PWA at `localhost:4000` with SPA routing. A production build is already included in `client/dist`.
-
-Deploy the `dozeles-app` folder to any Node host (Render, Railway, Fly.io, a VPS). HTTPS is required for PWA install prompts.
-
----
-
-## Backend
-
-Express API with a JSON data store (no database server needed):
-
-- `GET /api/content`, `GET /api/reviews` — public content
-- `POST /api/bookings`, `/api/contact`, `/api/subscribe` — public forms
-- `POST /api/auth/login` — JWT admin auth
-- `/api/admin/*` — manage bookings, messages, reviews, subscribers, and edit every content section
-- Optional SMTP notifications; without SMTP, submissions still save and appear in the admin
-
-**Admin panel** at `/admin` — log in with the credentials in `server/.env` (defaults `admin@dozeles.com` / `admin123`, change them).
+- **Frontend**: React 18, Vite, `date-fns`, `lucide-react`, Vanilla CSS 2026 Design Tokens (Deep Navy `#0A192F`, Action Blue `#0E5FD8`, Slate `#F8FAFC`).
+- **PWA Capabilities**: Installable directly on iOS Safari, Android Chrome, and Desktop with full offline caching and manifest setup.
+- **Backend**: Node.js & Express with JWT authentication, bcrypt password hashing, session analytics, and disk-persisted transactional JSON data store.
+- **Production Server**: Ubuntu Linux VPS (`2.25.90.226`) with Nginx reverse proxy, SSL termination, and PM2 process management.
 
 ---
 
-## Recent Updates & Integrations
+## Programmatic SEO Engine (1,500+ Pages)
 
-- **Cannabis Dispensary Industry Page**: Added highly tailored BCC-compliant copy and a dedicated Client Logos section showing mockups for premium positioning in the industry.
-- **Client Logos Component**: A reusable `<ClientLogos />` component in `Shared.jsx` to build trust and authority on industry pages.
-- **CRM Integration**:
-  - The external **trycrmai** CRM runs on a Hostinger VPS via Docker (`crm-postgres` and `openclaw` containers).
-  - Admins (e.g., `dozelescleaning@gmail.com` and `rajjayadev@gmail.com`) can be securely added to the CRM's `user` and `member` tables directly via the PostgreSQL container using SSH.
-  - The CRM supports Google OAuth for team login, which routes through `nip.io` domains configured in Google Cloud.
-- **Email Notifications**:
-  - Automated HTML email confirmations to users and plain-text lead alerts to the admin (e.g., `Maialeticia@hotmail.com`).
-  - Requires generating a **Google App Password** for the sending account (e.g., `dozelescleaning@gmail.com`) and injecting it into `server/.env` under the `SMTP_` variables.
+The platform generates and serves **1,504+ distinct search-optimized landing pages** without database overhead:
 
----
+| Page Type | URL Pattern | Generated Count |
+|---|---|---|
+| Core Pages | `/`, `/pricing`, `/locations`, `/booking`, `/contact`, `/about` | 12 |
+| Industry Verticals | `/industries/<industry>` (e.g. medical, cannabis, daycare, tech) | 10 |
+| Blog & Knowledgebase | `/blog/<slug>` | 13 |
+| Service Hubs | `/services/<service>` | 9 |
+| City Landing Pages | `/cleaning-services/<city>` | 73 |
+| **Service × City Matrix** | `/services/<service>/<city>` | **657** |
+| **Industry × City Matrix** | `/industries/<industry>/<city>` | **730** |
+| **Total Indexable Sitemap** | `https://dozeles.com/sitemap.xml` | **1,504 URLs** |
 
-## Ranking checklist (do these after launch)
-
-1. **Google Business Profile** — claim and fully complete it; add every service and service area. Local pack rankings depend on this more than the website.
-2. **Submit the sitemap** in Google Search Console: `https://dozeles.com/sitemap.xml`
-3. **Reviews** — Google reviews are the strongest local ranking factor. Ask every satisfied client; aim for 50+.
-4. **NAP consistency** — identical name, address, phone across Yelp, BBB, Angi, Thumbtack, Nextdoor, and Apple Maps.
-5. **Download the images** from the WordPress uploads into `client/public/images/` and update URLs in `server/data/seed.json` before retiring WordPress. All image URLs live in content data — no code changes needed.
-6. **301 redirect** old WordPress URLs to the new equivalents so existing rankings carry over.
-
-Note: the PSEO pages are client-rendered. Google renders JavaScript and will index them, but for maximum crawl efficiency consider adding prerendering (`vite-plugin-prerender`) or moving to Next.js SSR later — the data layer in `src/data/` ports over unchanged.
+### Automated On-Page SEO Features
+- **Dynamic Meta Tags**: Unique `<title>`, `<meta name="description">`, canonical links, OpenGraph, and Twitter cards per route.
+- **Rich Schema.org JSON-LD**: Injects `LocalBusiness`, `Service`, `BreadcrumbList`, and `FAQPage` rich structured data.
+- **Automated Sitemap Generation**: `client/scripts/generate-sitemap.js` runs automatically on `npm run build` and updates `sitemap.xml` and `robots.txt`.
 
 ---
 
-## Verified
+## 2026 Luxury Admin Portal & CRM
 
-- Production build passes; 749 URLs in sitemap
-- 8 representative routes render-tested (home, service hub, service×city, city, pricing, locations, services index) — all with unique H1s, unique titles, canonicals, and 1–3 JSON-LD blocks each
-- ~9,000–10,000 characters of unique content per PSEO page (not thin content)
-- API endpoints tested: bookings, validation, admin auth, content editing, contact, subscribe
+Accessible at `/admin`, the admin panel uses a cohesive executive design system across every tab:
+
+### 1. Dashboard Overview & Smart Calendar
+- High-level KPI cards: *Pending Actions*, *Total Logged Bookings*, *Active Ongoing Sites*, and *Service Proposals*.
+- Interactive monthly dispatch calendar with status tags, client names, and time slots.
+
+### 2. Leads & Sales Pipeline (`LeadsView.jsx`)
+- Visual lead stages: `New Lead` → `Contacted` → `Site Visit Scheduled` → `Proposal Sent` → `Won (Convert to Customer)` → `Lost`.
+- Filter by status, service type, and source. One-click conversion to Customer records or Service Quotes.
+
+### 3. Customers & CRM (`CustomersView.jsx`)
+- Full client relationship manager storing contact details, property addresses, billing histories, and service types.
+- Connected active projects and linked proposal archives.
+
+### 4. Projects & Photo Operations (`ProjectsView.jsx`)
+- Job sites management with status badges (`pending`, `in-progress`, `completed`).
+- **Photo Upload Suite**: Upload categorized photos for `Daily Progress`, `Before Clean`, and `After Clean`.
+- **GPS Check-in Log**: Field janitors log GPS coordinates and timestamps when arriving at project sites.
+- **Interactive Checklists**: Real-time task checklists per room or facility area.
+
+### 5. Service Quotes Engine (`ServiceQuote.jsx`)
+- Custom quote builder with residential and commercial line items, tax calculations, discounts, and terms.
+- Status tracking (`draft`, `sent`, `approved`, `declined`).
+- **Printable PDF Export**: Clean, printable proposal layout for commercial and governmental contracts.
+
+### 6. Bookings & Service Dispatches (`Admin.jsx -> Bookings`)
+- Live queue of customer booking submissions from the website.
+- Status workflow (`pending`, `quoted`, `scheduled`, `in-progress`, `completed`, `cancelled`).
+- File attachments, internal team notes, and automated invoice emailing.
+
+### 7. Inquiries & Customer Messages (`Admin.jsx -> Messages`)
+- Real-time inbox for contact form submissions.
+- Filter by unread status and direct `Reply via Email` CTA.
+
+### 8. Team & Field Staff Analytics (`UsersAdminView.jsx`)
+- User creation and role assignment (`admin` vs `janitor`).
+- **Real-Time Login Analytics**: Active login indicators, last login timestamps, session counts, and device/platform tags.
+
+### 9. Automated Pricing Engine (`PricingAdminView.jsx`)
+- Configure residential formulas (Base price, Per-bedroom increment, Per-bathroom increment, Minimum price).
+- Configure commercial rates ($/sq.ft) across facility types: *Office, Retail, Medical Clinic, Warehouse, School/Government, Restaurant*.
+- **Interactive Live Preview Calculator**: Real-time preview testing for residential rooms and commercial square footage.
+
+### 10. Website CMS (`ContentEditorView.jsx`)
+- Visual form editor and JSON code editor for website copy, contact information, business hours, social links, Google rating reviews, and map embeds.
+
+### 11. Client Reviews & Testimonials (`Admin.jsx -> ReviewsAdmin`)
+- Manage verified customer reviews and 5-star ratings displayed across the website.
+
+### 12. Newsletter Subscribers (`Admin.jsx -> Subscribers`)
+- Email subscriber registry with one-click **CSV Export** for email marketing campaigns.
+
+---
+
+## Role-Based Access Control (RBAC)
+
+The system automatically tailors the UI and API permissions based on the authenticated user's JWT role:
+
+| Feature / Tab | Administrator (`admin`) | Field Janitor (`janitor`) |
+|---|:---:|:---:|
+| Overview Calendar | Full View | Assigned Sites Only |
+| Leads & Pipeline | Read / Write | Restricted |
+| Customers & CRM | Read / Write | Restricted |
+| Service Quotes | Create / Edit / Delete | Restricted |
+| Projects & Photos | Full View & Management | View Assigned, Upload Photos, GPS Check-in |
+| Bookings & Jobs | Full Management | Assigned Schedule |
+| Pricing Engine | Edit & Publish Rates | Restricted |
+| Website CMS | Edit & Publish Content | Restricted |
+| User Analytics | Add / Edit Staff & Monitor Logins | Restricted |
+
+---
+
+## Complete File Structure
+
+```
+dozeles-app/
+├── package.json                         # Workspace root
+├── README.md                            # Comprehensive system documentation
+│
+├── client/                              # React + Vite Frontend PWA
+│   ├── index.html                       # Entry HTML with meta & favicon
+│   ├── package.json                     # Client dependencies
+│   ├── vite.config.js                   # Vite configuration & PWA manifest setup
+│   ├── scripts/
+│   │   └── generate-sitemap.js          # Dynamic sitemap (1,500+ URLs) & robots.txt
+│   ├── public/
+│   │   ├── favicon.ico
+│   │   ├── manifest.webmanifest         # PWA Progressive Web App manifest
+│   │   ├── robots.txt                   # Search crawler directives
+│   │   ├── sitemap.xml                  # Generated XML sitemap
+│   │   └── images/                      # Logos, project galleries & assets
+│   └── src/
+│       ├── main.jsx                     # Application bootstrap
+│       ├── App.jsx                      # Client router & PWA registration
+│       ├── index.css                    # 2026 Luxury design system & tokens
+│       ├── api.js                       # Axios/fetch API client with JWT bearer handling
+│       │
+│       ├── admin/                       # 2026 Luxury Admin Dashboard Views
+│       │   ├── Admin.jsx                # Main layout, sidebar, Bookings, Messages, Reviews, Subscribers
+│       │   ├── CustomersView.jsx        # CRM customer records & linked projects
+│       │   ├── LeadsView.jsx            # Sales pipeline & stage tracking
+│       │   ├── ProjectsView.jsx         # Field operations, photo suite & GPS logs
+│       │   ├── ServiceQuote.jsx         # Proposal generator & PDF export
+│       │   ├── UsersAdminView.jsx       # Staff management & real-time login analytics
+│       │   ├── PricingAdminView.jsx     # Residential & commercial pricing calculator engine
+│       │   └── ContentEditorView.jsx    # Visual CMS & JSON editor for site copy
+│       │
+│       ├── components/                  # Shared UI components
+│       │   ├── Header.jsx               # Navigation bar & mobile menu
+│       │   ├── Footer.jsx               # Site footer & newsletter opt-in
+│       │   ├── Shared.jsx               # Reusable buttons, badges, trust logos
+│       │   └── ScrollToTop.jsx          # Route change scroll reset
+│       │
+│       ├── data/                        # Programmatic SEO data dictionaries
+│       │   ├── cities.js                # 73 California cities data & blurbs
+│       │   ├── services.js              # 9 primary cleaning service verticals
+│       │   ├── industries.js            # 10 specialized commercial industries
+│       │   └── blogPosts.js             # 13 authoritative cleaning articles
+│       │
+│       └── pages/                       # Public Website Routes
+│           ├── Home.jsx                 # Landing page with hero & trust badges
+│           ├── About.jsx                # Company background, bonding & insurance
+│           ├── Booking.jsx              # Interactive booking flow & calculator
+│           ├── Pricing.jsx              # Public rate tiers & pricing psychology
+│           ├── Services.jsx             # Service catalog hub
+│           ├── ServicePage.jsx          # Individual service overview
+│           ├── Locations.jsx            # Service area directory
+│           ├── CityPage.jsx             # City-specific landing page (73 cities)
+│           ├── ServiceCityPage.jsx      # Service × City landing page (657 pages)
+│           ├── IndustryPage.jsx         # Specialized industry landing page
+│           ├── IndustryCityPage.jsx     # Industry × City landing page (730 pages)
+│           ├── Blog.jsx                 # Article index
+│           ├── BlogPost.jsx             # Article detail page with JSON-LD
+│           ├── Contact.jsx              # Public inquiry form
+│           ├── Faq.jsx                  # Comprehensive FAQ knowledgebase
+│           └── NotFound.jsx             # Custom 404 page
+│
+└── server/                              # Node.js + Express Backend API
+    ├── server.js                        # Main Express application & route mount
+    ├── package.json                     # Server dependencies
+    ├── .env.example                     # Environment template
+    ├── data/                            # Persistent JSON Database
+    │   ├── data.json                    # Public content, reviews, subscribers
+    │   ├── leads.json                   # Sales CRM pipeline records
+    │   ├── customers.json               # Customer account profiles
+    │   ├── projects.json                # Operations sites, photos & GPS logs
+    │   ├── quotes.json                  # Proposals & quotes data
+    │   ├── pricing.json                 # Dynamic residential & commercial formulas
+    │   ├── users.json                   # User credentials & login session logs
+    │   └── seed.json                    # Default database seed
+    ├── uploads/                         # Stored job photos & file attachments
+    └── routes/                          # API Modular Endpoints
+        ├── auth.js                      # Login, token verification, session tracking
+        ├── admin.js                     # Admin CRUD endpoints (bookings, messages, CMS)
+        ├── crm.js                       # Leads & Customers CRM API
+        ├── projects.js                  # Projects, photos, checklists & GPS API
+        ├── quotes.js                    # Quotes creation, patch & PDF data API
+        ├── pricing.js                   # Pricing engine configuration API
+        ├── reviews.js                   # Public & admin reviews API
+        └── content.js                   # Public site content API
+```
+
+---
+
+## Hosting, Server & Deployment Guide
+
+### Production Server Specifications
+- **VPS Host IP**: `2.25.90.226`
+- **Operating System**: Ubuntu Linux
+- **Web Server / Reverse Proxy**: Nginx with SSL (Let's Encrypt)
+- **Node.js Process Manager**: PM2 (`dozeles-api`, ID: `3`, Port: `4000`)
+- **Directory Path on Server**: `/var/www/dozeles`
+
+### Git Remote Repositories
+- **Primary Source (Origin)**: `https://github.com/iamvazu/dozeles.git`
+- **Vercel / Backup Remote**: `https://github.com/iamvazu/dozelesweb.git`
+
+### How to Deploy Updates to the Live VPS
+
+#### Option 1: Automated Push & Deploy via Terminal
+```bash
+# 1. Commit and push changes to GitHub
+git add .
+git commit -m "feat: your update message"
+git push origin main
+git push vercel main
+
+# 2. Deploy to VPS via SSH execution
+python -c "import paramiko; c = paramiko.SSHClient(); c.set_missing_host_key_policy(paramiko.AutoAddPolicy()); c.connect('2.25.90.226', username='root', password='YOUR_PASSWORD', timeout=15); stdin, stdout, stderr = c.exec_command('cd /var/www/dozeles && git pull origin main && cd client && PUPPETEER_SKIP_DOWNLOAD=true npm install --ignore-scripts && npm run build && pm2 restart dozeles-api'); print(stdout.read().decode('utf-8')); c.close()"
+```
+
+#### Option 2: Manual SSH Deployment
+```bash
+ssh root@2.25.90.226
+cd /var/www/dozeles
+
+# Pull latest code
+git pull origin main
+
+# Build the client production bundle
+cd client
+PUPPETEER_SKIP_DOWNLOAD=true npm install --ignore-scripts
+npm run build
+
+# Restart the Node API service
+pm2 restart dozeles-api
+```
+
+---
+
+## Local Development Setup
+
+### Prerequisites
+- Node.js 18+ and npm installed
+- Git
+
+### 1. Backend Setup
+```bash
+cd server
+cp .env.example .env
+
+# Configure server/.env:
+# PORT=4000
+# JWT_SECRET=your_jwt_secret_key_here
+# ADMIN_EMAIL=admin@dozeles.com
+# ADMIN_PASSWORD=admin123
+
+npm install
+npm start
+# Server runs on http://localhost:4000
+```
+
+### 2. Frontend Setup
+```bash
+cd client
+npm install
+npm run dev
+# Development server runs on http://localhost:5173
+```
+
+---
+
+## API Reference
+
+### Public Endpoints
+- `GET /api/content` — Fetches current website copy and configurations
+- `GET /api/pricing` — Retrieves dynamic pricing formula parameters
+- `GET /api/reviews` — Retrieves published client reviews
+- `POST /api/bookings` — Submits a new client booking request
+- `POST /api/contact` — Submits a general contact inquiry
+- `POST /api/subscribe` — Subscribes an email to the newsletter
+
+### Authentication Endpoints
+- `POST /api/auth/login` — Authenticates user credentials, logs session analytics, and returns JWT token
+- `GET /api/auth/me` — Returns the current authenticated user's profile
+
+### Admin & Operations Endpoints (Requires `Authorization: Bearer <JWT>`)
+- `GET /api/admin/leads` | `POST /api/admin/leads` | `PATCH /api/admin/leads/:id` — Sales pipeline
+- `GET /api/admin/customers` | `POST /api/admin/customers` — Customer CRM
+- `GET /api/admin/projects` | `POST /api/admin/projects` | `PATCH /api/admin/projects/:id` — Operations sites
+- `POST /api/admin/projects/:id/photos` — Uploads categorized site photos
+- `POST /api/admin/projects/:id/checkin` — Records GPS coordinates and timestamps
+- `GET /api/admin/quotes` | `POST /api/admin/quotes` | `PATCH /api/admin/quotes/:id` — Service quotes
+- `GET /api/admin/bookings` | `PATCH /api/admin/bookings/:id` — Booking dispatches
+- `POST /api/admin/pricing` — Updates residential and commercial pricing rules
+- `PUT /api/admin/content/:section` — Updates CMS website copy
+- `GET /api/admin/users` | `POST /api/admin/users` — Staff roster and login analytics
+- `GET /api/admin/subscribers` — Email subscriber list
+
+---
+
+## License & Intellectual Property
+© 2026 Dozeles Professional Cleaning Services. All rights reserved. Commercial, Residential & Governmental Cleaning Services across California.
