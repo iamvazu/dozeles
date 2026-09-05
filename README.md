@@ -14,7 +14,7 @@ Live Production: [https://dozeles.com](https://dozeles.com) | Admin Portal: [htt
 5. [Complete File Structure](#complete-file-structure)
 6. [Hosting, Server & Deployment Guide](#hosting-server--deployment-guide)
 7. [Local Development Setup](#local-development-setup)
-8. [API Reference](#api-reference)
+9. [Automated GTM & Marketing System (50 Skills)](#automated-gtm--marketing-system-50-skills)
 
 ---
 
@@ -352,6 +352,21 @@ npm run dev
 - `PUT /api/admin/content/:section` — Updates CMS website copy
 - `GET /api/admin/users` | `POST /api/admin/users` — Staff roster and login analytics
 - `GET /api/admin/subscribers` — Email subscriber list
+
+---
+
+## Automated GTM & Marketing System (50 Skills)
+
+The platform is supercharged with **50 specialized marketing, growth engineering, CRO, and sales automation skills** located in `.agents/skills/` (anchored by `.agents/product-marketing.md`).
+
+- **Master Positioning Document**: [`.agents/product-marketing.md`](file:///c:/Users/dell/Downloads/cleaning-services-2026-04-23-10-47-55-utc/themeforest-clanyeco/dozeles-app/.agents/product-marketing.md)
+- **Operations & Automation Guide**: [`docs/MARKETING_AUTOMATION_GUIDE.md`](file:///c:/Users/dell/Downloads/cleaning-services-2026-04-23-10-47-55-utc/themeforest-clanyeco/dozeles-app/docs/MARKETING_AUTOMATION_GUIDE.md)
+
+### Key Automated Workflows
+1. **B2B Cold Outreach (`cold-email`, `prospecting`)**: Automated multi-touch sequences targeting Bay Area facility managers, tech startups, and medical clinic administrators.
+2. **Conversion Rate Optimization (`cro`, `copywriting`, `ab-testing`)**: Continuous optimization of instant pricing calculators, booking steps, and mobile CTAs.
+3. **AI Answer Engine & Search Optimization (`ai-seo`, `seo-audit`, `schema`)**: Maximizing visibility across Perplexity, ChatGPT Search, Gemini, and Google Maps.
+4. **Client Review & Referral Engine (`emails`, `referrals`, `churn-prevention`)**: Automated post-clean 5-star Google review triggers and B2B vendor referral credits.
 
 ---
 
