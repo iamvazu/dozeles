@@ -79,6 +79,7 @@ function Dashboard({ user, onLogout }) {
   const initialTab = user.role === 'janitor' ? 'projects' : 'overview';
   const [tab, setTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
 
   useEffect(() => {
@@ -96,6 +97,19 @@ function Dashboard({ user, onLogout }) {
     installPrompt.prompt();
     const { outcome } = await installPrompt.userChoice;
     if (outcome === 'accepted') setInstallPrompt(null);
+  };
+
+  const handleNavClick = (navId) => {
+    setTab(navId);
+    setMobileOpen(false);
+  };
+
+  const handleToggleSidebar = () => {
+    if (window.innerWidth <= 1024) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      setCollapsed(!collapsed);
+    }
   };
 
   let navs = [];
@@ -135,8 +149,14 @@ function Dashboard({ user, onLogout }) {
 
   return (
     <div className="modern-admin-layout">
+      {/* Mobile Backdrop Overlay */}
+      <div 
+        className={`sidebar-backdrop ${mobileOpen ? 'show' : ''}`} 
+        onClick={() => setMobileOpen(false)} 
+      />
+
       {/* Luxury Dark Sidebar */}
-      <aside className={`modern-admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
+      <aside className={`modern-admin-sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="modern-sidebar-brand">
           {!collapsed ? (
             <div className="sidebar-brand-full">
@@ -180,7 +200,7 @@ function Dashboard({ user, onLogout }) {
             <button
               key={n.id}
               className={`modern-nav-item ${tab === n.id ? 'active' : ''}`}
-              onClick={() => setTab(n.id)}
+              onClick={() => handleNavClick(n.id)}
               title={collapsed ? n.label : undefined}
             >
               <div className="nav-icon-wrap">{n.icon}</div>
@@ -217,7 +237,7 @@ function Dashboard({ user, onLogout }) {
         {/* Top Header Bar */}
         <header className="modern-top-bar no-print">
           <div className="top-bar-left">
-            <button onClick={() => setCollapsed(!collapsed)} className="modern-toggle-btn" title="Toggle Sidebar">
+            <button onClick={handleToggleSidebar} className="modern-toggle-btn" title="Toggle Menu">
               <Menu size={18} />
             </button>
             <div className="breadcrumbs-wrap">
@@ -230,13 +250,14 @@ function Dashboard({ user, onLogout }) {
           <div className="top-bar-right">
             <div className="live-date-pill">
               <Calendar size={14} color="var(--blue)" />
-              <span>{format(new Date(), 'EEEE, MMM d, yyyy')}</span>
+              <span className="live-date-text">{format(new Date(), 'EEEE, MMM d, yyyy')}</span>
+              <span className="live-date-compact">{format(new Date(), 'MMM d, yyyy')}</span>
             </div>
 
             {installPrompt && (
               <button className="top-pwa-btn" onClick={handleInstallApp} title="Install as Desktop/Mobile App">
                 <Smartphone size={14} />
-                <span>Install App</span>
+                <span>Install</span>
               </button>
             )}
 
