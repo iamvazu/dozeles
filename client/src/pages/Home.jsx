@@ -164,7 +164,7 @@ export default function Home() {
             <div className="chero-cta">
               <button 
                 onClick={() => setShowAuditModal(true)} 
-                className="btn btn-gold btn-cleanliness-score"
+                className="btn btn-cleanliness-score"
               >
                 Get a Free Site Walkthrough &amp; Cleanliness Score
               </button>

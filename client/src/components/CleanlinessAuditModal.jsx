@@ -257,7 +257,7 @@ export default function CleanlinessAuditModal({ isOpen, onClose }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn btn-gold audit-submit-btn"
+                  className="btn btn-blue audit-submit-btn"
                 >
                   {loading ? 'Submitting Request...' : 'Get My Free Cleanliness Score & Walkthrough →'}
                 </button>

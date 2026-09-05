@@ -57,7 +57,7 @@ export default function CleanlinessAuditSection({ onOpenAuditModal }) {
             <div className="audit-cta-wrap">
               <button 
                 onClick={onOpenAuditModal}
-                className="btn btn-gold btn-cleanliness-score"
+                className="btn btn-cleanliness-score"
               >
                 Get a Free Site Walkthrough &amp; Cleanliness Score →
               </button>
