@@ -1,11 +1,28 @@
 import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
+import Seo from '../seo.jsx';
 import { PageBanner, Stats, CtaBand } from '../components/Shared.jsx';
 
 export default function About() {
   const { about, whyUs } = useContent();
   return (
     <>
+      <Seo
+        title="About Us | Dozeles Professional Cleaning — 20+ Years Experience"
+        description="Learn about Dozeles Professional Cleaning — providing premier commercial janitorial, office, and residential cleaning services across the San Francisco Bay Area and Northern California."
+        keywords={[
+          'about dozeles cleaning',
+          'bay area cleaning company',
+          'commercial cleaners history',
+          'licensed insured janitorial team',
+          'professional cleaners northern california'
+        ]}
+        path="/about-us"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'About Us', path: '/about-us' }
+        ]}
+      />
       <PageBanner title="About" crumb="About Us" />
 
       <section>

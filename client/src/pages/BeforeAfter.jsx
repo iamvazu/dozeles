@@ -1,4 +1,5 @@
 import { useContent } from '../content.jsx';
+import Seo from '../seo.jsx';
 import { PageBanner, Testimonials, CtaBand, QuoteForm } from '../components/Shared.jsx';
 import { BeforeAfterSlider } from '../components/BeforeAfterSlider.jsx';
 
@@ -7,6 +8,22 @@ export default function BeforeAfter() {
 
   return (
     <>
+      <Seo
+        title="Before & After Cleaning Gallery | Dozeles Professional Cleaning"
+        description="See real before and after cleaning results by Dozeles Professional Cleaning. Deep cleaning, carpet cleaning, tile scrubbing, and commercial office cleaning transformations."
+        keywords={[
+          'cleaning before and after',
+          'commercial cleaning results',
+          'janitorial transformation photos',
+          'deep cleaning gallery',
+          'bay area cleaning proof'
+        ]}
+        path="/before-after"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Before & After', path: '/before-after' }
+        ]}
+      />
       <PageBanner title="Before & After" crumb="Before & After" />
 
       <section>

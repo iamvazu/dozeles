@@ -14,13 +14,13 @@ export default function IndustryCity() {
   const industry = INDUSTRIES.find(ind => ind.slug === iSlug);
   const city = getCity(cSlug);
 
-  if (!industry) return <Navigate to="/industries" replace />;
+  if (!industry) return <Navigate to="/services-offered" replace />;
   if (!city) return <Navigate to={`/industries/${iSlug}`} replace />;
 
   const path = `/industries/${industry.slug}/${city.slug}`;
   const crumbs = [
     { name: 'Home', path: '/' },
-    { name: 'Industries', path: '/industries' },
+    { name: 'Services', path: '/services-offered' },
     { name: industry.short, path: `/industries/${industry.slug}` },
     { name: city.name, path },
   ];

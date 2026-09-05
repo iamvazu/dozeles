@@ -1,4 +1,5 @@
 import { useContent } from '../content.jsx';
+import Seo from '../seo.jsx';
 import { PageBanner, Testimonials, CtaBand } from '../components/Shared.jsx';
 
 export default function Reviews() {
@@ -7,6 +8,23 @@ export default function Reviews() {
 
   return (
     <>
+      <Seo
+        title="Client Reviews & Testimonials | Dozeles Professional Cleaning"
+        description="Read real client reviews and ratings for Dozeles Professional Cleaning. Top-rated commercial janitorial and residential house cleaning across the Bay Area."
+        keywords={[
+          'dozeles cleaning reviews',
+          'cleaning company testimonials',
+          'bay area cleaning ratings',
+          'reliable janitorial reviews',
+          'customer feedback commercial cleaning'
+        ]}
+        path="/reviews"
+        faqs={faqs}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Reviews', path: '/reviews' }
+        ]}
+      />
       <PageBanner title="Reviews" crumb="Reviews" />
       <Testimonials heading="What People Say About Us" />
 

@@ -17,7 +17,7 @@ export default function IndustryDetail() {
   const path = `/industries/${industry.slug}`;
   const crumbs = [
     { name: 'Home', path: '/' },
-    { name: 'Industries', path: '#' },
+    { name: 'Services', path: '/services-offered' },
     { name: industry.name, path },
   ];
 

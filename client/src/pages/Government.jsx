@@ -1,5 +1,6 @@
 import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
+import Seo from '../seo.jsx';
 import { PageBanner, Stats, CtaBand } from '../components/Shared.jsx';
 
 export default function Government() {
@@ -8,6 +9,22 @@ export default function Government() {
 
   return (
     <>
+      <Seo
+        title="Government Facility Cleaning & Contracts | Dozeles Professional Cleaning"
+        description="Certified Small Business and DIR Registered government facility cleaning contractor in California. Municipal, state, and federal facility janitorial services in Northern California."
+        keywords={[
+          'government facility cleaning',
+          'certified small business janitorial',
+          'california DIR registered cleaners',
+          'municipal building cleaning',
+          'government cleaning contractor norcal'
+        ]}
+        path="/government-contract"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Government Contract', path: '/government-contract' }
+        ]}
+      />
       <PageBanner title="Government Contract" crumb="Government Contract" />
 
       <section>

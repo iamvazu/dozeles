@@ -1,11 +1,28 @@
 import { useContent } from '../content.jsx';
 import Icon from '../components/Icon.jsx';
+import Seo from '../seo.jsx';
 import { PageBanner, QuoteForm, CtaBand } from '../components/Shared.jsx';
 
 export default function Contact() {
   const { site } = useContent();
   return (
     <>
+      <Seo
+        title="Contact Us | Dozeles Professional Cleaning — Free Quote & Inquiries"
+        description="Get in touch with Dozeles Professional Cleaning for commercial janitorial and residential cleaning quotes across the San Francisco Bay Area and Northern California. Call 650-290-0280."
+        keywords={[
+          'contact dozeles cleaning',
+          'cleaning quote bay area',
+          'janitorial estimate daly city',
+          'hire commercial cleaners',
+          'cleaning company phone number'
+        ]}
+        path="/contact-us"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Contact', path: '/contact-us' }
+        ]}
+      />
       <PageBanner title="Contact" crumb="Contact" />
 
       <section>

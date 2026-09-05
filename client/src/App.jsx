@@ -18,6 +18,7 @@ import BlogIndex from './pages/BlogIndex.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import IndustryDetail from './pages/IndustryDetail.jsx';
 import IndustryCity from './pages/IndustryCity.jsx';
+import NotFound from './pages/NotFound.jsx';
 import Admin from './admin/Admin.jsx';
 
 export default function App() {
@@ -45,7 +46,7 @@ export default function App() {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact-us" element={<Contact />} />
         <Route path="/book" element={<Booking />} />
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="/admin/*" element={<Admin />} />
     </Routes>

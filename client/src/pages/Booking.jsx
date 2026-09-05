@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useContent } from '../content.jsx';
+import Seo from '../seo.jsx';
 import { PageBanner } from '../components/Shared.jsx';
 import Icon from '../components/Icon.jsx';
 import Social from '../components/Social.jsx';
@@ -160,6 +161,12 @@ export default function Booking() {
   if (done) {
     return (
       <>
+        <Seo
+          title="Booking Request Received | Dozeles Professional Cleaning"
+          description="Your cleaning estimate and booking request has been submitted to Dozeles Professional Cleaning."
+          path="/book"
+          noindex={true}
+        />
         <PageBanner title="Request Received" crumb="Book Now" />
         <section>
           <div className="container" style={{ maxWidth: 680 }}>
@@ -185,6 +192,22 @@ export default function Booking() {
 
   return (
     <>
+      <Seo
+        title="Book Cleaning Service & Get Free Estimate | Dozeles Professional Cleaning"
+        description="Book your commercial janitorial, office, or residential cleaning service online with Dozeles Professional Cleaning. Instant estimates and fast response across the Bay Area."
+        keywords={[
+          'book cleaning service',
+          'cleaning estimate online',
+          'hire commercial cleaners bay area',
+          'residential cleaning appointment',
+          'janitorial service booking'
+        ]}
+        path="/book"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Book Now', path: '/book' }
+        ]}
+      />
       <PageBanner title="Get Your Estimate & Book Now" crumb="Book Now" />
 
       <section>
