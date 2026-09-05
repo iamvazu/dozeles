@@ -6,7 +6,7 @@ import {
   Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, 
   ChevronRight, DollarSign, Menu, Paperclip, FileText, 
   Upload, Building2, Download, Smartphone, Target, Briefcase, Layers,
-  Search, Filter, CheckCircle2, Clock, Trash2, Plus, ExternalLink, Send, Activity
+  Search, Filter, CheckCircle2, Clock, Trash2, Plus, ExternalLink, Send, Activity, Sparkles
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
 import ServiceQuote from './ServiceQuote.jsx';
