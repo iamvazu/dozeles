@@ -71,7 +71,7 @@ function Login({ onLogin }) {
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <img src="/images/dozeles-logo.jpg" alt="Dozeles Logo" style={{ maxHeight: 60 }} />
         </div>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input type="text" placeholder="Email or Username" value={email} onChange={(e) => setEmail(e.target.value)} autoCapitalize="none" autoCorrect="off" required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button className="btn btn-blue" style={{ width: '100%' }} type="submit">Sign In</button>
         {err && <div className="form-note err">{err}</div>}

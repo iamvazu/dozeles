@@ -24,15 +24,49 @@ export function loadDb() {
   db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
   
   if (!db.users) db.users = [];
-  if (db.users.length === 0) {
-    db.users.push({
-      id: newId(),
-      email: process.env.ADMIN_EMAIL || 'admin@dozeles.com',
+
+  const defaultAdminAccounts = [
+    {
+      email: 'admin@dozeles.com',
       password: process.env.ADMIN_PASSWORD || 'admin123',
       name: 'Master Admin',
-      role: 'admin',
-      createdAt: new Date().toISOString()
-    });
+      role: 'admin'
+    },
+    {
+      email: 'dozelescleaning@gmail.com',
+      password: process.env.ADMIN_PASSWORD || 'admin123',
+      name: 'Dozeles Operations',
+      role: 'admin'
+    },
+    {
+      email: 'Maialeticia@hotmail.com',
+      password: process.env.ADMIN_PASSWORD || 'admin123',
+      name: 'Leticia Maia',
+      role: 'admin'
+    },
+    {
+      email: 'leticiamaia@hotmail.com',
+      password: process.env.ADMIN_PASSWORD || 'admin123',
+      name: 'Leticia Maia',
+      role: 'admin'
+    }
+  ];
+
+  let addedUser = false;
+  for (const acc of defaultAdminAccounts) {
+    if (!db.users.some(u => u.email.toLowerCase() === acc.email.toLowerCase())) {
+      db.users.push({
+        id: newId(),
+        email: acc.email.toLowerCase(),
+        password: acc.password,
+        name: acc.name,
+        role: acc.role,
+        createdAt: new Date().toISOString()
+      });
+      addedUser = true;
+    }
+  }
+  if (addedUser) {
     saveDb();
   }
 
