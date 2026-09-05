@@ -90,7 +90,7 @@ function Dashboard({ user, onLogout }) {
 
   const handleInstallApp = async () => {
     if (!installPrompt) {
-      alert('To install the Dozeles Admin App:\n• On iOS: Tap Share -> "Add to Home Screen"\n• On Android/Chrome: Tap Menu (3 dots) -> "Install app"');
+      alert('To install the Dozeles Admin App:\n• On iOS Safari: Tap Share -> "Add to Home Screen"\n• On Android/Chrome: Tap Menu (3 dots) -> "Install app"');
       return;
     }
     installPrompt.prompt();
@@ -101,95 +101,142 @@ function Dashboard({ user, onLogout }) {
   let navs = [];
 
   if (user.role === 'janitor') {
-    // Focused field view for Janitors
     navs = [
-      { id: 'projects', label: 'Projects & Photos', icon: <Building2 /> },
-      { id: 'bookings', label: 'Assigned Schedule', icon: <CalendarCheck /> },
-      { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
+      { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
+      { id: 'bookings', label: 'Assigned Schedule', icon: <CalendarCheck size={19} /> },
+      { id: 'overview', label: 'Dashboard Overview', icon: <LayoutDashboard size={19} /> },
     ];
   } else {
-    // Full access for Admins
     navs = [
-      { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
-      { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck /> },
-      { id: 'quotes', label: 'Service Quotes', icon: <FileText /> },
-      { id: 'projects', label: 'Projects & Photos', icon: <Building2 /> },
-      { id: 'messages', label: 'Messages', icon: <MessageSquare /> },
-      { id: 'reviews', label: 'Reviews', icon: <Star /> },
-      { id: 'users', label: 'Team & Staff', icon: <Shield /> },
-      { id: 'subscribers', label: 'Subscribers', icon: <Users /> },
-      { id: 'pricing', label: 'Pricing Engine', icon: <DollarSign /> },
-      { id: 'content', label: 'Website Content', icon: <Edit3 /> },
+      { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={19} /> },
+      { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck size={19} /> },
+      { id: 'quotes', label: 'Service Quotes', icon: <FileText size={19} /> },
+      { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
+      { id: 'messages', label: 'Inquiries & Messages', icon: <MessageSquare size={19} /> },
+      { id: 'reviews', label: 'Client Reviews', icon: <Star size={19} /> },
+      { id: 'users', label: 'Team & Field Staff', icon: <Shield size={19} /> },
+      { id: 'subscribers', label: 'Newsletter Subscribers', icon: <Users size={19} /> },
+      { id: 'pricing', label: 'Pricing Calculator', icon: <DollarSign size={19} /> },
+      { id: 'content', label: 'Website CMS', icon: <Edit3 size={19} /> },
     ];
   }
 
-  // Fallback if user tries to access unauthorized tab
   if (!navs.find(n => n.id === tab)) setTab(navs[0].id);
 
+  // User initials for avatar
+  const initials = (user.name || 'Admin')
+    .split(' ')
+    .map(p => p[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  const activeNav = navs.find(n => n.id === tab);
+
   return (
-    <div className="admin-layout">
-      <aside className={`admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
-        <div className="admin-logo">
-          <img src="/images/dozeles-logo.jpg" alt="Dozeles" />
-        </div>
-        
-        <div className="admin-sidebar-user">
-          <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Logged in as</div>
-          <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{user.name}</div>
-          <div style={{ fontSize: '0.8rem', color: user.role === 'janitor' ? '#138a4d' : 'var(--blue)', fontWeight: 700, textTransform: 'uppercase' }}>
-            {user.role === 'janitor' ? 'Field Janitor' : user.role}
+    <div className="modern-admin-layout">
+      {/* Luxury Dark Sidebar */}
+      <aside className={`modern-admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
+        <div className="modern-sidebar-brand">
+          <div className="sidebar-brand-logo">
+            <img src="/images/dozeles-logo.jpg" alt="Dozeles" onError={(e) => { e.target.style.display='none'; }} />
+            <div className="brand-logo-fallback">
+              <span className="brand-primary">DOZELES</span>
+              <span className="brand-badge">PRO</span>
+            </div>
           </div>
+          {!collapsed && (
+            <div className="sidebar-brand-sub">COMMERCIAL &amp; JANITORIAL</div>
+          )}
         </div>
 
-        <nav className="admin-nav">
+        <div className="modern-nav-section-title">
+          {!collapsed && <span>MAIN NAVIGATION</span>}
+        </div>
+
+        <nav className="modern-admin-nav">
           {navs.map(n => (
             <button
               key={n.id}
-              className={`admin-nav-item ${tab === n.id ? 'active' : ''}`}
+              className={`modern-nav-item ${tab === n.id ? 'active' : ''}`}
               onClick={() => setTab(n.id)}
+              title={collapsed ? n.label : undefined}
             >
-              {n.icon} <span>{n.label}</span>
+              <div className="nav-icon-wrap">{n.icon}</div>
+              {!collapsed && <span className="nav-label">{n.label}</span>}
+              {!collapsed && tab === n.id && <div className="nav-active-pill"></div>}
             </button>
           ))}
         </nav>
 
-        <div style={{ marginTop: 'auto', display: 'grid', gap: '8px' }}>
-          <button 
-            className="admin-nav-item" 
-            onClick={handleInstallApp}
-            style={{ color: 'var(--blue)', background: 'rgba(14, 95, 216, 0.08)', borderRadius: 6 }}
-          >
-            <Smartphone size={18} /> <span>Install PWA App</span>
-          </button>
-          <Link to="/" target="_blank" rel="noopener noreferrer" className="admin-nav-item" style={{ justifyContent: 'center' }}>
-            <span>View Live Site</span>
-          </Link>
-          <button className="admin-nav-item" style={{ color: '#b3261e' }} onClick={onLogout}>
-            <LogOut /> <span>Log Out</span>
-          </button>
+        {/* User Profile Card at Bottom */}
+        <div className="modern-sidebar-footer">
+          <div className="user-profile-widget">
+            <div className="user-avatar-circle">
+              {initials}
+              <span className="user-status-dot"></span>
+            </div>
+            {!collapsed && (
+              <div className="user-info-text">
+                <div className="user-name-title">{user.name}</div>
+                <div className={`user-role-tag ${user.role}`}>
+                  {user.role === 'janitor' ? 'FIELD JANITOR' : 'ADMINISTRATOR'}
+                </div>
+              </div>
+            )}
+            <button className="sidebar-logout-btn" onClick={onLogout} title="Log Out">
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
       </aside>
       
-      <main className="admin-main">
-        <div className="admin-header no-print">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <button onClick={() => setCollapsed(!collapsed)} className="btn btn-outline" style={{ padding: '8px', border: 'none' }}>
-              <Menu size={20} />
+      {/* Main Content Area */}
+      <main className="modern-admin-main">
+        {/* Top Header Bar */}
+        <header className="modern-top-bar no-print">
+          <div className="top-bar-left">
+            <button onClick={() => setCollapsed(!collapsed)} className="modern-toggle-btn" title="Toggle Sidebar">
+              <Menu size={18} />
             </button>
-            <h1>{navs.find(n => n.id === tab)?.label || 'Dashboard'}</h1>
+            <div className="breadcrumbs-wrap">
+              <span className="bc-root">Dozeles Admin</span>
+              <span className="bc-sep">/</span>
+              <span className="bc-current">{activeNav?.label || 'Dashboard'}</span>
+            </div>
           </div>
-        </div>
 
-        {tab === 'overview' && <Overview user={user} setTab={setTab} />}
-        {tab === 'bookings' && <Bookings user={user} setTab={setTab} />}
-        {tab === 'quotes' && <ServiceQuote user={user} onBackToBookings={() => setTab('bookings')} />}
-        {tab === 'projects' && <ProjectsView user={user} />}
-        {tab === 'messages' && <Messages />}
-        {tab === 'reviews' && <ReviewsAdmin />}
-        {tab === 'users' && <UsersAdmin user={user} />}
-        {tab === 'subscribers' && <Subscribers />}
-        {tab === 'pricing' && <PricingAdmin />}
-        {tab === 'content' && <ContentEditor />}
+          <div className="top-bar-right">
+            <div className="live-date-pill">
+              <Calendar size={14} color="var(--blue)" />
+              <span>{format(new Date(), 'EEEE, MMM d, yyyy')}</span>
+            </div>
+
+            {installPrompt && (
+              <button className="top-pwa-btn" onClick={handleInstallApp} title="Install as Desktop/Mobile App">
+                <Smartphone size={14} />
+                <span>Install App</span>
+              </button>
+            )}
+
+            <Link to="/" target="_blank" rel="noopener noreferrer" className="top-site-link">
+              <span>Live Site ↗</span>
+            </Link>
+          </div>
+        </header>
+
+        <div className="modern-content-wrapper">
+          {tab === 'overview' && <Overview user={user} setTab={setTab} />}
+          {tab === 'bookings' && <Bookings user={user} setTab={setTab} />}
+          {tab === 'quotes' && <ServiceQuote user={user} onBackToBookings={() => setTab('bookings')} />}
+          {tab === 'projects' && <ProjectsView user={user} />}
+          {tab === 'messages' && <Messages />}
+          {tab === 'reviews' && <ReviewsAdmin />}
+          {tab === 'users' && <UsersAdmin user={user} />}
+          {tab === 'subscribers' && <Subscribers />}
+          {tab === 'pricing' && <PricingAdmin />}
+          {tab === 'content' && <ContentEditor />}
+        </div>
       </main>
     </div>
   );
@@ -197,16 +244,20 @@ function Dashboard({ user, onLogout }) {
 
 function Overview({ user, setTab }) {
   const [bookings, setBookings] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [quotes, setQuotes] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     api.get('/api/admin/bookings').then(setBookings).catch(console.error);
+    api.get('/api/admin/projects').then(setProjects).catch(console.error);
+    api.get('/api/admin/quotes').then(setQuotes).catch(console.error);
   }, []);
 
   const pendingBookings = useMemo(() => bookings.filter(b => b.status === 'pending').length, [bookings]);
+  const activeProjectsCount = useMemo(() => projects.filter(p => p.status !== 'completed').length, [projects]);
   const estimatedRevenue = useMemo(() => {
     return bookings.reduce((sum, b) => {
-      // Only count revenue for jobs this month that aren't cancelled
       if (b.status !== 'cancelled' && b.status !== 'pending' && b.price) {
         const bDate = new Date(b.date);
         if (isSameMonth(bDate, currentMonth)) {
@@ -227,58 +278,95 @@ function Overview({ user, setTab }) {
 
   return (
     <>
-      <div className="kpi-grid">
-        <div className="kpi-card" onClick={() => setTab('bookings')} style={{ cursor: 'pointer' }}>
-          <div className="kpi-icon" style={{ background: '#fff4dd', color: '#a06a00' }}><CalendarCheck size={20} /></div>
-          <div className="kpi-info">
-            <div className="kpi-value">{pendingBookings}</div>
-            <div className="kpi-label">Pending Bookings</div>
+      {/* Executive KPI Grid */}
+      <div className="modern-kpi-grid">
+        <div className="modern-kpi-card amber" onClick={() => setTab('bookings')}>
+          <div className="kpi-top">
+            <span className="kpi-tag">NEEDS ATTENTION</span>
+            <div className="kpi-icon-badge amber"><CalendarCheck size={18} /></div>
           </div>
+          <div className="kpi-main-val">{pendingBookings}</div>
+          <div className="kpi-label">Pending Bookings</div>
+          <div className="kpi-footer-link">View requests →</div>
         </div>
         
-        <div className="kpi-card">
-          <div className="kpi-icon" style={{ background: '#e8f1fd', color: '#0A4BB0' }}><CalendarCheck size={20} /></div>
-          <div className="kpi-info">
-            <div className="kpi-value">{bookings.length}</div>
-            <div className="kpi-label">Total Jobs</div>
+        <div className="modern-kpi-card blue" onClick={() => setTab('bookings')}>
+          <div className="kpi-top">
+            <span className="kpi-tag">TOTAL LOGGED</span>
+            <div className="kpi-icon-badge blue"><CalendarCheck size={18} /></div>
           </div>
+          <div className="kpi-main-val">{bookings.length}</div>
+          <div className="kpi-label">Client Jobs &amp; Bookings</div>
+          <div className="kpi-footer-link">Manage schedule →</div>
+        </div>
+
+        <div className="modern-kpi-card emerald" onClick={() => setTab('projects')}>
+          <div className="kpi-top">
+            <span className="kpi-tag">FIELD OPERATIONS</span>
+            <div className="kpi-icon-badge emerald"><Building2 size={18} /></div>
+          </div>
+          <div className="kpi-main-val">{activeProjectsCount}</div>
+          <div className="kpi-label">Active Ongoing Sites</div>
+          <div className="kpi-footer-link">View site photos →</div>
         </div>
 
         {user.role === 'admin' && (
-          <div className="kpi-card">
-            <div className="kpi-icon" style={{ background: '#e8f7f0', color: '#138a4d' }}><DollarSign size={20} /></div>
-            <div className="kpi-info">
-              <div className="kpi-value">${estimatedRevenue.toLocaleString()}</div>
-              <div className="kpi-label">Est. Revenue ({format(currentMonth, 'MMM')})</div>
+          <div className="modern-kpi-card cyan" onClick={() => setTab('quotes')}>
+            <div className="kpi-top">
+              <span className="kpi-tag">SERVICE PROPOSALS</span>
+              <div className="kpi-icon-badge cyan"><FileText size={18} /></div>
             </div>
+            <div className="kpi-main-val">{quotes.length}</div>
+            <div className="kpi-label">Service Quotes Generated</div>
+            <div className="kpi-footer-link">Review quote PDFs →</div>
           </div>
         )}
       </div>
 
-      <div className="calendar-card">
-        <div className="calendar-header">
-          <h3 style={{ margin: 0, fontFamily: 'var(--font-body)' }}>{format(currentMonth, 'MMMM yyyy')}</h3>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn btn-outline" style={{ padding: 6 }} onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}><ChevronLeft size={20} /></button>
-            <button className="btn btn-outline" style={{ padding: 6 }} onClick={() => setCurrentMonth(new Date())}>Today</button>
-            <button className="btn btn-outline" style={{ padding: 6 }} onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}><ChevronRight size={20} /></button>
+      {/* Calendar Card */}
+      <div className="modern-calendar-card">
+        <div className="modern-calendar-header">
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)' }}>
+              Service Schedule &amp; Bookings
+            </h3>
+            <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 3 }}>
+              {format(currentMonth, 'MMMM yyyy')} Calendar Overview
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button className="btn btn-outline" style={{ padding: '6px 10px', borderRadius: 8 }} onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}><ChevronLeft size={18} /></button>
+            <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.85rem', borderRadius: 8, fontWeight: 700 }} onClick={() => setCurrentMonth(new Date())}>Today</button>
+            <button className="btn btn-outline" style={{ padding: '6px 10px', borderRadius: 8 }} onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}><ChevronRight size={18} /></button>
           </div>
         </div>
 
-        <div className="calendar-grid">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} className="calendar-day-header">{d}</div>
+        <div className="modern-calendar-grid">
+          {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(d => (
+            <div key={d} className="modern-cal-day-header">{d}</div>
           ))}
           {calendarDays.map(day => {
             const dayBookings = bookings.filter(b => b.date === format(day, 'yyyy-MM-dd'));
+            const isToday = isSameDay(day, new Date());
             return (
-              <div key={day.toString()} className={`calendar-day ${!isSameMonth(day, monthStart) ? 'other-month' : ''}`}>
-                <div className="calendar-day-num">{format(day, 'd')}</div>
-                {dayBookings.map(b => (
-                  <div key={b.id} className={`calendar-event ${b.status}`} title={`${b.service} - ${b.name}`}>
-                    {b.time || 'TBD'} - {b.name.split(' ')[0]}
-                  </div>
-                ))}
+              <div key={day.toString()} className={`modern-cal-day ${!isSameMonth(day, monthStart) ? 'other-month' : ''} ${isToday ? 'is-today' : ''}`}>
+                <div className="modern-cal-day-top">
+                  <span className={`day-number ${isToday ? 'today-pill' : ''}`}>{format(day, 'd')}</span>
+                  {dayBookings.length > 0 && <span className="day-count-badge">{dayBookings.length}</span>}
+                </div>
+                <div className="modern-cal-events-list">
+                  {dayBookings.map(b => (
+                    <div 
+                      key={b.id} 
+                      className={`modern-cal-event ${b.status}`} 
+                      title={`${b.service} - ${b.name}`}
+                      onClick={() => setTab('bookings')}
+                    >
+                      <span className="cal-event-time">{b.time || 'TBD'}</span>
+                      <span className="cal-event-client">{b.name.split(' ')[0]}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}

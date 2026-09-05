@@ -3,7 +3,8 @@ import { api } from '../api.js';
 import { 
   Building2, Camera, Upload, CheckCircle2, Clock, 
   MapPin, Plus, Trash2, Edit3, Image as ImageIcon, 
-  User, CheckSquare, Square, X, Calendar, ArrowRight, Eye
+  User, CheckSquare, Square, X, Calendar, ArrowRight, Eye, 
+  Sparkles, ShieldCheck, Check, Copy
 } from 'lucide-react';
 
 export default function ProjectsView({ user }) {
@@ -15,8 +16,10 @@ export default function ProjectsView({ user }) {
   const [photoCaption, setPhotoCaption] = useState('');
   const [photoType, setPhotoType] = useState('progress');
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [previewDataUrl, setPreviewDataUrl] = useState(null);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [copiedNote, setCopiedNote] = useState(false);
 
   const [newProject, setNewProject] = useState({
     title: '',
@@ -48,6 +51,15 @@ export default function ProjectsView({ user }) {
     loadProjects();
   }, []);
 
+  // Helper to ensure photo URL works in all environments (Vercel proxy + VPS)
+  const getPhotoUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('data:') || url.startsWith('http')) return url;
+    // If it starts with /uploads, route via /api/uploads for guaranteed proxying
+    if (url.startsWith('/uploads/')) return '/api' + url;
+    return url;
+  };
+
   const handleCreateProject = async (e) => {
     e.preventDefault();
     try {
@@ -70,8 +82,20 @@ export default function ProjectsView({ user }) {
     }
   };
 
-  const handlePhotoUpload = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = (re) => setPreviewDataUrl(re.target.result);
+    reader.readAsDataURL(file);
+
+    // Auto trigger upload
+    uploadPhoto(file);
+  };
+
+  const uploadPhoto = async (file) => {
     if (!file || !activeProject) return;
 
     setUploading(true);
@@ -92,7 +116,7 @@ export default function ProjectsView({ user }) {
       setActiveProject(data.project);
       setProjects(projects.map(p => p.id === data.project.id ? data.project : p));
       setPhotoCaption('');
-      setPhotoType('progress');
+      setPreviewDataUrl(null);
     } catch (err) {
       alert('Photo upload failed: ' + err.message);
     } finally {
@@ -137,6 +161,10 @@ export default function ProjectsView({ user }) {
     }
   };
 
+  const completedCount = activeProject?.checklist?.filter(c => c.completed).length || 0;
+  const totalChecklist = activeProject?.checklist?.length || 0;
+  const progressPercent = totalChecklist > 0 ? Math.round((completedCount / totalChecklist) * 100) : 0;
+
   const filteredProjects = projects.filter(p => {
     const matchesSearch = 
       p.title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -152,16 +180,19 @@ export default function ProjectsView({ user }) {
       <div className="projects-sidebar">
         <div className="projects-sidebar-header">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Active Projects</h3>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)' }}>Field Projects</h3>
+              <div style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 2 }}>{projects.length} Active Sites</div>
+            </div>
             {user.role === 'admin' && (
-              <button className="btn btn-blue" style={{ padding: '6px 12px', fontSize: '0.85rem' }} onClick={() => setShowNewModal(true)}>
-                <Plus size={15} style={{ marginRight: 4 }} /> New Project
+              <button className="btn btn-blue" style={{ padding: '6px 12px', fontSize: '0.82rem', borderRadius: 8 }} onClick={() => setShowNewModal(true)}>
+                <Plus size={15} style={{ marginRight: 4 }} /> New Site
               </button>
             )}
           </div>
           <input 
             type="text" 
-            placeholder="Search projects..." 
+            placeholder="Search facility or client..." 
             value={search} 
             onChange={e => setSearch(e.target.value)} 
             className="quote-search-input"
@@ -192,21 +223,21 @@ export default function ProjectsView({ user }) {
               className={`project-list-card ${activeProject?.id === p.id ? 'active' : ''}`}
               onClick={() => setActiveProject(p)}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--ink)' }}>{p.title}</span>
                 <span className={`pill ${p.status}`}>{p.status}</span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Building2 size={13} /> {p.clientName}
+              <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Building2 size={13} color="var(--blue)" /> {p.clientName}
               </div>
               {p.address && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--muted)', marginTop: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <MapPin size={13} /> {p.address}
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, fontSize: '0.75rem', color: 'var(--muted)' }}>
-                <span>{p.photos?.length || 0} photos uploaded</span>
-                <span>{p.frequency}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, fontSize: '0.75rem', borderTop: '1px solid #f1f5f9', paddingTop: 8 }}>
+                <span style={{ color: 'var(--blue)', fontWeight: 600 }}>📸 {p.photos?.length || 0} photos</span>
+                <span style={{ color: 'var(--muted)' }}>{p.frequency}</span>
               </div>
             </div>
           ))}
@@ -220,23 +251,23 @@ export default function ProjectsView({ user }) {
             {/* Header */}
             <div className="project-header-bar">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <h2 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'var(--font-body)' }}>{activeProject.title}</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--ink)' }}>{activeProject.title}</h2>
                   <span className={`pill ${activeProject.status}`}>{activeProject.status}</span>
                 </div>
-                <div style={{ color: 'var(--muted)', marginTop: 4, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ color: 'var(--muted)', marginTop: 6, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                   <span><strong>Client:</strong> {activeProject.clientName}</span>
                   {activeProject.address && <span><strong>Site:</strong> {activeProject.address}</span>}
                   <span><strong>Schedule:</strong> {activeProject.frequency}</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                 <select 
                   className="form-select"
                   value={activeProject.status} 
                   onChange={e => handleStatusUpdate(e.target.value)}
-                  style={{ padding: '6px 12px', fontSize: '0.85rem', borderRadius: 6, border: '1px solid var(--line)' }}
+                  style={{ padding: '8px 14px', fontSize: '0.85rem', borderRadius: 8, border: '1px solid var(--line)', fontWeight: 600 }}
                 >
                   <option value="in-progress">In Progress</option>
                   <option value="scheduled">Scheduled</option>
@@ -244,119 +275,175 @@ export default function ProjectsView({ user }) {
                 </select>
 
                 {user.role === 'admin' && (
-                  <button className="btn btn-outline" style={{ color: '#b3261e', borderColor: '#b3261e', padding: '6px 10px' }} onClick={() => handleDeleteProject(activeProject.id)}>
+                  <button className="btn btn-outline" style={{ color: '#b3261e', borderColor: '#fee2e2', padding: '8px 12px', borderRadius: 8 }} onClick={() => handleDeleteProject(activeProject.id)}>
                     <Trash2 size={16} />
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Field Photo Upload Station (Crucial for Janitors on Mobile) */}
+            {/* Field Photo Upload Station */}
             <div className="card photo-upload-station" style={{ marginTop: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Camera size={20} /> Janitor Photo Station &amp; Job Progress
-                </h3>
-                <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>
-                  Upload before/after proof &amp; daily updates
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Camera size={20} /> Janitor Photo Station &amp; Job Progress
+                  </h3>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--muted)', marginTop: 2 }}>
+                    Upload inspection photos, before/after proof, and daily service updates.
+                  </div>
+                </div>
+                <span className="pill in-progress" style={{ fontSize: '0.8rem', padding: '4px 10px' }}>
+                  {activeProject.photos?.length || 0} Photos Uploaded
                 </span>
               </div>
 
+              {/* Upload Controls Bar */}
               <div className="photo-upload-form">
                 <div className="upload-controls-grid">
                   <div>
-                    <label className="form-note">Photo Tag / Category</label>
+                    <label className="form-note" style={{ fontWeight: 700, color: 'var(--ink)' }}>Category</label>
                     <select 
                       className="form-select"
                       value={photoType} 
                       onChange={e => setPhotoType(e.target.value)}
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid var(--line)' }}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--line)' }}
                     >
-                      <option value="progress">Progress / Cleaning Update</option>
-                      <option value="before">Before Cleaning (Inspection)</option>
+                      <option value="progress">Cleaning Progress / Daily Update</option>
+                      <option value="before">Before Cleaning (Pre-Inspection)</option>
                       <option value="after">After Cleaning (Finished Proof)</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="form-note">Photo Caption / Note</label>
+                    <label className="form-note" style={{ fontWeight: 700, color: 'var(--ink)' }}>Caption / Area Note</label>
                     <input 
                       type="text" 
-                      placeholder="e.g., Lobby floors buffed, Breakroom disinfected..." 
+                      placeholder="e.g., Reception floor buffed, Restroom sanitized..." 
                       value={photoCaption} 
                       onChange={e => setPhotoCaption(e.target.value)} 
+                      style={{ borderRadius: 8 }}
                     />
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                    {/* Direct Mobile Camera Capture */}
-                    <label className="btn btn-blue" style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, cursor: 'pointer', padding: '10px 16px' }}>
+                  <div>
+                    <label className="btn btn-blue" style={{ width: '100%', height: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, cursor: 'pointer', borderRadius: 8 }}>
                       <Camera size={18} />
-                      <span>{uploading ? 'Uploading...' : 'Take / Upload Photo'}</span>
+                      <span style={{ fontWeight: 700 }}>{uploading ? 'Uploading...' : 'Take / Select Photo'}</span>
                       <input 
                         type="file" 
                         accept="image/*" 
                         capture="environment" 
                         style={{ display: 'none' }} 
-                        onChange={handlePhotoUpload} 
+                        onChange={handleFileSelect} 
                         disabled={uploading} 
                       />
                     </label>
                   </div>
                 </div>
+
+                {previewDataUrl && (
+                  <div style={{ marginTop: 12, padding: 10, background: '#f8fafc', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <img src={previewDataUrl} alt="Preview" style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6 }} />
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>Uploading photo...</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>Optimizing and sending to server</div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Photo Gallery Grid */}
-              <div className="project-photos-grid" style={{ marginTop: 20 }}>
+              <div className="project-photos-grid" style={{ marginTop: 24 }}>
                 {(!activeProject.photos || activeProject.photos.length === 0) ? (
-                  <div style={{ gridColumn: '1 / -1', padding: 30, textAlign: 'center', background: '#f8fafc', borderRadius: 8, color: 'var(--muted)' }}>
-                    <ImageIcon size={36} style={{ opacity: 0.3, marginBottom: 8 }} />
-                    <p style={{ margin: 0, fontSize: '0.9rem' }}>No job photos uploaded yet. Tap <strong>Take / Upload Photo</strong> above to add field photos.</p>
+                  <div style={{ gridColumn: '1 / -1', padding: 40, textAlign: 'center', background: '#f8fafc', borderRadius: 10, border: '2px dashed #cbd5e1', color: 'var(--muted)' }}>
+                    <ImageIcon size={42} style={{ opacity: 0.3, marginBottom: 10 }} />
+                    <h4 style={{ margin: '0 0 6px 0', color: 'var(--ink)' }}>No Site Photos Uploaded Yet</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem' }}>Tap <strong>Take / Select Photo</strong> above to upload before/after photos directly from your phone or camera.</p>
                   </div>
                 ) : (
-                  activeProject.photos.map((ph) => (
-                    <div key={ph.id} className="project-photo-card" onClick={() => setSelectedPhoto(ph)}>
-                      <div className="photo-img-wrapper">
-                        <img src={ph.url} alt={ph.caption || 'Project photo'} loading="lazy" />
-                        <span className={`photo-type-badge ${ph.type}`}>
-                          {ph.type.toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="photo-card-info">
-                        <div className="photo-caption">{ph.caption || 'Site progress photo'}</div>
-                        <div className="photo-meta">
-                          <span>{ph.author} ({ph.authorRole || 'Janitor'})</span>
-                          <span>{new Date(ph.uploadedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  activeProject.photos.map((ph) => {
+                    const fullImgUrl = getPhotoUrl(ph.url);
+                    return (
+                      <div key={ph.id} className="project-photo-card" onClick={() => setSelectedPhoto({ ...ph, resolvedUrl: fullImgUrl })}>
+                        <div className="photo-img-wrapper">
+                          <img 
+                            src={fullImgUrl} 
+                            alt={ph.caption || 'Project photo'} 
+                            loading="lazy"
+                            onError={(e) => {
+                              // If /uploads failed, try direct /api/uploads prefix
+                              if (!e.target.dataset.tried) {
+                                e.target.dataset.tried = 'true';
+                                e.target.src = ph.url.startsWith('/api') ? ph.url : '/api' + ph.url;
+                              }
+                            }}
+                          />
+                          <span className={`photo-type-badge ${ph.type}`}>
+                            {ph.type === 'before' ? 'BEFORE' : ph.type === 'after' ? 'AFTER' : 'PROGRESS'}
+                          </span>
+                          <div className="photo-zoom-overlay">
+                            <Eye size={20} color="#fff" />
+                          </div>
+                        </div>
+                        <div className="photo-card-info">
+                          <div className="photo-caption">{ph.caption || 'Site progress photo'}</div>
+                          <div className="photo-meta">
+                            <span>{ph.author} ({ph.authorRole || 'Janitor'})</span>
+                            <span>{new Date(ph.uploadedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
 
-            {/* Checklist & Site Details Grid */}
-            <div className="project-bottom-grid" style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            {/* Checklist & Site Access Grid */}
+            <div className="project-bottom-grid" style={{ marginTop: 24, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
               
               {/* Daily Checklist for Janitors */}
-              <div className="card">
-                <h3 style={{ margin: '0 0 16px 0', fontSize: '1.05rem', color: 'var(--ink)' }}>
-                  On-Site Cleaning Checklist
-                </h3>
+              <div className="card" style={{ borderRadius: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--ink)' }}>
+                    On-Site Cleaning Tasks
+                  </h3>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: progressPercent === 100 ? '#16a34a' : 'var(--blue)' }}>
+                    {progressPercent}% Done ({completedCount}/{totalChecklist})
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div style={{ width: '100%', height: 6, background: '#f1f5f9', borderRadius: 3, overflow: 'hidden', marginBottom: 16 }}>
+                  <div style={{ width: `${progressPercent}%`, height: '100%', background: progressPercent === 100 ? '#16a34a' : 'var(--blue)', transition: 'width 0.3s' }}></div>
+                </div>
+
                 <div className="checklist-items">
                   {activeProject.checklist?.map((item, idx) => (
                     <div 
                       key={item.id || idx} 
                       className={`checklist-item ${item.completed ? 'completed' : ''}`}
                       onClick={() => toggleChecklistItem(idx)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 6, marginBottom: 8, cursor: 'pointer', background: item.completed ? '#e8f7f0' : '#f8fafc', transition: 'all 0.2s' }}
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 12, 
+                        padding: '12px 14px', 
+                        borderRadius: 8, 
+                        marginBottom: 8, 
+                        cursor: 'pointer', 
+                        background: item.completed ? '#f0fdf4' : '#f8fafc', 
+                        border: `1px solid ${item.completed ? '#bbf7d0' : '#e2e8f0'}`,
+                        transition: 'all 0.2s' 
+                      }}
                     >
                       {item.completed ? (
-                        <CheckCircle2 size={18} color="#138a4d" />
+                        <CheckCircle2 size={20} color="#16a34a" />
                       ) : (
-                        <Square size={18} color="var(--muted)" />
+                        <Square size={20} color="#94a3b8" />
                       )}
-                      <span style={{ fontSize: '0.9rem', textDecoration: item.completed ? 'line-through' : 'none', color: item.completed ? '#138a4d' : 'var(--ink)' }}>
+                      <span style={{ fontSize: '0.9rem', fontWeight: item.completed ? 600 : 500, textDecoration: item.completed ? 'line-through' : 'none', color: item.completed ? '#16a34a' : 'var(--ink)' }}>
                         {item.task}
                       </span>
                     </div>
@@ -364,19 +451,34 @@ export default function ProjectsView({ user }) {
                 </div>
               </div>
 
-              {/* Site Notes & Team Info */}
-              <div className="card">
-                <h3 style={{ margin: '0 0 16px 0', fontSize: '1.05rem', color: 'var(--ink)' }}>
-                  Site &amp; Access Notes
-                </h3>
-                <div style={{ background: '#fff4dd', padding: 14, borderRadius: 6, color: '#a06a00', fontSize: '0.9rem', marginBottom: 16 }}>
-                  {activeProject.notes || 'Standard commercial protocol. Ensure alarms are reset upon exit.'}
+              {/* Site Notes & Keycard Instructions */}
+              <div className="card" style={{ borderRadius: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--ink)' }}>
+                    Site &amp; Access Protocol
+                  </h3>
+                  <button 
+                    className="btn btn-outline" 
+                    style={{ padding: '4px 8px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: 4 }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(activeProject.notes || '');
+                      setCopiedNote(true);
+                      setTimeout(() => setCopiedNote(false), 2000);
+                    }}
+                  >
+                    {copiedNote ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                    {copiedNote ? 'Copied' : 'Copy'}
+                  </button>
                 </div>
 
-                <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
+                <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', padding: 16, borderRadius: 8, color: '#92400e', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: 16 }}>
+                  {activeProject.notes || 'Standard commercial access. Keycard provided. Ensure alarm is armed upon departure.'}
+                </div>
+
+                <div style={{ fontSize: '0.85rem', color: 'var(--muted)', background: '#f8fafc', padding: 14, borderRadius: 8 }}>
                   <div style={{ marginBottom: 6 }}><strong>Assigned Janitors:</strong> {activeProject.assignedJanitors?.join(', ') || 'Field Crew'}</div>
                   <div style={{ marginBottom: 6 }}><strong>Facility:</strong> {activeProject.facilityType}</div>
-                  <div><strong>Start Date:</strong> {activeProject.startDate}</div>
+                  <div><strong>Schedule:</strong> {activeProject.frequency}</div>
                 </div>
               </div>
 
@@ -469,7 +571,7 @@ export default function ProjectsView({ user }) {
                 <label className="form-note">Assigned Janitor Name(s)</label>
                 <input 
                   type="text" 
-                  placeholder="e.g. Carlos Gomez, Elena Rodriguez" 
+                  placeholder="e.g. Carlos Gomez, Mateo Ramirez" 
                   value={newProject.assignedJanitors.join(', ')} 
                   onChange={e => setNewProject({ ...newProject, assignedJanitors: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} 
                 />
@@ -496,25 +598,29 @@ export default function ProjectsView({ user }) {
 
       {/* Lightbox Modal for Photo Inspection */}
       {selectedPhoto && (
-        <div className="modal-overlay" onClick={() => setSelectedPhoto(null)} style={{ background: 'rgba(0,0,0,0.85)' }}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 800, padding: 0, background: '#000', color: '#fff' }}>
-            <div style={{ position: 'relative' }}>
-              <img src={selectedPhoto.url} alt={selectedPhoto.caption} style={{ width: '100%', maxHeight: '75vh', objectFit: 'contain', display: 'block' }} />
+        <div className="modal-overlay" onClick={() => setSelectedPhoto(null)} style={{ background: 'rgba(10, 25, 47, 0.92)', backdropFilter: 'blur(6px)' }}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 850, padding: 0, background: '#0f172a', color: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ position: 'relative', background: '#000' }}>
+              <img 
+                src={selectedPhoto.resolvedUrl || getPhotoUrl(selectedPhoto.url)} 
+                alt={selectedPhoto.caption} 
+                style={{ width: '100%', maxHeight: '75vh', objectFit: 'contain', display: 'block' }} 
+              />
               <button 
                 onClick={() => setSelectedPhoto(null)} 
-                style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(0,0,0,0.7)', color: '#fff', border: 'none', borderRadius: '50%', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
               >
-                <X size={20} />
+                <X size={22} />
               </button>
             </div>
-            <div style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f172a' }}>
               <div>
-                <span className={`photo-type-badge ${selectedPhoto.type}`} style={{ display: 'inline-block', marginBottom: 6 }}>
-                  {selectedPhoto.type.toUpperCase()}
+                <span className={`photo-type-badge ${selectedPhoto.type}`} style={{ display: 'inline-block', position: 'static', marginBottom: 8 }}>
+                  {selectedPhoto.type === 'before' ? 'BEFORE CLEANING' : selectedPhoto.type === 'after' ? 'AFTER CLEANING' : 'CLEANING PROGRESS'}
                 </span>
-                <div style={{ fontSize: '1rem', fontWeight: 600 }}>{selectedPhoto.caption || 'Site Photo'}</div>
-                <div style={{ fontSize: '0.8rem', color: '#aaa', marginTop: 4 }}>
-                  Uploaded by {selectedPhoto.author} • {new Date(selectedPhoto.uploadedAt).toLocaleString()}
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>{selectedPhoto.caption || 'Site Photo'}</div>
+                <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: 4 }}>
+                  Uploaded by <strong>{selectedPhoto.author}</strong> ({selectedPhoto.authorRole || 'Janitor'}) • {new Date(selectedPhoto.uploadedAt).toLocaleString()}
                 </div>
               </div>
             </div>
