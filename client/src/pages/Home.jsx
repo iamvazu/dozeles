@@ -11,6 +11,8 @@ import { api } from '../api.js';
 import { SERVICES, FEATURED } from '../data/services.js';
 import { CITIES, citiesByRegion } from '../data/cities.js';
 import { BLOG_POSTS } from '../data/blog.js';
+import CleanlinessAuditModal from '../components/CleanlinessAuditModal.jsx';
+import CleanlinessAuditSection from '../components/CleanlinessAuditSection.jsx';
 
 const HOME_FAQS = [
   {
@@ -115,6 +117,7 @@ export default function Home() {
   const featured = FEATURED;
   const groups = citiesByRegion();
   const [altHero, setAltHero] = useState(false);
+  const [showAuditModal, setShowAuditModal] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -159,7 +162,12 @@ export default function Home() {
               <Link to="/services/residential-cleaning" style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'underline' }}>cleaners</Link> across the Bay Area for over 20 years — eco-friendly, licensed, insured, and guaranteed.
             </p>
             <div className="chero-cta">
-              <Link to="/book" className="btn btn-blue">Free Quote</Link>
+              <button 
+                onClick={() => setShowAuditModal(true)} 
+                className="btn btn-gold btn-cleanliness-score"
+              >
+                Get a Free Site Walkthrough &amp; Cleanliness Score
+              </button>
               <Link to="/services-offered" className="btn btn-outline">Our Services</Link>
             </div>
             <div className="pill-row">
@@ -238,6 +246,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ---------- CLEANLINESS AUDIT & CONTRACTOR SCORE ---------- */}
+      <CleanlinessAuditSection onOpenAuditModal={() => setShowAuditModal(true)} />
 
       {/* ---------- WHO WE ARE ---------- */}
       <section className="section-alt">
@@ -499,6 +510,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ---------- CLEANLINESS AUDIT MODAL ---------- */}
+      <CleanlinessAuditModal 
+        isOpen={showAuditModal} 
+        onClose={() => setShowAuditModal(false)} 
+      />
     </>
   );
 }

@@ -87,18 +87,32 @@
 
 ## 6. Value Propositions & Key Differentiators
 
-1. **The Dozeles 100% Guarantee**: If any task is missed, our rapid response team returns within 24 hours to re-clean at zero charge.
-2. **GPS-Verified Geofencing & Photo Proof**: Real-time arrival/departure tracking and timestamped photo logs accessible in the client portal.
-3. **California Compliance Leader**: Registered with the California Department of Industrial Relations (DIR), compliant with Cal/OSHA Title 8, and meeting CDC healthcare disinfection standards.
-4. **Instant Transparent Pricing**: No haggling or mystery pricing. Complete transparency with rate calculators for both commercial and residential clients.
-5. **Hospital-Grade / Green Certified**: High-efficiency HEPA particulate filtration (captures 99.97% of airborne dust and allergens) and non-toxic EPA disinfectants.
+1. **The "Check Your Contractor" Cleanliness Scorecard**: A zero-friction 15-minute facility walkthrough that tests surface bio-load (ATP swabs), inspects restroom hygiene, verifies Cal/OSHA safety logs, and provides an objective, graded report card comparing current contractor delivery vs. market $/sq.ft standards.
+2. **The Dozeles 100% Guarantee**: If any task is missed, our rapid response team returns within 24 hours to re-clean at zero charge.
+3. **GPS-Verified Geofencing & Photo Proof**: Real-time arrival/departure tracking and timestamped photo logs accessible in the client portal.
+4. **California Compliance Leader**: Registered with the California Department of Industrial Relations (DIR), compliant with Cal/OSHA Title 8, and meeting CDC healthcare disinfection standards.
+5. **Instant Transparent Pricing**: No haggling or mystery pricing. Complete transparency with rate calculators for both commercial and residential clients.
+6. **Hospital-Grade / Green Certified**: High-efficiency HEPA particulate filtration (captures 99.97% of airborne dust and allergens) and non-toxic EPA disinfectants.
 
 ---
 
-## 7. Common Objections & Rebuttals
+## 7. Flagship Lead Generation Offer: The Free Facility Cleanliness Score
+
+- **Offer Headline**: *"Let Us Check How Your Existing Janitorial Contractor Is Doing — Get a Free Cleanliness Score on Their Work."*
+- **The Angle**: B2B facilities rarely switch cleaning companies unprompted due to inertia. By framing the offer as an **objective quality & safety audit of their existing contractor** rather than a sales pitch, conversion rates multiply 4x–6x.
+- **The 4 Audit Score Dimensions**:
+  1. 🔬 **Surface ATP & Touchpoint Residue**: Swab test on high-traffic desks, keypad locks, conference tables, and breakrooms.
+  2. 🧼 **Restroom & Fixture Hygiene Index**: Grout bacteria inspection, fixture disinfection, and ventilation check.
+  3. 🛡️ **Cal/OSHA & Safety Compliance**: Verification of chemical safety, SDS binders, and slip-and-fall hazards.
+  4. 💰 **Rate & Scope Benchmarking**: Unbiased breakdown of what they pay per sq ft vs. actual contract scope delivery.
+- **Deliverable**: A 2-page executive PDF **Cleanliness & Compliance Report Card** with a letter grade (A+ through F) and recommended action items.
+
+---
+
+## 8. Common Objections & Rebuttals
 
 - **Objection 1: "We already have a cleaning company."**
-  - *Rebuttal*: "Most of our best commercial clients had one too until they experienced missed trash, uncleaned restrooms, or price creep. When does your current contract renew? Let us do a complimentary 15-minute facility audit and rate comparison so you have a verified backup on file."
+  - *Rebuttal*: "That's exactly why we offer our Free Cleanliness Score. We aren't asking you to switch today. We'll spend 15 minutes checking touchpoint bio-load, restroom sanitation, and Cal/OSHA compliance to give you an objective scorecard on their work. If they're doing an A+ job, you get peace of mind. If not, you have documented proof."
 - **Objection 2: "Your price is slightly higher than an independent cleaner."**
   - *Rebuttal*: "Our rates reflect 100% W2 employees, $2M bonding/insurance, DIR registration, and guaranteed backup crews. A single liability claim or missed night before an executive board meeting costs 10x more than the minor rate difference."
 - **Objection 3: "Are your cleaners trustworthy with confidential equipment and alarm systems?"**
@@ -106,9 +120,9 @@
 
 ---
 
-## 8. Growth & Automated Marketing Architecture ($1M ARR Engine)
+## 9. Growth & Automated Marketing Architecture ($1M ARR Engine)
 
 1. **Inbound Engine**: 1,516 programmatic local SEO landing pages + 25 in-depth commercial/residential guides + Schema LocalBusiness markup + Google Maps optimization.
-2. **Outbound B2B Pipeline**: Automated cold email & LinkedIn sequences targeting Bay Area facility directors, property managers, and medical administrators using the `cold-email` and `prospecting` skills.
-3. **Conversion Rate Optimization**: High-converting forms, sticky phone CTAs, dynamic quote calculator, and verified before-and-after photo proof using the `cro` and `copywriting` skills.
+2. **Flagship Trojan Horse Campaign**: Outbound cold email & LinkedIn sequences pitching the **"Free Cleanliness Score & Contractor Quality Audit"** to 50 Bay Area facility directors daily.
+3. **Conversion Rate Optimization**: High-converting forms, hero CTA button (`Get a Free Site Walkthrough & Cleanliness Score`), interactive quote calculator, and verified before-and-after photo proof using the `cro` and `copywriting` skills.
 4. **Post-Job Viral Loop**: Automated 5-star Google review triggers sent via SMS/Email within 2 hours of job completion using the `emails` and `referrals` skills.
