@@ -5,11 +5,13 @@ import {
   LayoutDashboard, CalendarCheck, Calendar, MessageSquare, Users, 
   Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, 
   ChevronRight, DollarSign, Menu, Paperclip, FileText, 
-  Upload, Building2, Download, Smartphone
+  Upload, Building2, Download, Smartphone, Target, Briefcase, Layers
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
 import ServiceQuote from './ServiceQuote.jsx';
 import ProjectsView from './ProjectsView.jsx';
+import LeadsView from './LeadsView.jsx';
+import CustomersView from './CustomersView.jsx';
 
 const SECTIONS = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
 const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
@@ -123,9 +125,11 @@ function Dashboard({ user, onLogout }) {
   } else {
     navs = [
       { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={19} /> },
-      { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck size={19} /> },
-      { id: 'quotes', label: 'Service Quotes', icon: <FileText size={19} /> },
+      { id: 'leads', label: 'Leads & Pipeline', icon: <Target size={19} /> },
+      { id: 'customers', label: 'Customers & CRM', icon: <Users size={19} /> },
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
+      { id: 'quotes', label: 'Service Quotes', icon: <FileText size={19} /> },
+      { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck size={19} /> },
       { id: 'messages', label: 'Inquiries & Messages', icon: <MessageSquare size={19} /> },
       { id: 'reviews', label: 'Client Reviews', icon: <Star size={19} /> },
       { id: 'users', label: 'Team & Field Staff', icon: <Shield size={19} /> },
@@ -269,6 +273,8 @@ function Dashboard({ user, onLogout }) {
 
         <div className="modern-content-wrapper">
           {tab === 'overview' && <Overview user={user} setTab={setTab} />}
+          {tab === 'leads' && <LeadsView user={user} onOpenQuotes={() => setTab('quotes')} onOpenCustomers={() => setTab('customers')} />}
+          {tab === 'customers' && <CustomersView user={user} onOpenProject={(id) => setTab('projects')} onOpenQuote={(id) => setTab('quotes')} />}
           {tab === 'bookings' && <Bookings user={user} setTab={setTab} />}
           {tab === 'quotes' && <ServiceQuote user={user} onBackToBookings={() => setTab('bookings')} />}
           {tab === 'projects' && <ProjectsView user={user} />}

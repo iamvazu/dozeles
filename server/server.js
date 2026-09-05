@@ -629,6 +629,238 @@ app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
+// ==================== LEADS CRM API ====================
+app.get('/api/admin/leads', requireAuth, (req, res) => {
+  if (!db.leads) db.leads = [];
+  res.json([...db.leads].reverse());
+});
+
+app.post('/api/admin/leads', requireAuth, (req, res) => {
+  const { companyName, contactName, email, phone, facilityType, squareFootage, estimatedMonthlyValue, source, stage, priority, notes, assignedTo } = req.body;
+  if (!companyName && !contactName) return res.status(400).json({ error: 'Company Name or Contact Name is required' });
+
+  const lead = {
+    id: newId(),
+    companyName: companyName || 'Prospective Facility',
+    contactName: contactName || '',
+    email: email || '',
+    phone: phone || '',
+    facilityType: facilityType || 'Commercial Office',
+    squareFootage: squareFootage || '',
+    estimatedMonthlyValue: Number(estimatedMonthlyValue) || 0,
+    source: source || 'Google Search',
+    stage: stage || 'new', // 'new' | 'contacted' | 'walkthrough' | 'proposal_sent' | 'won' | 'lost'
+    priority: priority || 'medium',
+    notes: notes || '',
+    assignedTo: assignedTo || req.user.name || 'Admin',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (!db.leads) db.leads = [];
+  db.leads.push(lead);
+  saveDb();
+  res.status(201).json(lead);
+});
+
+app.put('/api/admin/leads/:id', requireAuth, (req, res) => {
+  if (!db.leads) db.leads = [];
+  const idx = db.leads.findIndex(l => l.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Lead not found' });
+
+  db.leads[idx] = {
+    ...db.leads[idx],
+    ...req.body,
+    id: req.params.id,
+    updatedAt: new Date().toISOString()
+  };
+  saveDb();
+  res.json(db.leads[idx]);
+});
+
+app.delete('/api/admin/leads/:id', requireAdmin, (req, res) => {
+  if (!db.leads) db.leads = [];
+  db.leads = db.leads.filter(l => l.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+// Convert Lead to Customer
+app.post('/api/admin/leads/:id/convert', requireAuth, (req, res) => {
+  if (!db.leads) db.leads = [];
+  if (!db.customers) db.customers = [];
+  if (!db.projects) db.projects = [];
+
+  const lead = db.leads.find(l => l.id === req.params.id);
+  if (!lead) return res.status(404).json({ error: 'Lead not found' });
+
+  lead.stage = 'won';
+  lead.updatedAt = new Date().toISOString();
+
+  const customerId = newId();
+  const newCustomer = {
+    id: customerId,
+    companyName: lead.companyName,
+    contactName: lead.contactName,
+    email: lead.email,
+    phone: lead.phone,
+    address: req.body.address || '',
+    facilityType: lead.facilityType,
+    squareFootage: lead.squareFootage,
+    contractValue: lead.estimatedMonthlyValue || 0,
+    billingFrequency: req.body.billingFrequency || 'Monthly (Net 30)',
+    status: 'active',
+    tags: ['Converted Lead', lead.source],
+    notes: lead.notes,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  db.customers.push(newCustomer);
+
+  if (req.body.createProject) {
+    const project = {
+      id: newId(),
+      customerId: customerId,
+      title: `${lead.companyName} Ongoing Janitorial`,
+      clientName: lead.companyName,
+      address: req.body.address || '',
+      facilityType: lead.facilityType,
+      status: 'in-progress',
+      frequency: req.body.frequency || '5x / week',
+      startDate: new Date().toISOString().split('T')[0],
+      assignedJanitors: [req.user.name || 'Field Crew'],
+      checklist: [
+        { id: '1', task: 'Restrooms disinfected and restocked', completed: false },
+        { id: '2', task: 'Trash and recyclables removed', completed: false },
+        { id: '3', task: 'HEPA vacuum carpets & damp mop hard floors', completed: false },
+        { id: '4', task: 'High-touch disinfection (handles, switches, desks)', completed: false },
+        { id: '5', task: 'Entrance and lobby glass polished streak-free', completed: false }
+      ],
+      photos: [],
+      notes: lead.notes,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    db.projects.push(project);
+  }
+
+  saveDb();
+  res.json({ ok: true, customer: newCustomer, lead });
+});
+
+// ==================== CUSTOMERS CRM API ====================
+app.get('/api/admin/customers', requireAuth, (req, res) => {
+  if (!db.customers) db.customers = [];
+  if (!db.projects) db.projects = [];
+  if (!db.quotes) db.quotes = [];
+  if (!db.bookings) db.bookings = [];
+
+  const enriched = db.customers.map(c => {
+    const connectedProjects = db.projects.filter(p => p.customerId === c.id || (p.clientName && p.clientName.toLowerCase() === c.companyName.toLowerCase()));
+    const connectedQuotes = db.quotes.filter(q => q.customerId === c.id || (q.preparedFor?.clientName && q.preparedFor.clientName.toLowerCase() === c.companyName.toLowerCase()));
+    const connectedBookings = db.bookings.filter(b => b.customerId === c.id || (b.name && b.name.toLowerCase() === c.contactName.toLowerCase()));
+
+    return {
+      ...c,
+      projects: connectedProjects,
+      quotes: connectedQuotes,
+      bookings: connectedBookings,
+      projectCount: connectedProjects.length,
+      photoCount: connectedProjects.reduce((sum, p) => sum + (p.photos?.length || 0), 0)
+    };
+  });
+
+  res.json(enriched.reverse());
+});
+
+app.post('/api/admin/customers', requireAdmin, (req, res) => {
+  const { companyName, contactName, email, phone, address, facilityType, squareFootage, contractValue, billingFrequency, status, tags, notes } = req.body;
+  if (!companyName) return res.status(400).json({ error: 'Company Name is required' });
+
+  const customer = {
+    id: newId(),
+    companyName,
+    contactName: contactName || '',
+    email: email || '',
+    phone: phone || '',
+    address: address || '',
+    facilityType: facilityType || 'Commercial Office',
+    squareFootage: squareFootage || '',
+    contractValue: Number(contractValue) || 0,
+    billingFrequency: billingFrequency || 'Monthly (Net 30)',
+    status: status || 'active',
+    tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()) : ['Commercial']),
+    notes: notes || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (!db.customers) db.customers = [];
+  db.customers.push(customer);
+  saveDb();
+  res.status(201).json(customer);
+});
+
+app.put('/api/admin/customers/:id', requireAdmin, (req, res) => {
+  if (!db.customers) db.customers = [];
+  const idx = db.customers.findIndex(c => c.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Customer not found' });
+
+  db.customers[idx] = {
+    ...db.customers[idx],
+    ...req.body,
+    id: req.params.id,
+    updatedAt: new Date().toISOString()
+  };
+  saveDb();
+  res.json(db.customers[idx]);
+});
+
+app.delete('/api/admin/customers/:id', requireAdmin, (req, res) => {
+  if (!db.customers) db.customers = [];
+  db.customers = db.customers.filter(c => c.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+// Create a project directly connected to a customer
+app.post('/api/admin/customers/:id/projects', requireAdmin, (req, res) => {
+  if (!db.customers) db.customers = [];
+  if (!db.projects) db.projects = [];
+
+  const customer = db.customers.find(c => c.id === req.params.id);
+  if (!customer) return res.status(404).json({ error: 'Customer not found' });
+
+  const { title, facilityType, frequency, startDate, notes } = req.body;
+  const project = {
+    id: newId(),
+    customerId: customer.id,
+    title: title || `${customer.companyName} Cleaning Service`,
+    clientName: customer.companyName,
+    address: customer.address || '',
+    facilityType: facilityType || customer.facilityType || 'Commercial Office',
+    status: 'in-progress',
+    frequency: frequency || '5x / week',
+    startDate: startDate || new Date().toISOString().split('T')[0],
+    assignedJanitors: [req.user.name || 'Field Crew'],
+    checklist: [
+      { id: '1', task: 'Restrooms disinfected and restocked', completed: false },
+      { id: '2', task: 'Trash and recyclables removed', completed: false },
+      { id: '3', task: 'HEPA vacuum carpets & damp mop hard floors', completed: false },
+      { id: '4', task: 'High-touch disinfection (handles, switches, desks)', completed: false },
+      { id: '5', task: 'Entrance and lobby glass polished streak-free', completed: false }
+    ],
+    photos: [],
+    notes: notes || customer.notes || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  db.projects.push(project);
+  saveDb();
+  res.status(201).json(project);
+});
+
 // Content editing: replace a whole section (site, home, about, services, government, faqs, ...)
 const EDITABLE = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
 app.put('/api/admin/content/:section', requireAdmin, (req, res) => {
