@@ -138,15 +138,36 @@ function Dashboard({ user, onLogout }) {
       {/* Luxury Dark Sidebar */}
       <aside className={`modern-admin-sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="modern-sidebar-brand">
-          <div className="sidebar-brand-logo">
-            <img src="/images/dozeles-logo.jpg" alt="Dozeles" onError={(e) => { e.target.style.display='none'; }} />
-            <div className="brand-logo-fallback">
-              <span className="brand-primary">DOZELES</span>
-              <span className="brand-badge">PRO</span>
+          {!collapsed ? (
+            <div className="sidebar-brand-full">
+              <div className="sidebar-logo-card">
+                <img 
+                  src="/images/dozeles-logo.png" 
+                  alt="Dozeles" 
+                  className="brand-logo-img"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/images/dozeles-logo.jpg';
+                  }}
+                />
+              </div>
+              <div className="sidebar-brand-sub">
+                Residential, Commercial &amp; Governmental Cleaning Services
+              </div>
             </div>
-          </div>
-          {!collapsed && (
-            <div className="sidebar-brand-sub">COMMERCIAL &amp; JANITORIAL</div>
+          ) : (
+            <div className="sidebar-brand-collapsed" title="Dozeles Cleaning Services">
+              <div className="brand-collapsed-logo">
+                <img 
+                  src="/images/dozeles-logo.png" 
+                  alt="Dozeles" 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/images/dozeles-logo.jpg';
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
 
@@ -278,47 +299,51 @@ function Overview({ user, setTab }) {
 
   return (
     <>
-      {/* Executive KPI Grid */}
+      {/* Sleek Compact Executive KPI Grid */}
       <div className="modern-kpi-grid">
         <div className="modern-kpi-card amber" onClick={() => setTab('bookings')}>
-          <div className="kpi-top">
+          <div className="kpi-icon-badge amber"><CalendarCheck size={20} /></div>
+          <div className="kpi-info-col">
             <span className="kpi-tag">NEEDS ATTENTION</span>
-            <div className="kpi-icon-badge amber"><CalendarCheck size={18} /></div>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{pendingBookings}</span>
+              <span className="kpi-label">Pending Bookings</span>
+            </div>
           </div>
-          <div className="kpi-main-val">{pendingBookings}</div>
-          <div className="kpi-label">Pending Bookings</div>
-          <div className="kpi-footer-link">View requests →</div>
         </div>
         
         <div className="modern-kpi-card blue" onClick={() => setTab('bookings')}>
-          <div className="kpi-top">
+          <div className="kpi-icon-badge blue"><CalendarCheck size={20} /></div>
+          <div className="kpi-info-col">
             <span className="kpi-tag">TOTAL LOGGED</span>
-            <div className="kpi-icon-badge blue"><CalendarCheck size={18} /></div>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{bookings.length}</span>
+              <span className="kpi-label">Client Bookings</span>
+            </div>
           </div>
-          <div className="kpi-main-val">{bookings.length}</div>
-          <div className="kpi-label">Client Jobs &amp; Bookings</div>
-          <div className="kpi-footer-link">Manage schedule →</div>
         </div>
 
         <div className="modern-kpi-card emerald" onClick={() => setTab('projects')}>
-          <div className="kpi-top">
+          <div className="kpi-icon-badge emerald"><Building2 size={20} /></div>
+          <div className="kpi-info-col">
             <span className="kpi-tag">FIELD OPERATIONS</span>
-            <div className="kpi-icon-badge emerald"><Building2 size={18} /></div>
+            <div className="kpi-val-row">
+              <span className="kpi-main-val">{activeProjectsCount}</span>
+              <span className="kpi-label">Active Ongoing Sites</span>
+            </div>
           </div>
-          <div className="kpi-main-val">{activeProjectsCount}</div>
-          <div className="kpi-label">Active Ongoing Sites</div>
-          <div className="kpi-footer-link">View site photos →</div>
         </div>
 
         {user.role === 'admin' && (
           <div className="modern-kpi-card cyan" onClick={() => setTab('quotes')}>
-            <div className="kpi-top">
+            <div className="kpi-icon-badge cyan"><FileText size={20} /></div>
+            <div className="kpi-info-col">
               <span className="kpi-tag">SERVICE PROPOSALS</span>
-              <div className="kpi-icon-badge cyan"><FileText size={18} /></div>
+              <div className="kpi-val-row">
+                <span className="kpi-main-val">{quotes.length}</span>
+                <span className="kpi-label">Service Quotes</span>
+              </div>
             </div>
-            <div className="kpi-main-val">{quotes.length}</div>
-            <div className="kpi-label">Service Quotes Generated</div>
-            <div className="kpi-footer-link">Review quote PDFs →</div>
           </div>
         )}
       </div>
