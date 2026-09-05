@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { api } from '../api.js';
 import { 
   FileText, Plus, Printer, Download, Mail, CheckCircle2, 
   Trash2, Edit3, ArrowLeft, Building2, Calendar, ShieldCheck, 
-  Sparkles, DollarSign, Check, X, RefreshCw
+  Sparkles, DollarSign, Check, X, RefreshCw, Search,
+  Clock, Award, Layers, ChevronRight, User
 } from 'lucide-react';
 
 export default function ServiceQuote({ user, onBackToBookings }) {
@@ -20,9 +21,15 @@ export default function ServiceQuote({ user, onBackToBookings }) {
     try {
       setLoading(true);
       const data = await api.get('/api/admin/quotes');
-      setQuotes(data);
-      if (data.length > 0 && !activeQuote) {
-        setActiveQuote(data[0]);
+      const list = Array.isArray(data) ? data : [];
+      setQuotes(list);
+      if (list.length > 0) {
+        if (!activeQuote) {
+          setActiveQuote(list[0]);
+        } else {
+          const refreshed = list.find(q => q.id === activeQuote.id);
+          setActiveQuote(refreshed || list[0]);
+        }
       }
     } catch (err) {
       console.error('Failed to load quotes:', err);
@@ -38,50 +45,50 @@ export default function ServiceQuote({ user, onBackToBookings }) {
   const handleCreateNew = async () => {
     try {
       const newQuote = await api.post('/api/admin/quotes', {
-        clientName: 'New Client / Facility',
-        contactName: 'Contact Person',
+        clientName: 'New Commercial Client',
+        contactName: 'Operations Director',
         serviceName: 'Commercial Janitorial Cleaning'
       });
-      setQuotes([newQuote, ...quotes]);
+      setQuotes([newQuote, ...(quotes || [])]);
       setActiveQuote(newQuote);
       setEditData(JSON.parse(JSON.stringify(newQuote)));
       setIsEditing(true);
     } catch (err) {
-      alert('Error creating quote: ' + err.message);
+      alert('Error creating quote: ' + (err.message || err));
     }
   };
 
   const handleSaveEdit = async () => {
     try {
       const updated = await api.put(`/api/admin/quotes/${editData.id}`, editData);
-      setQuotes(quotes.map(q => q.id === updated.id ? updated : q));
+      setQuotes((quotes || []).map(q => q.id === updated.id ? updated : q));
       setActiveQuote(updated);
       setIsEditing(false);
       setEditData(null);
     } catch (err) {
-      alert('Error updating quote: ' + err.message);
+      alert('Error updating quote: ' + (err.message || err));
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this quote?')) return;
+    if (!window.confirm('Are you sure you want to delete this quote proposal?')) return;
     try {
       await api.del(`/api/admin/quotes/${id}`);
-      const remaining = quotes.filter(q => q.id !== id);
+      const remaining = (quotes || []).filter(q => q.id !== id);
       setQuotes(remaining);
       setActiveQuote(remaining[0] || null);
     } catch (err) {
-      alert('Error deleting quote: ' + err.message);
+      alert('Error deleting quote: ' + (err.message || err));
     }
   };
 
   const handleStatusChange = async (id, newStatus) => {
     try {
       const updated = await api.put(`/api/admin/quotes/${id}`, { status: newStatus });
-      setQuotes(quotes.map(q => q.id === updated.id ? updated : q));
+      setQuotes((quotes || []).map(q => q.id === updated.id ? updated : q));
       if (activeQuote?.id === id) setActiveQuote(updated);
     } catch (err) {
-      alert('Error changing status: ' + err.message);
+      alert('Error changing status: ' + (err.message || err));
     }
   };
 
@@ -89,536 +96,560 @@ export default function ServiceQuote({ user, onBackToBookings }) {
     window.print();
   };
 
-  const filteredQuotes = quotes.filter(q => {
+  // Helper calculation for grand total
+  const calculateTotal = (quoteObj) => {
+    if (!quoteObj || !quoteObj.items) return 0;
+    return quoteObj.items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  };
+
+  const totalQuotesValue = useMemo(() => {
+    return (quotes || []).reduce((sum, q) => sum + calculateTotal(q), 0);
+  }, [quotes]);
+
+  const approvedQuotesValue = useMemo(() => {
+    return (quotes || [])
+      .filter(q => q.status === 'approved')
+      .reduce((sum, q) => sum + calculateTotal(q), 0);
+  }, [quotes]);
+
+  const filteredQuotes = (quotes || []).filter(q => {
+    const s = search.toLowerCase();
     const matchesSearch = 
-      q.quoteNumber?.toLowerCase().includes(search.toLowerCase()) ||
-      q.preparedFor?.clientName?.toLowerCase().includes(search.toLowerCase()) ||
-      q.preparedFor?.contactName?.toLowerCase().includes(search.toLowerCase()) ||
-      q.programTitle?.toLowerCase().includes(search.toLowerCase());
+      (q.quoteNumber && q.quoteNumber.toLowerCase().includes(s)) ||
+      (q.preparedFor?.clientName && q.preparedFor.clientName.toLowerCase().includes(s)) ||
+      (q.preparedFor?.contactName && q.preparedFor.contactName.toLowerCase().includes(s)) ||
+      (q.programTitle && q.programTitle.toLowerCase().includes(s));
     const matchesStatus = statusFilter === 'all' || q.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
-    <div className="quote-manager-container">
-      {/* Sidebar List of Quotes */}
-      <div className="quote-sidebar no-print">
-        <div className="quote-sidebar-header">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Service Quotes</h3>
-            {user.role === 'admin' && (
-              <button className="btn btn-blue" style={{ padding: '6px 12px', fontSize: '0.85rem' }} onClick={handleCreateNew}>
-                <Plus size={15} style={{ marginRight: 4 }} /> New Quote
-              </button>
-            )}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+      {/* Top Header */}
+      <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--navy)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FileText size={24} color="var(--blue)" />
+            Commercial Service Quotes &amp; Proposals
+          </h2>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            Generate, customize, and export professional PDF cleaning proposals with itemized scopes and SLA guarantees.
+          </p>
+        </div>
+
+        {user?.role === 'admin' && (
+          <button 
+            onClick={handleCreateNew} 
+            className="btn btn-blue"
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 18px', borderRadius: '8px', fontWeight: 600, fontSize: '0.88rem' }}
+          >
+            <Plus size={16} />
+            <span>Create New Quote</span>
+          </button>
+        )}
+      </div>
+
+      {/* Top KPI Bar */}
+      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid #bbf7d0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Approved Contract Value
+              </span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#15803d', marginTop: '4px' }}>
+                ${approvedQuotesValue.toLocaleString()}
+              </div>
+            </div>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle2 size={22} color="#16a34a" />
+            </div>
           </div>
-          <input 
-            type="text" 
-            placeholder="Search quote # or client..." 
-            value={search} 
-            onChange={e => setSearch(e.target.value)} 
-            className="quote-search-input"
-          />
-          <div className="quote-filter-pills">
-            {['all', 'draft', 'sent', 'approved'].map(st => (
-              <button 
-                key={st} 
-                className={`filter-pill ${statusFilter === st ? 'active' : ''}`}
-                onClick={() => setStatusFilter(st)}
-              >
-                {st.toUpperCase()}
-              </button>
-            ))}
+          <div style={{ fontSize: '0.78rem', color: '#166534', marginTop: '10px', fontWeight: 500 }}>
+            Active signed client agreements
           </div>
         </div>
 
-        <div className="quote-list">
-          {loading && <div style={{ padding: 20, textAlign: 'center', color: 'var(--muted)' }}>Loading quotes...</div>}
-          {!loading && filteredQuotes.length === 0 && (
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--muted)', fontSize: '0.9rem' }}>
-              No quotes found.
-            </div>
-          )}
-          {filteredQuotes.map(q => (
-            <div 
-              key={q.id} 
-              className={`quote-item-card ${activeQuote?.id === q.id ? 'active' : ''}`}
-              onClick={() => {
-                setActiveQuote(q);
-                setIsEditing(false);
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="quote-num-badge">{q.quoteNumber}</span>
-                <span className={`pill ${q.status}`}>{q.status}</span>
-              </div>
-              <div style={{ fontWeight: 600, marginTop: 6, color: 'var(--ink)' }}>
-                {q.preparedFor?.clientName || 'Untitled Client'}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginTop: 2 }}>
-                {q.preparedFor?.facilityType || 'Facility Cleaning'} • {q.date}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-                <span style={{ fontWeight: 700, color: 'var(--blue)' }}>
-                  ${Number(q.totalAmount || 0).toLocaleString()}
-                </span>
-                <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                  {q.items?.length || 0} scope lines
-                </span>
+        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Total Quotes Generated
+              </span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--navy)', marginTop: '4px' }}>
+                {quotes.length}
               </div>
             </div>
-          ))}
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'rgba(26, 115, 232, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FileText size={22} color="var(--blue)" />
+            </div>
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
+            Proposals in history
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: '18px 20px', background: '#ffffff', border: '1px solid var(--line)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Total Proposal Pipeline
+              </span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--blue)', marginTop: '4px' }}>
+                ${totalQuotesValue.toLocaleString()}
+              </div>
+            </div>
+            <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#e0f2fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DollarSign size={22} color="var(--blue)" />
+            </div>
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '10px' }}>
+            Gross quote value across all states
+          </div>
         </div>
       </div>
 
-      {/* Main Quote Preview / Editor */}
-      <div className="quote-preview-container">
-        {activeQuote ? (
-          <>
-            {/* Top Toolbar */}
-            <div className="quote-action-bar no-print">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>
-                  {activeQuote.quoteNumber}
-                </span>
-                <select 
-                  className="form-select"
-                  value={activeQuote.status} 
-                  onChange={e => handleStatusChange(activeQuote.id, e.target.value)}
-                  style={{ padding: '4px 10px', fontSize: '0.85rem', borderRadius: 6, border: '1px solid var(--line)' }}
-                >
-                  <option value="draft">Draft</option>
-                  <option value="sent">Sent to Client</option>
-                  <option value="approved">Approved / Signed</option>
-                  <option value="rejected">Declined</option>
-                </select>
-              </div>
+      {/* Main 2-Column Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '20px', alignItems: 'start' }}>
+        
+        {/* Left Column: Quote Directory */}
+        <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="card" style={{ padding: '14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+            <div style={{ position: 'relative', marginBottom: '10px' }}>
+              <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input 
+                type="text" 
+                placeholder="Search quote # or client..."
+                value={search} 
+                onChange={e => setSearch(e.target.value)} 
+                style={{ width: '100%', paddingLeft: '32px', height: '36px', borderRadius: '6px', border: '1px solid var(--line)', fontSize: '0.84rem' }}
+              />
+            </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {isEditing ? (
-                  <>
-                    <button className="btn btn-blue" onClick={handleSaveEdit} style={{ padding: '7px 14px', fontSize: '0.85rem' }}>
-                      <Check size={16} style={{ marginRight: 6 }} /> Save Changes
-                    </button>
-                    <button className="btn btn-outline" onClick={() => { setIsEditing(false); setEditData(null); }} style={{ padding: '7px 14px', fontSize: '0.85rem' }}>
-                      <X size={16} style={{ marginRight: 6 }} /> Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {user.role === 'admin' && (
-                      <button 
-                        className="btn btn-outline" 
+            <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-light)', padding: '3px', borderRadius: '6px' }}>
+              {['all', 'draft', 'sent', 'approved'].map(st => (
+                <button
+                  key={st}
+                  onClick={() => setStatusFilter(st)}
+                  style={{
+                    flex: 1,
+                    padding: '5px 0',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    background: statusFilter === st ? '#ffffff' : 'transparent',
+                    color: statusFilter === st ? 'var(--navy)' : 'var(--text-muted)',
+                    boxShadow: statusFilter === st ? '0 1px 3px rgba(0,0,0,0.08)' : 'none'
+                  }}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '720px', overflowY: 'auto' }}>
+            {loading ? (
+              <div className="card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                Loading quotes...
+              </div>
+            ) : filteredQuotes.length === 0 ? (
+              <div className="card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+                No quotes found.
+              </div>
+            ) : (
+              filteredQuotes.map(q => {
+                const isSelected = activeQuote?.id === q.id;
+                const total = calculateTotal(q);
+
+                return (
+                  <div
+                    key={q.id}
+                    onClick={() => { setActiveQuote(q); setIsEditing(false); }}
+                    style={{
+                      padding: '14px 16px',
+                      borderRadius: '10px',
+                      background: isSelected ? 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)' : '#ffffff',
+                      border: isSelected ? '1.5px solid var(--blue)' : '1px solid var(--line)',
+                      boxShadow: isSelected ? '0 4px 12px rgba(14, 95, 216, 0.08)' : '0 1px 2px rgba(0,0,0,0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <span style={{ fontWeight: 800, color: 'var(--blue)', fontSize: '0.82rem' }}>{q.quoteNumber}</span>
+                      <span style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        padding: '2px 7px',
+                        borderRadius: '12px',
+                        background: q.status === 'approved' ? '#dcfce7' : q.status === 'sent' ? '#e0f2fe' : '#f1f5f9',
+                        color: q.status === 'approved' ? '#15803d' : q.status === 'sent' ? '#0369a1' : '#475569'
+                      }}>
+                        {q.status?.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <div style={{ fontWeight: 700, color: 'var(--navy)', fontSize: '0.92rem', marginTop: '4px' }}>
+                      {q.preparedFor?.clientName || 'Commercial Client'}
+                    </div>
+
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      {q.preparedFor?.facilityType || 'Commercial Facility'} • {q.date}
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.04)', fontSize: '0.76rem' }}>
+                      <span style={{ fontWeight: 800, color: 'var(--blue)', fontSize: '0.94rem' }}>
+                        ${total.toLocaleString()}
+                      </span>
+                      <span style={{ color: 'var(--text-muted)' }}>
+                        {q.items?.length || 0} Scope Items
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Right Column: Interactive Quote Document & Command Panel */}
+        <div>
+          {activeQuote ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              
+              {/* Sleek Top Action Header Bar (No wrapped text or clunky buttons) */}
+              <div className="card no-print" style={{ padding: '16px 20px', borderRadius: '12px', border: '1px solid var(--line)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--navy)' }}>
+                        {activeQuote.quoteNumber}
+                      </h3>
+                      <span style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        background: activeQuote.status === 'approved' ? '#dcfce7' : activeQuote.status === 'sent' ? '#e0f2fe' : '#f1f5f9',
+                        color: activeQuote.status === 'approved' ? '#15803d' : activeQuote.status === 'sent' ? '#0369a1' : '#475569'
+                      }}>
+                        {activeQuote.status?.toUpperCase()}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                      Prepared for <strong>{activeQuote.preparedFor?.clientName}</strong> • Valid until {activeQuote.validUntil}
+                    </div>
+                  </div>
+
+                  {/* Refined Action Controls */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <select
+                      className="form-select"
+                      value={activeQuote.status}
+                      onChange={e => handleStatusChange(activeQuote.id, e.target.value)}
+                      style={{ padding: '7px 12px', fontSize: '0.82rem', borderRadius: '8px', border: '1px solid var(--line)', fontWeight: 600, color: 'var(--navy)', height: '36px' }}
+                    >
+                      <option value="draft">Draft / Preparing</option>
+                      <option value="sent">Sent to Client</option>
+                      <option value="approved">Approved &amp; Signed</option>
+                      <option value="declined">Declined</option>
+                    </select>
+
+                    {user?.role === 'admin' && !isEditing && (
+                      <button
                         onClick={() => {
                           setEditData(JSON.parse(JSON.stringify(activeQuote)));
                           setIsEditing(true);
                         }}
-                        style={{ padding: '7px 14px', fontSize: '0.85rem' }}
+                        className="btn btn-outline"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '7px 14px', fontSize: '0.82rem', height: '36px' }}
                       >
-                        <Edit3 size={16} style={{ marginRight: 6 }} /> Edit Quote
+                        <Edit3 size={14} />
+                        <span>Edit Scope</span>
                       </button>
                     )}
-                    <button className="btn btn-blue" onClick={handlePrint} style={{ padding: '7px 16px', fontSize: '0.85rem' }}>
-                      <Printer size={16} style={{ marginRight: 6 }} /> Print / Save as PDF
-                    </button>
-                    {user.role === 'admin' && (
-                      <button className="btn btn-outline" style={{ color: '#b3261e', borderColor: '#b3261e', padding: '7px 12px' }} onClick={() => handleDelete(activeQuote.id)}>
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
 
-            {/* If Editing Mode */}
-            {isEditing && editData && (
-              <div className="quote-editor-panel no-print">
-                <h4 style={{ margin: '0 0 16px 0', color: 'var(--blue)' }}>Edit Quote Metadata & Line Items</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginBottom: 16 }}>
-                  <div>
-                    <label className="form-note">Client / Company Name</label>
-                    <input 
-                      type="text" 
-                      value={editData.preparedFor?.clientName || ''} 
-                      onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, clientName: e.target.value } })} 
-                    />
+                    {isEditing && (
+                      <>
+                        <button
+                          onClick={() => setIsEditing(false)}
+                          className="btn btn-outline"
+                          style={{ padding: '7px 12px', fontSize: '0.82rem', height: '36px' }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSaveEdit}
+                          className="btn btn-blue"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '7px 16px', fontSize: '0.82rem', fontWeight: 600, height: '36px' }}
+                        >
+                          <Check size={14} />
+                          <span>Save Changes</span>
+                        </button>
+                      </>
+                    )}
+
+                    <button
+                      onClick={handlePrint}
+                      className="btn btn-blue"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '7px 16px', fontSize: '0.82rem', fontWeight: 600, height: '36px' }}
+                    >
+                      <Printer size={14} />
+                      <span>Print / PDF</span>
+                    </button>
+
+                    {user?.role === 'admin' && (
+                      <button
+                        onClick={() => handleDelete(activeQuote.id)}
+                        className="btn btn-outline"
+                        title="Delete Quote"
+                        style={{ padding: '8px 10px', borderColor: '#fca5a5', color: '#b91c1c', borderRadius: '8px', height: '36px' }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
                   </div>
+                </div>
+              </div>
+
+              {/* Printable Live Document / Edit Form */}
+              <div 
+                ref={printRef}
+                className="card"
+                style={{ 
+                  padding: '36px 40px', 
+                  borderRadius: '12px', 
+                  border: '1px solid var(--line)', 
+                  background: '#ffffff',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.04)'
+                }}
+              >
+                {/* PDF Quote Header Banner */}
+                <div style={{ background: '#0A192F', borderRadius: '10px', padding: '24px 28px', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
                   <div>
-                    <label className="form-note">Contact Person</label>
-                    <input 
-                      type="text" 
-                      value={editData.preparedFor?.contactName || ''} 
-                      onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, contactName: e.target.value } })} 
-                    />
+                    <div style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '0.06em', color: '#38bdf8' }}>
+                      DOZELES
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#94a3b8', letterSpacing: '0.04em', textTransform: 'uppercase', marginTop: '2px' }}>
+                      Commercial &amp; Janitorial Cleaning Services
+                    </div>
                   </div>
-                  <div>
-                    <label className="form-note">Contact Email</label>
-                    <input 
-                      type="email" 
-                      value={editData.preparedFor?.email || ''} 
-                      onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, email: e.target.value } })} 
-                    />
+
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38bdf8' }}>
+                      SERVICE QUOTE
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#cbd5e1', marginTop: '2px' }}>
+                      Quote #: <strong>{activeQuote.quoteNumber}</strong>
+                    </div>
+                    <div style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
+                      Date: {activeQuote.date} • Valid: {activeQuote.validUntil}
+                    </div>
                   </div>
-                  <div>
-                    <label className="form-note">Site Address</label>
-                    <input 
-                      type="text" 
-                      value={editData.preparedFor?.siteAddress || ''} 
-                      onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, siteAddress: e.target.value } })} 
-                    />
+                </div>
+
+                {/* 2-Column Info: Prepared For & Service Provider */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '28px' }}>
+                  <div style={{ background: '#f8fafc', padding: '18px 20px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--blue)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>
+                      PREPARED FOR
+                    </div>
+                    {isEditing ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input 
+                          type="text" 
+                          placeholder="Client / Company Name"
+                          value={editData.preparedFor?.clientName || ''} 
+                          onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, clientName: e.target.value } })}
+                          style={{ width: '100%', height: '32px', fontSize: '0.84rem' }}
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Contact Person"
+                          value={editData.preparedFor?.contactName || ''} 
+                          onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, contactName: e.target.value } })}
+                          style={{ width: '100%', height: '32px', fontSize: '0.84rem' }}
+                        />
+                        <input 
+                          type="email" 
+                          placeholder="Email Address"
+                          value={editData.preparedFor?.email || ''} 
+                          onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, email: e.target.value } })}
+                          style={{ width: '100%', height: '32px', fontSize: '0.84rem' }}
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Site Address"
+                          value={editData.preparedFor?.siteAddress || ''} 
+                          onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, siteAddress: e.target.value } })}
+                          style={{ width: '100%', height: '32px', fontSize: '0.84rem' }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.88rem', color: 'var(--navy)', lineHeight: 1.6 }}>
+                        <div style={{ fontWeight: 800, fontSize: '1rem' }}>{activeQuote.preparedFor?.clientName}</div>
+                        <div>Attn: {activeQuote.preparedFor?.contactName} ({activeQuote.preparedFor?.email})</div>
+                        <div>Site: {activeQuote.preparedFor?.siteAddress}</div>
+                        <div>Facility: {activeQuote.preparedFor?.facilityType} ({activeQuote.preparedFor?.squareFootage})</div>
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="form-note">Facility Type</label>
-                    <input 
-                      type="text" 
-                      value={editData.preparedFor?.facilityType || ''} 
-                      onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, facilityType: e.target.value } })} 
-                    />
+
+                  <div style={{ background: '#f8fafc', padding: '18px 20px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--blue)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>
+                      SERVICE PROVIDER
+                    </div>
+                    <div style={{ fontSize: '0.88rem', color: 'var(--navy)', lineHeight: 1.6 }}>
+                      <div style={{ fontWeight: 800, fontSize: '1rem' }}>Dozeles Professional Cleaning</div>
+                      <div>Licensing: Licensed, Bonded &amp; California DIR Registered</div>
+                      <div>Direct Phone: 650-290-0280</div>
+                      <div>Official Email: dozelescleaning@gmail.com</div>
+                      <div>HQ: San Jose &amp; San Francisco Bay Area, CA</div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="form-note">Square Footage</label>
-                    <input 
-                      type="text" 
-                      value={editData.preparedFor?.squareFootage || ''} 
-                      onChange={e => setEditData({ ...editData, preparedFor: { ...editData.preparedFor, squareFootage: e.target.value } })} 
-                    />
+                </div>
+
+                {/* Scope Program Title */}
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    SPECIFIED SCOPE OF WORK
                   </div>
-                  <div>
-                    <label className="form-note">Quote Date</label>
-                    <input 
-                      type="text" 
-                      value={editData.date || ''} 
-                      onChange={e => setEditData({ ...editData, date: e.target.value })} 
-                    />
-                  </div>
-                  <div>
-                    <label className="form-note">Valid Until Date</label>
-                    <input 
-                      type="text" 
-                      value={editData.validUntil || ''} 
-                      onChange={e => setEditData({ ...editData, validUntil: e.target.value })} 
-                    />
-                  </div>
-                  <div>
-                    <label className="form-note">Total Investment Amount ($)</label>
-                    <input 
-                      type="number" 
-                      value={editData.totalAmount || 0} 
-                      onChange={e => setEditData({ ...editData, totalAmount: Number(e.target.value) })} 
-                    />
-                  </div>
-                  <div>
-                    <label className="form-note">Program / Phase Title</label>
+                  {isEditing ? (
                     <input 
                       type="text" 
                       value={editData.programTitle || ''} 
-                      onChange={e => setEditData({ ...editData, programTitle: e.target.value })} 
+                      onChange={e => setEditData({ ...editData, programTitle: e.target.value })}
+                      style={{ width: '100%', height: '36px', fontSize: '0.95rem', fontWeight: 700 }}
                     />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: 16 }}>
-                  <label className="form-note" style={{ fontWeight: 700 }}>Scope Items</label>
-                  {editData.items?.map((item, idx) => (
-                    <div key={item.id || idx} style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 1.5fr 1fr auto', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-                      <input 
-                        placeholder="Service Name" 
-                        value={item.serviceName} 
-                        onChange={e => {
-                          const items = [...editData.items];
-                          items[idx].serviceName = e.target.value;
-                          setEditData({ ...editData, items });
-                        }} 
-                      />
-                      <input 
-                        placeholder="Details / Scope" 
-                        value={item.details} 
-                        onChange={e => {
-                          const items = [...editData.items];
-                          items[idx].details = e.target.value;
-                          setEditData({ ...editData, items });
-                        }} 
-                      />
-                      <input 
-                        placeholder="Frequency (e.g. Daily)" 
-                        value={item.frequency} 
-                        onChange={e => {
-                          const items = [...editData.items];
-                          items[idx].frequency = e.target.value;
-                          setEditData({ ...editData, items });
-                        }} 
-                      />
-                      <input 
-                        type="number" 
-                        placeholder="Rate ($)" 
-                        value={item.amount || ''} 
-                        onChange={e => {
-                          const items = [...editData.items];
-                          items[idx].amount = Number(e.target.value);
-                          setEditData({ ...editData, items });
-                        }} 
-                      />
-                      <button 
-                        type="button" 
-                        className="btn btn-outline" 
-                        style={{ padding: '6px 8px', color: '#b3261e', borderColor: '#b3261e' }}
-                        onClick={() => {
-                          const items = editData.items.filter((_, i) => i !== idx);
-                          setEditData({ ...editData, items });
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                  ) : (
+                    <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)' }}>
+                      {activeQuote.programTitle || 'COMMERCIAL JANITORIAL FACILITY CLEANING'}
                     </div>
-                  ))}
-                  <button 
-                    type="button" 
-                    className="btn btn-outline" 
-                    style={{ fontSize: '0.8rem', padding: '4px 10px' }}
-                    onClick={() => {
-                      const items = editData.items || [];
-                      setEditData({
-                        ...editData,
-                        items: [...items, { id: Date.now().toString(), serviceName: 'New Scope Item', details: 'Scope details', frequency: 'Weekly', amount: 100 }]
-                      });
-                    }}
-                  >
-                    <Plus size={14} style={{ marginRight: 4 }} /> Add Scope Line
-                  </button>
+                  )}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div>
-                    <label className="form-note">Optional Program Name</label>
-                    <input 
-                      type="text" 
-                      value={editData.optionalProgram?.title || ''} 
-                      onChange={e => setEditData({ ...editData, optionalProgram: { ...editData.optionalProgram, title: e.target.value } })} 
-                    />
-                  </div>
-                  <div>
-                    <label className="form-note">Optional Program Rate</label>
-                    <input 
-                      type="text" 
-                      value={editData.optionalProgram?.rate || ''} 
-                      onChange={e => setEditData({ ...editData, optionalProgram: { ...editData.optionalProgram, rate: e.target.value } })} 
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Printable Document Paper (Matches PDF Template Exactly) */}
-            <div className="printable-quote-page" ref={printRef}>
-              
-              {/* Top Navy Header Banner */}
-              <div className="quote-pdf-header">
-                <div className="quote-pdf-brand">
-                  <div className="quote-logo-mark">
-                    <img src="/images/dozeles-logo.jpg" alt="Dozeles" style={{ height: 42, filter: 'brightness(0) invert(1)' }} onError={(e) => { e.target.style.display='none'; }} />
-                    <div className="quote-logo-fallback">
-                      <div style={{ fontWeight: 900, letterSpacing: 2, fontSize: '1.25rem', color: '#00C0F3' }}>DOZELES</div>
-                    </div>
-                  </div>
-                  <div className="quote-brand-sub">COMMERCIAL &amp; OFFICE CLEANING SERVICES</div>
-                </div>
-
-                <div className="quote-pdf-meta">
-                  <h1 className="quote-pdf-title">SERVICE QUOTE</h1>
-                  <div className="quote-pdf-meta-item">
-                    <span className="q-label">Quote #:</span> 
-                    <span className="q-val bold">{activeQuote.quoteNumber}</span>
-                  </div>
-                  <div className="quote-pdf-meta-item">
-                    <span className="q-label">Date:</span> 
-                    <span className="q-val">{activeQuote.date}</span>
-                  </div>
-                  <div className="quote-pdf-meta-item">
-                    <span className="q-label">Valid Until:</span> 
-                    <span className="q-val">{activeQuote.validUntil}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 2-Column Info Section */}
-              <div className="quote-pdf-parties">
-                <div className="quote-party-col">
-                  <div className="quote-party-header">PREPARED FOR</div>
-                  <div className="quote-party-body">
-                    <div className="party-name">{activeQuote.preparedFor?.clientName || 'Valued Client'}</div>
-                    <div className="party-attn">
-                      <strong>Attn:</strong> {activeQuote.preparedFor?.contactName || 'Facilities Manager'} 
-                      {activeQuote.preparedFor?.email && <span> ({activeQuote.preparedFor?.email})</span>}
-                    </div>
-                    <div className="party-detail"><strong>Site Address:</strong> {activeQuote.preparedFor?.siteAddress || 'Bay Area Facility'}</div>
-                    <div className="party-detail"><strong>Facility Type:</strong> {activeQuote.preparedFor?.facilityType || 'Commercial Office'}</div>
-                    <div className="party-detail"><strong>Square Footage:</strong> {activeQuote.preparedFor?.squareFootage || '3,500 sq. ft.'}</div>
-                  </div>
-                </div>
-
-                <div className="quote-party-col">
-                  <div className="quote-party-header">SERVICE PROVIDER</div>
-                  <div className="quote-party-body">
-                    <div className="party-name">{activeQuote.serviceProvider?.companyName || 'Dozeles Professional Cleaning'}</div>
-                    <div className="party-detail"><strong>Specialization:</strong> {activeQuote.serviceProvider?.specialization || 'Commercial & Office Cleaning'}</div>
-                    <div className="party-detail"><strong>Email:</strong> {activeQuote.serviceProvider?.email || 'dozelescleaning@gmail.com'}</div>
-                    <div className="party-detail"><strong>Phone:</strong> {activeQuote.serviceProvider?.phone || '650-290-0280'}</div>
-                    <div className="party-detail"><strong>Licensing:</strong> Licensed, Bonded &amp; California DIR Registered</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Scope Table Section */}
-              <div className="quote-pdf-scope-section">
-                <div className="quote-section-title-bar">
-                  <div className="cyan-bar"></div>
-                  <h3>{activeQuote.programTitle || 'PRIMARY COMMERCIAL SERVICE PROGRAM'}</h3>
-                </div>
-
-                <table className="quote-pdf-table">
+                {/* Scope Items Table */}
+                <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
                   <thead>
-                    <tr>
-                      <th style={{ width: '30%' }}>SERVICE DESCRIPTION</th>
-                      <th style={{ width: '50%' }}>DETAILS / SCOPE</th>
-                      <th style={{ width: '20%', textAlign: 'right' }}>FREQUENCY</th>
+                    <tr style={{ background: '#0A192F', color: '#ffffff', textAlign: 'left' }}>
+                      <th style={{ padding: '10px 14px', fontSize: '0.76rem', fontWeight: 700, borderRadius: '6px 0 0 6px' }}>SERVICE MODULE</th>
+                      <th style={{ padding: '10px 14px', fontSize: '0.76rem', fontWeight: 700 }}>SCOPE SPECIFICATION</th>
+                      <th style={{ padding: '10px 14px', fontSize: '0.76rem', fontWeight: 700, textAlign: 'right', borderRadius: '0 6px 6px 0' }}>INVESTMENT</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {activeQuote.items?.map((item, idx) => (
-                      <tr key={item.id || idx}>
-                        <td className="svc-name">
-                          <strong>{idx + 1}. {item.serviceName}</strong>
+                    {(isEditing ? editData.items : activeQuote.items || []).map((item, idx) => (
+                      <tr key={item.id || idx} style={{ borderBottom: '1px solid var(--line)' }}>
+                        <td style={{ padding: '12px 14px', verticalAlign: 'top', width: '28%' }}>
+                          {isEditing ? (
+                            <input 
+                              type="text" 
+                              value={item.name} 
+                              onChange={e => {
+                                const newItems = [...editData.items];
+                                newItems[idx].name = e.target.value;
+                                setEditData({ ...editData, items: newItems });
+                              }}
+                              style={{ width: '100%', height: '32px', fontSize: '0.84rem', fontWeight: 600 }}
+                            />
+                          ) : (
+                            <strong style={{ fontSize: '0.9rem', color: 'var(--navy)' }}>{item.name}</strong>
+                          )}
                         </td>
-                        <td className="svc-desc">{item.details}</td>
-                        <td className="svc-freq" style={{ textAlign: 'right' }}>
-                          <span className="freq-tag">[{item.frequency}]</span>
+                        <td style={{ padding: '12px 14px', verticalAlign: 'top', color: '#475569', fontSize: '0.84rem' }}>
+                          {isEditing ? (
+                            <textarea 
+                              rows="2"
+                              value={item.description} 
+                              onChange={e => {
+                                const newItems = [...editData.items];
+                                newItems[idx].description = e.target.value;
+                                setEditData({ ...editData, items: newItems });
+                              }}
+                              style={{ width: '100%', fontSize: '0.84rem' }}
+                            />
+                          ) : (
+                            item.description
+                          )}
+                        </td>
+                        <td style={{ padding: '12px 14px', verticalAlign: 'top', textAlign: 'right', width: '20%' }}>
+                          {isEditing ? (
+                            <input 
+                              type="number" 
+                              value={item.price} 
+                              onChange={e => {
+                                const newItems = [...editData.items];
+                                newItems[idx].price = Number(e.target.value) || 0;
+                                setEditData({ ...editData, items: newItems });
+                              }}
+                              style={{ width: '100px', height: '32px', fontSize: '0.84rem', textAlign: 'right', fontWeight: 700 }}
+                            />
+                          ) : (
+                            <strong style={{ fontSize: '0.96rem', color: 'var(--blue)' }}>
+                              ${Number(item.price || 0).toLocaleString()}
+                            </strong>
+                          )}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
 
-                {/* Subtotals & Total Summary */}
-                <div className="quote-pdf-totals">
-                  {activeQuote.lineItems?.map((li, idx) => (
-                    <div key={idx} className="quote-total-row">
-                      <span className="tot-lbl">{li.label}</span>
-                      <span className="tot-val">${Number(li.amount || 0).toFixed(2)}</span>
+                {/* Grand Total & Summary */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '28px' }}>
+                  <div style={{ width: '280px', background: '#f8fafc', padding: '16px 20px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                      <span>Subtotal</span>
+                      <span>${calculateTotal(isEditing ? editData : activeQuote).toLocaleString()}</span>
                     </div>
-                  ))}
-                  <div className="quote-total-row grand-total">
-                    <span className="tot-lbl">[{activeQuote.totalLabel || 'Total Investment'}]</span>
-                    <span className="tot-val">[${Number(activeQuote.totalAmount || 0).toFixed(2)}]</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Optional Program Block */}
-              {activeQuote.optionalProgram && (
-                <div className="quote-pdf-optional-block">
-                  <div className="optional-header">
-                    <span className="opt-title">[{activeQuote.optionalProgram.title}]</span>
-                    <span className="opt-tag">[{activeQuote.optionalProgram.tag || 'OPTIONAL / SCHEDULED'}]</span>
-                  </div>
-                  <ul className="opt-tasks">
-                    {activeQuote.optionalProgram.tasks?.map((t, idx) => (
-                      <li key={idx}>• {t}</li>
-                    ))}
-                  </ul>
-                  <div className="opt-rate">
-                    <strong>Rate:</strong> [{activeQuote.optionalProgram.rate || '$350.00 – $550.00 / session'}]
-                  </div>
-                </div>
-              )}
-
-              {/* Scope Assumptions & Terms */}
-              <div className="quote-pdf-terms">
-                <div className="quote-section-title-bar">
-                  <div className="cyan-bar"></div>
-                  <h3>SCOPE ASSUMPTIONS &amp; SERVICE TERMS</h3>
-                </div>
-                <div className="terms-content">
-                  <p>• <strong>Site Access:</strong> {activeQuote.terms?.siteAccess || 'Keycard or lockbox access provided by client. Secure alarm protocol observed.'}</p>
-                  <p>• <strong>Equipment &amp; Supplies:</strong> {activeQuote.terms?.equipmentSupplies || 'Dozeles provides commercial HEPA vacuums, microfiber materials, and EPA registered eco-friendly cleaners.'}</p>
-                  <p>• <strong>Service Hours:</strong> {activeQuote.terms?.serviceHours || 'After-hours cleaning starting at 6:00 PM or custom agreed day-porter hours.'}</p>
-                  <p>• <strong>Billing:</strong> {activeQuote.terms?.billing || 'Net 30 billing terms. Monthly electronic invoicing with ACH or check payment options.'}</p>
-                  <p>• <strong>Pricing Adjustment:</strong> {activeQuote.terms?.pricingAdjustment || 'Rates subject to periodic review if client modifies service frequency or facility square footage.'}</p>
-                </div>
-              </div>
-
-              {/* Certifications Banner Bar */}
-              <div className="quote-pdf-cert-banner">
-                <div className="cert-item">
-                  <div className="cert-icon">
-                    <ShieldCheck size={22} color="#00C0F3" />
-                  </div>
-                  <div className="cert-text">
-                    <strong>Certified Small Business</strong>
-                    <span>Cert. No. 2041212</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+                      <span>Taxes &amp; Insurance</span>
+                      <span>Included</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.15rem', fontWeight: 800, color: 'var(--navy)', borderTop: '1px solid var(--line)', paddingTop: '8px' }}>
+                      <span>Total</span>
+                      <span style={{ color: 'var(--blue)' }}>${calculateTotal(isEditing ? editData : activeQuote).toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="cert-item">
-                  <div className="cert-icon">
-                    <Building2 size={22} color="#00C0F3" />
-                  </div>
-                  <div className="cert-text">
-                    <strong>DIR Janitorial Registration</strong>
-                    <span>Reg. No. JS-LR-1001274287</span>
+                {/* Guarantees and Certification Badges */}
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
+                  <ShieldCheck size={28} color="#16a34a" style={{ flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.82rem', color: '#166534', lineHeight: 1.5 }}>
+                    <strong>100% Quality &amp; Cleanliness Guarantee:</strong> All services are performed by background-checked, insured, and bonded janitorial professionals adhering to OSHA and CDC commercial facility standards.
                   </div>
                 </div>
 
-                <div className="cert-item">
-                  <div className="cert-icon">
-                    <Sparkles size={22} color="#00C0F3" />
+                {/* Signature and Approval Line */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginTop: '36px', paddingTop: '20px', borderTop: '1px dashed var(--line)' }}>
+                  <div>
+                    <div style={{ height: '40px', borderBottom: '1px solid var(--navy)', marginBottom: '6px' }} />
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--navy)' }}>Authorized Client Signature</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Date &amp; Title</div>
                   </div>
-                  <div className="cert-text">
-                    <strong>Women-Certified Business</strong>
-                    <span>State Recognized WBE</span>
+
+                  <div>
+                    <div style={{ height: '40px', borderBottom: '1px solid var(--navy)', marginBottom: '6px' }} />
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--navy)' }}>Dozeles Operations Representative</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>Date &amp; Acceptance</div>
                   </div>
                 </div>
 
-                <div className="cert-item">
-                  <div className="cert-icon">
-                    <CheckCircle2 size={22} color="#00C0F3" />
-                  </div>
-                  <div className="cert-text">
-                    <strong>Licensed, Bonded &amp; Insured</strong>
-                    <span>$2M Commercial Liability</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dual Signatures */}
-              <div className="quote-pdf-signatures">
-                <div className="sig-block">
-                  <div className="sig-line"></div>
-                  <div className="sig-label">AUTHORIZED SIGNATURE — [{activeQuote.preparedFor?.clientName?.toUpperCase() || 'CLIENT / COMPANY NAME'}]</div>
-                  <div className="sig-sub">Printed Name / Title / Date</div>
-                </div>
-
-                <div className="sig-block">
-                  <div className="sig-line"></div>
-                  <div className="sig-label">AUTHORIZED SIGNATURE — DOZELES PROFESSIONAL CLEANING</div>
-                  <div className="sig-sub">Authorized Representative / Date</div>
-                </div>
-              </div>
-
-              {/* Footer Tagline */}
-              <div className="quote-pdf-footer">
-                Dozeles Professional Cleaning • Commercial &amp; Office Cleaning Services • 650-290-0280 • www.dozeles.com
               </div>
 
             </div>
-          </>
-        ) : (
-          <div style={{ padding: 60, textAlign: 'center', color: 'var(--muted)' }}>
-            <FileText size={48} style={{ opacity: 0.3, marginBottom: 16 }} />
-            <h3>Select or create a service quote</h3>
-            <p>Generate formal commercial cleaning quotes ready for PDF export and client signing.</p>
-          </div>
-        )}
+          ) : (
+            <div className="card" style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <FileText size={44} color="var(--line)" style={{ margin: '0 auto 12px', display: 'block' }} />
+              <strong>Select a service quote on the left to preview and customize.</strong>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

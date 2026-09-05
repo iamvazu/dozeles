@@ -4,7 +4,8 @@ import {
   Building2, Camera, Upload, CheckCircle2, Clock, 
   MapPin, Plus, Trash2, Edit3, Image as ImageIcon, 
   User, CheckSquare, Square, X, Calendar, ArrowRight, Eye, 
-  Sparkles, ShieldCheck, Check, Copy, Navigation, Layers
+  Sparkles, ShieldCheck, Check, Copy, Navigation, Layers,
+  Search, AlertCircle
 } from 'lucide-react';
 
 export default function ProjectsView({ user }) {
@@ -37,14 +38,14 @@ export default function ProjectsView({ user }) {
     try {
       setLoading(true);
       const data = await api.get('/api/admin/projects');
-      setProjects(data || []);
-      if (data && data.length > 0) {
+      const list = Array.isArray(data) ? data : [];
+      setProjects(list);
+      if (list.length > 0) {
         if (!activeProject) {
-          setActiveProject(data[0]);
+          setActiveProject(list[0]);
         } else {
-          const refreshed = data.find(p => p.id === activeProject.id);
-          if (refreshed) setActiveProject(refreshed);
-          else setActiveProject(data[0]);
+          const refreshed = list.find(p => p.id === activeProject.id);
+          setActiveProject(refreshed || list[0]);
         }
       }
     } catch (err) {
@@ -427,7 +428,7 @@ export default function ProjectsView({ user }) {
                   </span>
                 </div>
 
-                {/* Sleek Photo Upload Bar (No wrapped text or clunky columns) */}
+                {/* Sleek Photo Upload Bar */}
                 <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
                     
