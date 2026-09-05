@@ -35,10 +35,9 @@ app.use('/api/uploads', express.static(uploadsDir));
 const db = loadDb();
 
 const NOTIFY_RECIPIENTS = Array.from(new Set([
-  'Maialeticia@hotmail.com',
-  'dozelescleaning@gmail.com',
-  ADMIN_EMAIL
-].filter(Boolean))).join(', ');
+  'maialeticia@hotmail.com',
+  'iamvazu@gmail.com'
+])).join(', ');
 
 // ---------- email (optional) ----------
 let mailer = null;
@@ -490,20 +489,33 @@ app.post('/api/walkthrough', rateLimitPublicForms, async (req, res) => {
   // 4. Send Confirmation Email to Client
   if (email) {
     notifyUser(email, `Your Free Facility Cleanliness Walkthrough Request - Dozeles Cleaning`, `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F;">
-        <h2 style="color: #0E5FD8;">Thank you, ${contactName}!</h2>
-        <p>We have successfully received your request for a <strong>Free Site Walkthrough & Cleanliness Scorecard</strong> for <strong>${businessName || 'your facility'}</strong>.</p>
-        <div style="background: #F3F5F2; padding: 16px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: #0A2540;">What We'll Inspect:</h3>
-          <ul style="padding-left: 20px; line-height: 1.6;">
-            <li>🔬 <strong>ATP Bio-Load Swab:</strong> High-touch surface bacteria & residue test</li>
-            <li>🧼 <strong>Restroom Hygiene Index:</strong> Fixtures, grout, and odor elimination check</li>
-            <li>🛡️ <strong>Cal/OSHA Safety Audit:</strong> SDS compliance and non-slip floor safety</li>
-            <li>📊 <strong>$/Sq.Ft Scope Benchmark:</strong> Unbiased market rate comparison</li>
-          </ul>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #fff;">
+        <div style="background: #0A2540; padding: 22px; color: #fff; text-align: center;">
+          <h2 style="margin: 0; color: #6FB1FF; font-size: 20px;">🔬 Free Walkthrough &amp; Cleanliness Audit Request</h2>
         </div>
-        <p>Our senior operations manager will reach out within <strong>2 business hours</strong> to confirm your walkthrough time.</p>
-        <p>Best regards,<br><strong>Dozeles Professional Cleaning</strong><br>📞 (650) 290-0280 | 🌐 dozeles.com</p>
+        <div style="padding: 24px;">
+          <h3 style="color: #0E5FD8; margin-top: 0;">Thank you, ${contactName}!</h3>
+          <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+            We have received your request for a <strong>Free 15-Point Site Walkthrough &amp; Cleanliness Scorecard</strong> for <strong>${businessName || 'your facility'}</strong>.
+          </p>
+          <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+            Our <strong>Operations Manager will reach out to you within 2 hours</strong> to review your facility requirements and confirm your on-site inspection schedule.
+          </p>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+            <h4 style="margin: 0 0 10px 0; color: #0A2540; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">What We Will Inspect On-Site:</h4>
+            <ul style="padding-left: 20px; margin: 0; line-height: 1.7; font-size: 14px; color: #334155;">
+              <li>🔬 <strong>ATP Bio-Load Luminometer Swabs:</strong> Touchpoint bacteria &amp; organic residue metrics</li>
+              <li>🧼 <strong>Restroom &amp; Grout Hygiene Index:</strong> Tile, fixture, and deep sanitization audit</li>
+              <li>🛡️ <strong>Cal/OSHA Safety Compliance:</strong> SDS sheets, chemical storage, and non-slip floor safety</li>
+              <li>📊 <strong>$/Sq.Ft Scope Benchmarking:</strong> Unbiased market rate &amp; scope comparison</li>
+            </ul>
+          </div>
+          <div style="border-top: 1px solid #E2E8F0; padding-top: 16px; margin-top: 20px; font-size: 13px; color: #64748B;">
+            <p style="margin: 0 0 4px 0;">Need immediate assistance? You can call us directly:</p>
+            <p style="margin: 0; font-weight: 700; color: #0E5FD8; font-size: 15px;">📞 (650) 290-0280</p>
+            <p style="margin: 12px 0 0 0;">Best regards,<br><strong style="color: #0A2540;">Dozeles Professional Cleaning</strong><br>🌐 <a href="https://dozeles.com" style="color: #0E5FD8; text-decoration: none;">dozeles.com</a></p>
+          </div>
+        </div>
       </div>
     `);
   }
@@ -595,17 +607,30 @@ app.post('/api/bookings', rateLimitPublicForms, async (req, res) => {
     
   if (email) {
     notifyUser(email, `Your Booking Request: ${service} - Dozeles Cleaning`, `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #0E5FD8;">Thank you for your request, ${name}!</h2>
-        <p>We have received your booking request for <strong>${service}</strong>.</p>
-        <p>Our team will review your details and contact you shortly to confirm your booking and provide a formal service quote (Quote #${autoQuote.quoteNumber}).</p>
-        <div style="background: #F3F5F2; padding: 15px; border-radius: 8px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">Request Summary</h3>
-          <p style="margin: 5px 0;"><strong>Service:</strong> ${service}</p>
-          <p style="margin: 5px 0;"><strong>Date:</strong> ${date} ${time || ''}</p>
-          <p style="margin: 5px 0;"><strong>Address:</strong> ${address || 'N/A'}</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #fff;">
+        <div style="background: #0A2540; padding: 22px; color: #fff; text-align: center;">
+          <h2 style="margin: 0; color: #6FB1FF; font-size: 20px;">Request Received &amp; Under Review</h2>
         </div>
-        <p>Best regards,<br><strong>Dozeles Professional Cleaning</strong></p>
+        <div style="padding: 24px;">
+          <h3 style="color: #0E5FD8; margin-top: 0;">Thank you for your request, ${name}!</h3>
+          <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+            We have received your request for <strong>${service}</strong>. An <strong>Operations Manager will reach out to you within 2 hours</strong> to confirm your service details and schedule.
+          </p>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+            <h4 style="margin: 0 0 10px 0; color: #0A2540; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Summary of Your Request:</h4>
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+              <tr><td style="padding: 4px 0; color: #64748B; width: 35%;">Service:</td><td><strong>${service}</strong></td></tr>
+              <tr><td style="padding: 4px 0; color: #64748B;">Requested Date:</td><td><strong>${date} ${time || ''}</strong></td></tr>
+              <tr><td style="padding: 4px 0; color: #64748B;">Address:</td><td><strong>${address || 'Provided during confirmation'}</strong></td></tr>
+              ${notes ? `<tr><td style="padding: 4px 0; color: #64748B; vertical-align: top;">Notes / Estimate:</td><td style="color: #475569;">${notes}</td></tr>` : ''}
+            </table>
+          </div>
+          <div style="border-top: 1px solid #E2E8F0; padding-top: 16px; margin-top: 20px; font-size: 13px; color: #64748B;">
+            <p style="margin: 0 0 4px 0;">Need immediate assistance? You can call us directly:</p>
+            <p style="margin: 0; font-weight: 700; color: #0E5FD8; font-size: 15px;">📞 (650) 290-0280</p>
+            <p style="margin: 12px 0 0 0;">Best regards,<br><strong style="color: #0A2540;">Dozeles Professional Cleaning</strong><br>🌐 <a href="https://dozeles.com" style="color: #0E5FD8; text-decoration: none;">dozeles.com</a></p>
+          </div>
+        </div>
       </div>
     `);
   }
@@ -679,15 +704,26 @@ app.post('/api/contact', rateLimitPublicForms, async (req, res) => {
   );
   
   if (email) {
-    notifyUser(email, `We received your message - Dozeles Cleaning`, `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <h2 style="color: #0E5FD8;">Hello ${name},</h2>
-        <p>Thank you for reaching out to Dozeles Professional Cleaning.</p>
-        <p>We have successfully received your message and our team will get back to you as soon as possible.</p>
-        <div style="background: #F3F5F2; padding: 15px; border-radius: 8px; margin: 20px 0; font-style: italic;">
-          "${message}"
+    notifyUser(email, `We received your inquiry - Dozeles Cleaning`, `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #fff;">
+        <div style="background: #0A2540; padding: 22px; color: #fff; text-align: center;">
+          <h2 style="margin: 0; color: #6FB1FF; font-size: 20px;">Inquiry Received</h2>
         </div>
-        <p>Best regards,<br><strong>Dozeles Professional Cleaning</strong></p>
+        <div style="padding: 24px;">
+          <h3 style="color: #0E5FD8; margin-top: 0;">Hello ${name},</h3>
+          <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+            Thank you for reaching out to Dozeles Professional Cleaning. We have received your message and an <strong>Operations Manager will reach out to you within 2 hours</strong>.
+          </p>
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; margin: 20px 0;">
+            <strong style="font-size: 13px; color: #64748B; text-transform: uppercase;">Your Message:</strong>
+            <p style="margin: 6px 0 0; color: #334155; font-style: italic; white-space: pre-wrap; font-size: 14px;">"${message}"</p>
+          </div>
+          <div style="border-top: 1px solid #E2E8F0; padding-top: 16px; margin-top: 20px; font-size: 13px; color: #64748B;">
+            <p style="margin: 0 0 4px 0;">Need immediate assistance? You can call us directly:</p>
+            <p style="margin: 0; font-weight: 700; color: #0E5FD8; font-size: 15px;">📞 (650) 290-0280</p>
+            <p style="margin: 12px 0 0 0;">Best regards,<br><strong style="color: #0A2540;">Dozeles Professional Cleaning</strong><br>🌐 <a href="https://dozeles.com" style="color: #0E5FD8; text-decoration: none;">dozeles.com</a></p>
+          </div>
+        </div>
       </div>
     `);
   }
