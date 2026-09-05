@@ -304,9 +304,16 @@ export default function LeadsView({ user, onOpenQuotes, onOpenCustomers }) {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--navy)' }}>
-                      {l.companyName}
-                    </h4>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--navy)' }}>
+                        {l.companyName}
+                      </h4>
+                      {(l.auditDetails || l.source?.includes('Walkthrough')) && (
+                        <span style={{ fontSize: '0.68rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'rgba(14, 95, 216, 0.12)', color: '#0e5fd8' }}>
+                          🔬 Audit Request
+                        </span>
+                      )}
+                    </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '3px' }}>
                       {l.facilityType} • {l.squareFootage || 'Commercial Facility'}
                     </div>
@@ -334,7 +341,18 @@ export default function LeadsView({ user, onOpenQuotes, onOpenCustomers }) {
                   </div>
                 </div>
 
-                {l.notes && (
+                {l.auditDetails && (
+                  <div style={{ marginTop: '10px', fontSize: '0.78rem', color: '#1e293b', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '8px 10px', borderRadius: '6px' }}>
+                    <div style={{ fontWeight: 700, color: '#15803d', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Activity size={13} /> Facility Walkthrough Details:
+                    </div>
+                    <div><strong>Current Contractor:</strong> {l.auditDetails.hasCurrentContractor || 'Not Specified'}</div>
+                    {l.auditDetails.preferredDate && <div><strong>Preferred Schedule:</strong> {l.auditDetails.preferredDate}</div>}
+                    {l.auditDetails.concerns && <div><strong>Pain Points / Concerns:</strong> {l.auditDetails.concerns}</div>}
+                  </div>
+                )}
+
+                {l.notes && !l.auditDetails && (
                   <div style={{ marginTop: '10px', fontSize: '0.8rem', color: '#475569', background: '#fffbeb', border: '1px solid #fef3c7', padding: '8px 10px', borderRadius: '6px' }}>
                     {l.notes}
                   </div>

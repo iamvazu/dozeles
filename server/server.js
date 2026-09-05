@@ -34,6 +34,14 @@ app.use('/api/uploads', express.static(uploadsDir));
 
 const db = loadDb();
 
+const NOTIFY_RECIPIENTS = Array.from(new Set([
+  process.env.NOTIFY_EMAIL,
+  'Maialeticia@hotmail.com',
+  'leticiamaia@hotmail.com',
+  'dozelescleaning@gmail.com',
+  ADMIN_EMAIL
+].filter(Boolean))).join(', ');
+
 // ---------- email (optional) ----------
 let mailer = null;
 if (process.env.SMTP_HOST) {
@@ -44,15 +52,19 @@ if (process.env.SMTP_HOST) {
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
 }
-async function notify(subject, text) {
+
+async function notify(subject, text, html) {
   if (!mailer) return;
   try {
-    await mailer.sendMail({
-      from: process.env.SMTP_USER,
-      to: process.env.NOTIFY_EMAIL || ADMIN_EMAIL,
+    const mailOptions = {
+      from: `"Dozeles Alerts" <${process.env.SMTP_USER}>`,
+      to: NOTIFY_RECIPIENTS,
       subject,
       text,
-    });
+    };
+    if (html) mailOptions.html = html;
+    await mailer.sendMail(mailOptions);
+    console.log(`[Email Dispatched] ${subject} -> Sent to: ${NOTIFY_RECIPIENTS}`);
   } catch (e) {
     console.error('Email notification failed:', e.message);
   }
@@ -70,6 +82,59 @@ async function notifyUser(to, subject, html) {
   } catch (e) {
     console.error('User email notification failed:', e.message);
   }
+}
+
+// ---------- Security & Anti-Spam Rate Limiter ----------
+const ipSubmissions = new Map();
+function rateLimitPublicForms(req, res, next) {
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const history = ipSubmissions.get(ip) || [];
+  // Keep last 15 minutes
+  const recent = history.filter(t => now - t < 15 * 60 * 1000);
+  if (recent.length >= 25) {
+    return res.status(429).json({ error: 'Too many submissions from this connection. Please wait a few minutes before trying again.' });
+  }
+  recent.push(now);
+  ipSubmissions.set(ip, recent);
+  next();
+}
+
+function verifyBotProtection(req) {
+  const { hp_website, captchaAnswer, captchaToken } = req.body || {};
+  // 1. Honeypot check
+  if (hp_website && String(hp_website).trim().length > 0) {
+    return { valid: false, reason: 'Spam activity detected.' };
+  }
+  // 2. Mathematical token verification
+  if (captchaToken) {
+    try {
+      const decoded = JSON.parse(Buffer.from(captchaToken, 'base64').toString('utf8'));
+      if (decoded && decoded.sum !== undefined) {
+        if (Number(captchaAnswer) !== Number(decoded.sum)) {
+          return { valid: false, reason: 'Incorrect security verification answer. Please solve the question.' };
+        }
+      }
+    } catch {
+      return { valid: false, reason: 'Invalid security challenge format.' };
+    }
+  }
+  return { valid: true };
+}
+
+function estimateFacilityMonthlyValue(facilityType, sqftStr) {
+  const sqft = parseInt(String(sqftStr || '').replace(/[^0-9]/g, ''), 10) || 3500;
+  const rates = {
+    'Medical / Dental Clinic': 0.28,
+    'Tech / Corporate Office': 0.22,
+    'Retail / Cannabis Dispensary': 0.25,
+    'Daycare / School Facility': 0.24,
+    'Warehouse / Industrial Facility': 0.12,
+    'HOA / Condominium Common Areas': 0.20,
+    'Residential Property': 0.18
+  };
+  const rate = rates[facilityType] || 0.22;
+  return Math.max(450, Math.round(sqft * rate));
 }
 
 // ---------- auth ----------
@@ -256,16 +321,168 @@ function buildDefaultQuote({ booking = null, custom = {} }) {
   };
 }
 
+// ---------- FREE SITE WALKTHROUGH & CLEANLINESS AUDIT ----------
+app.post('/api/walkthrough', rateLimitPublicForms, async (req, res) => {
+  const botCheck = verifyBotProtection(req);
+  if (!botCheck.valid) {
+    return res.status(400).json({ error: botCheck.reason });
+  }
+
+  const { businessName, contactName, email, phone, facilityType, sqft, currentStatus, city, preferredDate, notes } = req.body || {};
+  if (!contactName || !email || !phone) {
+    return res.status(400).json({ error: 'Contact Name, Email, and Phone number are required' });
+  }
+
+  // 1. Insert into CRM Leads Pipeline (db.leads)
+  if (!db.leads) db.leads = [];
+  const estVal = estimateFacilityMonthlyValue(facilityType, sqft);
+  const lead = {
+    id: newId(),
+    companyName: businessName ? businessName.trim() : `${contactName}'s Facility`,
+    contactName: contactName.trim(),
+    email: email.trim().toLowerCase(),
+    phone: phone.trim(),
+    facilityType: facilityType || 'Corporate / Tech Office',
+    squareFootage: sqft ? String(sqft).trim() : '',
+    estimatedMonthlyValue: estVal,
+    source: 'Free Site Walkthrough & Cleanliness Score (Website)',
+    stage: 'walkthrough', // Sets stage directly to Walkthrough Scheduled!
+    priority: 'high',
+    notes: `[FREE CLEANLINESS AUDIT & WALKTHROUGH REQUEST]\n• Contractor Audit Status: ${currentStatus || 'Standard Quality Check'}\n• Preferred Date: ${preferredDate || 'Flexible / ASAP'}\n• City / Address: ${city || 'Not specified'}\n• Specific Areas of Concern: ${notes || 'None'}`,
+    auditDetails: {
+      businessName: businessName || '',
+      facilityType: facilityType || '',
+      sqft: sqft || '',
+      currentStatus: currentStatus || '',
+      city: city || '',
+      preferredDate: preferredDate || '',
+      notes: notes || ''
+    },
+    assignedTo: 'Leticia Maia',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  db.leads.unshift(lead);
+
+  // 2. Insert into Messages / Inquiries (db.messages)
+  if (!db.messages) db.messages = [];
+  const msg = {
+    id: newId(),
+    name: contactName,
+    email: email.trim().toLowerCase(),
+    phone: phone.trim(),
+    message: `[Free Walkthrough & Cleanliness Score Request for ${businessName || 'Facility'} (${facilityType})]\nSquare Footage: ${sqft || 'N/A'}\nContractor Status: ${currentStatus || 'N/A'}\nPreferred Date: ${preferredDate || 'ASAP'}\nCity: ${city || 'N/A'}\nNotes: ${notes || 'None'}`,
+    read: false,
+    createdAt: new Date().toISOString()
+  };
+  db.messages.unshift(msg);
+
+  saveDb();
+
+  // 3. Dispatch Notification to Leticia Maia and Admin
+  const adminHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+      <div style="background: #0A2540; padding: 24px; color: #ffffff; text-align: center;">
+        <h2 style="margin: 0; color: #6FB1FF; font-size: 22px;">🚨 New Free Site Walkthrough & Cleanliness Audit Request</h2>
+        <p style="margin: 6px 0 0; color: #E2E8F0; font-size: 14px;">A new high-intent commercial lead just requested a facility inspection!</p>
+      </div>
+      <div style="padding: 24px;">
+        <div style="background: #F1F5F9; border-left: 4px solid #0E5FD8; padding: 14px; border-radius: 6px; margin-bottom: 20px;">
+          <h3 style="margin: 0 0 4px; color: #0E5FD8; font-size: 18px;">${businessName || 'Commercial Facility'}</h3>
+          <p style="margin: 0; color: #475569; font-size: 14px;"><strong>Facility Type:</strong> ${facilityType} &bull; <strong>Size:</strong> ${sqft || 'Not specified'} &bull; <strong>Est. Monthly:</strong> $${estVal.toLocaleString()}/mo</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
+          <tr>
+            <td style="padding: 8px 0; color: #64748B; width: 140px;"><strong>Contact Person:</strong></td>
+            <td style="padding: 8px 0; color: #0A192F;"><strong>${contactName}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748B;"><strong>Email:</strong></td>
+            <td style="padding: 8px 0;"><a href="mailto:${email}" style="color: #0E5FD8; font-weight: 600;">${email}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748B;"><strong>Phone Number:</strong></td>
+            <td style="padding: 8px 0;"><a href="tel:${phone}" style="color: #0E5FD8; font-weight: 600;">${phone}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748B;"><strong>Contractor Status:</strong></td>
+            <td style="padding: 8px 0; color: #0A192F;">${currentStatus || 'Standard Check'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748B;"><strong>Preferred Date:</strong></td>
+            <td style="padding: 8px 0; color: #0A192F; font-weight: 600;">${preferredDate || 'Flexible / ASAP'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748B;"><strong>City / Location:</strong></td>
+            <td style="padding: 8px 0; color: #0A192F;">${city || 'N/A'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748B;"><strong>Specific Concerns:</strong></td>
+            <td style="padding: 8px 0; color: #0A192F; font-style: italic;">${notes || 'None listed'}</td>
+          </tr>
+        </table>
+
+        <div style="text-align: center; margin-top: 24px;">
+          <a href="tel:${phone}" style="display: inline-block; background: #0E5FD8; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-right: 10px;">📞 Call ${contactName}</a>
+          <a href="mailto:${email}" style="display: inline-block; background: #0A2540; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">✉️ Reply via Email</a>
+        </div>
+      </div>
+      <div style="background: #F8FAFC; padding: 14px; text-align: center; font-size: 12px; color: #94A3B8; border-top: 1px solid #E2E8F0;">
+        Dozeles Professional Cleaning System Notification &bull; <a href="https://dozeles.com/admin" style="color: #0E5FD8;">Open CRM Pipeline</a>
+      </div>
+    </div>
+  `;
+
+  await notify(
+    `🚨 New Free Walkthrough Request: ${businessName || contactName} (${facilityType})`,
+    `New Walkthrough & Cleanliness Audit Request\n\nCompany: ${businessName}\nContact: ${contactName}\nEmail: ${email}\nPhone: ${phone}\nFacility Type: ${facilityType}\nSq Ft: ${sqft}\nContractor Status: ${currentStatus}\nPreferred Date: ${preferredDate}\nCity: ${city}\nNotes: ${notes}`,
+    adminHtml
+  );
+
+  // 4. Send Confirmation Email to Client
+  if (email) {
+    notifyUser(email, `Your Free Facility Cleanliness Walkthrough Request - Dozeles Cleaning`, `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F;">
+        <h2 style="color: #0E5FD8;">Thank you, ${contactName}!</h2>
+        <p>We have successfully received your request for a <strong>Free Site Walkthrough & Cleanliness Scorecard</strong> for <strong>${businessName || 'your facility'}</strong>.</p>
+        <div style="background: #F3F5F2; padding: 16px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="margin-top: 0; color: #0A2540;">What We'll Inspect:</h3>
+          <ul style="padding-left: 20px; line-height: 1.6;">
+            <li>🔬 <strong>ATP Bio-Load Swab:</strong> High-touch surface bacteria & residue test</li>
+            <li>🧼 <strong>Restroom Hygiene Index:</strong> Fixtures, grout, and odor elimination check</li>
+            <li>🛡️ <strong>Cal/OSHA Safety Audit:</strong> SDS compliance and non-slip floor safety</li>
+            <li>📊 <strong>$/Sq.Ft Scope Benchmark:</strong> Unbiased market rate comparison</li>
+          </ul>
+        </div>
+        <p>Our senior operations manager will reach out within <strong>2 business hours</strong> to confirm your walkthrough time.</p>
+        <p>Best regards,<br><strong>Dozeles Professional Cleaning</strong><br>📞 (650) 290-0280 | 🌐 dozeles.com</p>
+      </div>
+    `);
+  }
+
+  res.status(201).json({ ok: true, leadId: lead.id });
+});
+
 // ---------- bookings ----------
-app.post('/api/bookings', async (req, res) => {
+app.post('/api/bookings', rateLimitPublicForms, async (req, res) => {
+  const botCheck = verifyBotProtection(req);
+  if (!botCheck.valid) {
+    return res.status(400).json({ error: botCheck.reason });
+  }
+
   const { name, email, phone, service, date, time, address, notes } = req.body || {};
   if (!name || !phone || !service || !date) {
     return res.status(400).json({ error: 'name, phone, service and date are required' });
   }
   const booking = {
     id: newId(),
-    name, email: email || '', phone, service, date, time: time || '',
-    address: address || '', notes: notes || '',
+    name: name.trim(), 
+    email: email ? email.trim().toLowerCase() : '', 
+    phone: phone.trim(), 
+    service, date, time: time || '',
+    address: address || '', 
+    notes: notes || '',
     status: 'pending',
     price: 0,
     internalNotes: [],
@@ -279,9 +496,55 @@ app.post('/api/bookings', async (req, res) => {
   db.quotes.push(autoQuote);
   booking.quoteId = autoQuote.id;
 
+  // Also create/sync Lead in db.leads
+  if (!db.leads) db.leads = [];
+  db.leads.unshift({
+    id: newId(),
+    companyName: name.trim(),
+    contactName: name.trim(),
+    email: email ? email.trim().toLowerCase() : '',
+    phone: phone.trim(),
+    facilityType: service.includes('Commercial') ? 'Commercial Facility' : 'Residential Property',
+    squareFootage: '',
+    estimatedMonthlyValue: 450,
+    source: 'Website Booking Request',
+    stage: 'new',
+    priority: 'high',
+    notes: `[NEW BOOKING REQUEST]\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || 'N/A'}\nNotes: ${notes || 'None'}`,
+    assignedTo: 'Leticia Maia',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
   saveDb();
-  notify(`New booking request: ${service}`,
-    `Name: ${name}\nPhone: ${phone}\nEmail: ${email || '-'}\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || '-'}\nNotes: ${notes || '-'}`);
+
+  const bookingAdminHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #fff;">
+      <div style="background: #0E5FD8; padding: 20px; color: #fff; text-align: center;">
+        <h2 style="margin: 0; font-size: 20px;">📅 New Booking Request Received</h2>
+        <p style="margin: 4px 0 0; color: #EAF1FB; font-size: 14px;">Service: ${service}</p>
+      </div>
+      <div style="padding: 24px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr><td style="padding: 6px 0; color: #64748B;">Client Name:</td><td><strong>${name}</strong></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Phone:</td><td><a href="tel:${phone}" style="color: #0E5FD8;">${phone}</a></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Email:</td><td><a href="mailto:${email}" style="color: #0E5FD8;">${email || 'N/A'}</a></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Requested Date:</td><td><strong>${date} ${time || ''}</strong></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Address:</td><td>${address || 'N/A'}</td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Notes / Estimate:</td><td>${notes || 'None'}</td></tr>
+        </table>
+        <div style="margin-top: 20px; text-align: center;">
+          <a href="tel:${phone}" style="display: inline-block; background: #0E5FD8; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">Call Customer</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  await notify(
+    `New booking request: ${service} (${name})`,
+    `Name: ${name}\nPhone: ${phone}\nEmail: ${email || '-'}\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || '-'}\nNotes: ${notes || '-'}`,
+    bookingAdminHtml
+  );
     
   if (email) {
     notifyUser(email, `Your Booking Request: ${service} - Dozeles Cleaning`, `
@@ -304,15 +567,69 @@ app.post('/api/bookings', async (req, res) => {
 });
 
 // ---------- contact + newsletter ----------
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', rateLimitPublicForms, async (req, res) => {
+  const botCheck = verifyBotProtection(req);
+  if (!botCheck.valid) {
+    return res.status(400).json({ error: botCheck.reason });
+  }
+
   const { name, email, phone, message } = req.body || {};
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'name, email and message are required' });
   }
-  const msg = { id: newId(), name, email, phone: phone || '', message, read: false, createdAt: new Date().toISOString() };
-  db.messages.push(msg);
+  const msg = { id: newId(), name: name.trim(), email: email.trim().toLowerCase(), phone: phone ? phone.trim() : '', message: message.trim(), read: false, createdAt: new Date().toISOString() };
+  db.messages.unshift(msg);
+
+  // Also create a Lead in db.leads if it's an inquiry with details
+  if (!db.leads) db.leads = [];
+  db.leads.unshift({
+    id: newId(),
+    companyName: name.trim(),
+    contactName: name.trim(),
+    email: email.trim().toLowerCase(),
+    phone: phone ? phone.trim() : '',
+    facilityType: 'Direct Inquiry',
+    squareFootage: '',
+    estimatedMonthlyValue: 500,
+    source: 'Website Contact Form',
+    stage: 'new',
+    priority: 'medium',
+    notes: message.trim(),
+    assignedTo: 'Leticia Maia',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
   saveDb();
-  notify(`New contact message from ${name}`, `Name: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\n\n${message}`);
+
+  const contactAdminHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #fff;">
+      <div style="background: #0A2540; padding: 20px; color: #fff; text-align: center;">
+        <h2 style="margin: 0; color: #6FB1FF; font-size: 20px;">✉️ New Website Inquiry from ${name}</h2>
+      </div>
+      <div style="padding: 24px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr><td style="padding: 6px 0; color: #64748B;">Name:</td><td><strong>${name}</strong></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Email:</td><td><a href="mailto:${email}" style="color: #0E5FD8;">${email}</a></td></tr>
+          <tr><td style="padding: 6px 0; color: #64748B;">Phone:</td><td><a href="tel:${phone}" style="color: #0E5FD8;">${phone || 'N/A'}</a></td></tr>
+        </table>
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px; margin-top: 16px;">
+          <strong>Message:</strong>
+          <p style="margin: 6px 0 0; color: #334155; white-space: pre-wrap;">${message}</p>
+        </div>
+        <div style="margin-top: 20px; text-align: center;">
+          <a href="tel:${phone}" style="display: inline-block; background: #0E5FD8; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-right: 8px;">Call Prospect</a>
+          <a href="mailto:${email}" style="display: inline-block; background: #0A2540; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">Reply Email</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  await notify(
+    `New contact message from ${name}`,
+    `Name: ${name}\nEmail: ${email}\nPhone: ${phone || '-'}\n\n${message}`,
+    contactAdminHtml
+  );
   
   if (email) {
     notifyUser(email, `We received your message - Dozeles Cleaning`, `

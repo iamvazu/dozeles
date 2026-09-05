@@ -132,20 +132,41 @@ export function Testimonials({ heading = 'What People Say About Us' }) {
   );
 }
 
+import CaptchaChallenge from './CaptchaChallenge.jsx';
+
 export function QuoteForm({ compact = false }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [captchaData, setCaptchaData] = useState({ answer: '', expected: 0, token: '', hp_website: '' });
+  const [captchaError, setCaptchaError] = useState('');
   const [state, setState] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   async function submit(e) {
     e.preventDefault();
     setState(null);
+    setCaptchaError('');
+
+    // Math captcha check
+    if (!captchaData.answer || parseInt(captchaData.answer, 10) !== captchaData.expected) {
+      setCaptchaError('Please solve the security verification question correctly.');
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      await api.post('/api/contact', form);
+      await api.post('/api/contact', {
+        ...form,
+        captchaAnswer: captchaData.answer,
+        captchaToken: captchaData.token,
+        hp_website: captchaData.hp_website
+      });
       setState({ ok: true, msg: "Thank you! We received your message and we'll get back to you shortly." });
       setForm({ name: '', email: '', phone: '', message: '' });
     } catch (err) {
       setState({ ok: false, msg: err.message });
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -164,8 +185,19 @@ export function QuoteForm({ compact = false }) {
       )}
       <input placeholder="Phone" value={form.phone} onChange={set('phone')} />
       <textarea placeholder="Message" value={form.message} onChange={set('message')} required />
+      
+      <CaptchaChallenge 
+        onVerify={(data) => {
+          setCaptchaData(data);
+          setCaptchaError('');
+        }} 
+        error={captchaError} 
+      />
+
       <div>
-        <button className="btn btn-green" type="submit">Submit Now</button>
+        <button className="btn btn-green" type="submit" disabled={submitting}>
+          {submitting ? 'Submitting…' : 'Submit Now'}
+        </button>
       </div>
       {state && <div className={`form-note ${state.ok ? 'ok' : 'err'}`}>{state.msg}</div>}
     </form>

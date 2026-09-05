@@ -5,6 +5,7 @@ import Seo from '../seo.jsx';
 import { PageBanner } from '../components/Shared.jsx';
 import Icon from '../components/Icon.jsx';
 import Social from '../components/Social.jsx';
+import CaptchaChallenge from '../components/CaptchaChallenge.jsx';
 import { api } from '../api.js';
 import { SERVICES } from '../data/services.js';
 import {
@@ -46,6 +47,8 @@ export default function Booking() {
   const [done, setDone] = useState(false);
   const [err, setErr] = useState('');
   const [sending, setSending] = useState(false);
+  const [captchaData, setCaptchaData] = useState({ answer: '', expected: 0, token: '', hp_website: '' });
+  const [captchaError, setCaptchaError] = useState('');
 
   const [f, setF] = useState({
     // step 1
@@ -114,6 +117,7 @@ export default function Booking() {
   }
   function back() {
     setErr('');
+    setCaptchaError('');
     setStep((s) => Math.max(0, s - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -122,8 +126,16 @@ export default function Booking() {
     e.preventDefault();
     const v = validate(1);
     if (v) { setErr(v); setStep(1); return; }
+    
+    // Validate Captcha
+    if (!captchaData.answer || parseInt(captchaData.answer, 10) !== captchaData.expected) {
+      setCaptchaError('Please solve the security verification question correctly.');
+      return;
+    }
+
     setSending(true);
     setErr('');
+    setCaptchaError('');
 
     const detail = isCommercial
       ? `${Number(f.sqft).toLocaleString()} sq ft · ${COM_FACILITIES.find((x) => x.id === f.facility)?.label} · ${COM_FREQ.find((x) => x.id === f.frequency)?.label}`
@@ -147,6 +159,9 @@ export default function Booking() {
           f.pets && `Pets: ${f.pets}`,
           f.notes && `Notes: ${f.notes}`,
         ].filter(Boolean).join('\n'),
+        captchaAnswer: captchaData.answer,
+        captchaToken: captchaData.token,
+        hp_website: captchaData.hp_website
       });
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -392,6 +407,14 @@ export default function Booking() {
                       <label>Additional information</label>
                       <textarea value={f.notes} onChange={set('notes')} placeholder="Anything else we should know — access codes, problem areas, restricted rooms…" />
                     </div>
+
+                    <CaptchaChallenge 
+                      onVerify={(data) => {
+                        setCaptchaData(data);
+                        setCaptchaError('');
+                      }} 
+                      error={captchaError} 
+                    />
                   </>
                 )}
 

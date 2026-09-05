@@ -386,7 +386,26 @@
     "/images/hero_br.png"
   ],
   "bookings": [],
-  "messages": [],
+  "messages": [
+    {
+      "id": "mtothe5017xfjg",
+      "name": "Dr. Aris Thorne",
+      "email": "athorne@svbiotechlabs.com",
+      "phone": "650-290-0280",
+      "message": "[Free Walkthrough & Cleanliness Score Request for Facility (Medical / Dental Clinic)]\nSquare Footage: 12,000 sq.ft.\nContractor Status: N/A\nPreferred Date: Thursday at 10:00 AM\nCity: N/A\nNotes: None",
+      "read": false,
+      "createdAt": "2026-09-05T20:10:06.420Z"
+    },
+    {
+      "id": "mtoth1hfcbv532",
+      "name": "Dr. Aris Thorne",
+      "email": "athorne@svbiotechlabs.com",
+      "phone": "650-290-0280",
+      "message": "[Free Walkthrough & Cleanliness Score Request for Facility (Medical / Dental Clinic)]\nSquare Footage: 12,000 sq.ft.\nContractor Status: N/A\nPreferred Date: Thursday at 10:00 AM\nCity: N/A\nNotes: None",
+      "read": false,
+      "createdAt": "2026-09-05T20:09:50.019Z"
+    }
+  ],
   "subscribers": [],
   "users": [
     {
@@ -444,5 +463,156 @@
       }
     ],
     "COM_MIN_MONTHLY": 380
-  }
+  },
+  "quotes": [],
+  "projects": [],
+  "customers": [
+    {
+      "id": "mtotgq09sigpo1",
+      "companyName": "Skyline Financial Group",
+      "contactName": "David Clark",
+      "email": "david@skylinefin.com",
+      "phone": "650-555-0192",
+      "address": "100 Pine St, Suite 1400, San Francisco, CA",
+      "facilityType": "Commercial Financial Office",
+      "squareFootage": "4,500 sq.ft.",
+      "contractValue": 1850,
+      "billingFrequency": "Monthly (Net 30)",
+      "status": "active",
+      "tags": [
+        "Commercial",
+        "WBE RFP",
+        "High Value"
+      ],
+      "notes": "Keycard access in lockbox. Daily evening service after 6:00 PM. High-traffic lobby.",
+      "createdAt": "2026-08-06T20:09:35.145Z",
+      "updatedAt": "2026-09-05T20:09:35.146Z"
+    },
+    {
+      "id": "mtotgq0arr3dsj",
+      "companyName": "Apex Health Clinic",
+      "contactName": "Dr. Elena Rostova",
+      "email": "elena@apexhealthbay.com",
+      "phone": "408-555-0344",
+      "address": "450 Sutter St, San Jose, CA",
+      "facilityType": "Medical & Dental Clinic",
+      "squareFootage": "3,800 sq.ft.",
+      "contractValue": 2400,
+      "billingFrequency": "Monthly (ACH Auto-Pay)",
+      "status": "active",
+      "tags": [
+        "Medical Grade",
+        "Sanitization",
+        "EPA Certified"
+      ],
+      "notes": "Requires EPA registered disinfectant on all exam tables and waiting area surfaces.",
+      "createdAt": "2026-08-21T20:09:35.146Z",
+      "updatedAt": "2026-09-05T20:09:35.146Z"
+    }
+  ],
+  "leads": [
+    {
+      "id": "mtothe50z6plg2",
+      "companyName": "Dr. Aris Thorne's Facility",
+      "contactName": "Dr. Aris Thorne",
+      "email": "athorne@svbiotechlabs.com",
+      "phone": "650-290-0280",
+      "facilityType": "Medical / Dental Clinic",
+      "squareFootage": "12,000 sq.ft.",
+      "estimatedMonthlyValue": 3360,
+      "source": "Free Site Walkthrough & Cleanliness Score (Website)",
+      "stage": "walkthrough",
+      "priority": "high",
+      "notes": "[FREE CLEANLINESS AUDIT & WALKTHROUGH REQUEST]\n• Contractor Audit Status: Standard Quality Check\n• Preferred Date: Thursday at 10:00 AM\n• City / Address: Not specified\n• Specific Areas of Concern: None",
+      "auditDetails": {
+        "businessName": "",
+        "facilityType": "Medical / Dental Clinic",
+        "sqft": "12,000 sq.ft.",
+        "currentStatus": "",
+        "city": "",
+        "preferredDate": "Thursday at 10:00 AM",
+        "notes": ""
+      },
+      "assignedTo": "Leticia Maia",
+      "createdAt": "2026-09-05T20:10:06.420Z",
+      "updatedAt": "2026-09-05T20:10:06.420Z"
+    },
+    {
+      "id": "mtoth1hfwg5ai4",
+      "companyName": "Dr. Aris Thorne's Facility",
+      "contactName": "Dr. Aris Thorne",
+      "email": "athorne@svbiotechlabs.com",
+      "phone": "650-290-0280",
+      "facilityType": "Medical / Dental Clinic",
+      "squareFootage": "12,000 sq.ft.",
+      "estimatedMonthlyValue": 3360,
+      "source": "Free Site Walkthrough & Cleanliness Score (Website)",
+      "stage": "walkthrough",
+      "priority": "high",
+      "notes": "[FREE CLEANLINESS AUDIT & WALKTHROUGH REQUEST]\n• Contractor Audit Status: Standard Quality Check\n• Preferred Date: Thursday at 10:00 AM\n• City / Address: Not specified\n• Specific Areas of Concern: None",
+      "auditDetails": {
+        "businessName": "",
+        "facilityType": "Medical / Dental Clinic",
+        "sqft": "12,000 sq.ft.",
+        "currentStatus": "",
+        "city": "",
+        "preferredDate": "Thursday at 10:00 AM",
+        "notes": ""
+      },
+      "assignedTo": "Leticia Maia",
+      "createdAt": "2026-09-05T20:09:50.019Z",
+      "updatedAt": "2026-09-05T20:09:50.019Z"
+    },
+    {
+      "id": "mtotgq0c4ejejy",
+      "companyName": "Silicon Valley BioTech Labs",
+      "contactName": "Sarah Jenkins",
+      "email": "sjenkins@svbiotech.io",
+      "phone": "408-555-7821",
+      "facilityType": "Medical / Biotech Lab",
+      "squareFootage": "6,200 sq.ft.",
+      "estimatedMonthlyValue": 3200,
+      "source": "Google Search (LSA)",
+      "stage": "walkthrough",
+      "priority": "high",
+      "notes": "Needs HEPA filtration & bio-waste cleanrooms. Scheduled on-site walkthrough for next Tuesday.",
+      "assignedTo": "Vazu Admin",
+      "createdAt": "2026-09-03T20:09:35.148Z",
+      "updatedAt": "2026-09-05T20:09:35.148Z"
+    },
+    {
+      "id": "mtotgq0crlgoea",
+      "companyName": "Oakland Logistics Center",
+      "contactName": "Marcus Vance",
+      "email": "marcus@oaklandlogistics.net",
+      "phone": "510-555-8930",
+      "facilityType": "Warehouse & Logistics Terminal",
+      "squareFootage": "12,500 sq.ft.",
+      "estimatedMonthlyValue": 4500,
+      "source": "Govt RFP (Cal eProcure)",
+      "stage": "proposal_sent",
+      "priority": "high",
+      "notes": "Submitted formal Service Quote with DIR & WBE certifications. Awaiting Board vote.",
+      "assignedTo": "Vazu Admin",
+      "createdAt": "2026-08-31T20:09:35.148Z",
+      "updatedAt": "2026-09-05T20:09:35.148Z"
+    },
+    {
+      "id": "mtotgq0cth19jx",
+      "companyName": "Palo Alto Software Works",
+      "contactName": "Jason Lee",
+      "email": "jason@pasoftware.co",
+      "phone": "650-555-4421",
+      "facilityType": "Tech Office / Headquarters",
+      "squareFootage": "5,000 sq.ft.",
+      "estimatedMonthlyValue": 2100,
+      "source": "Referral",
+      "stage": "contacted",
+      "priority": "medium",
+      "notes": "Requested rate card for 3x/week evening janitorial service.",
+      "assignedTo": "Vazu Admin",
+      "createdAt": "2026-09-04T20:09:35.148Z",
+      "updatedAt": "2026-09-05T20:09:35.148Z"
+    }
+  ]
 }

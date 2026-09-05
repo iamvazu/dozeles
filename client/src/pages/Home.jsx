@@ -13,6 +13,7 @@ import { CITIES, citiesByRegion } from '../data/cities.js';
 import { BLOG_POSTS } from '../data/blog.js';
 import CleanlinessAuditModal from '../components/CleanlinessAuditModal.jsx';
 import CleanlinessAuditSection from '../components/CleanlinessAuditSection.jsx';
+import CaptchaChallenge from '../components/CaptchaChallenge.jsx';
 
 const HOME_FAQS = [
   {
@@ -67,23 +68,39 @@ const WHY = [
 
 function QuoteFormPanel() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', sqft: '', service: '', message: '' });
+  const [captchaData, setCaptchaData] = useState({ answer: '', expected: 0, token: '', hp_website: '' });
+  const [captchaError, setCaptchaError] = useState('');
   const [state, setState] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   async function submit(e) {
     e.preventDefault();
     setState(null);
+    setCaptchaError('');
+
+    if (!captchaData.answer || parseInt(captchaData.answer, 10) !== captchaData.expected) {
+      setCaptchaError('Please solve the security verification question correctly.');
+      return;
+    }
+
+    setSubmitting(true);
     try {
       await api.post('/api/contact', {
         name: form.name,
         email: form.email,
         phone: form.phone,
         message: `Service: ${form.service || 'Not specified'}\nSquare footage: ${form.sqft || 'Not specified'}\n\n${form.message}`,
+        captchaAnswer: captchaData.answer,
+        captchaToken: captchaData.token,
+        hp_website: captchaData.hp_website
       });
       setState({ ok: true, msg: "Thank you! We've received your request and will send your quote within one business day." });
       setForm({ name: '', email: '', phone: '', sqft: '', service: '', message: '' });
     } catch (err) {
       setState({ ok: false, msg: err.message });
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -102,11 +119,22 @@ function QuoteFormPanel() {
         {SERVICES.map((s) => <option key={s.slug} value={s.title}>{s.title}</option>)}
       </select>
       <textarea placeholder="Anything else we should know?" value={form.message} onChange={set('message')} />
+      
+      <CaptchaChallenge 
+        onVerify={(data) => {
+          setCaptchaData(data);
+          setCaptchaError('');
+        }} 
+        error={captchaError} 
+      />
+
       <p className="gdpr">
         By submitting this form you agree to be contacted about your quote. We never sell or share
         your information.
       </p>
-      <button className="btn btn-white" type="submit">I'd Like a Quote</button>
+      <button className="btn btn-white" type="submit" disabled={submitting}>
+        {submitting ? 'Submitting…' : "I'd Like a Quote"}
+      </button>
       {state && <div className={`form-note ${state.ok ? 'ok' : 'err'}`}>{state.msg}</div>}
     </form>
   );

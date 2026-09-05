@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Icon from './Icon.jsx';
+import CaptchaChallenge from './CaptchaChallenge.jsx';
 import { api } from '../api.js';
 
 export default function CleanlinessAuditModal({ isOpen, onClose }) {
@@ -15,6 +16,8 @@ export default function CleanlinessAuditModal({ isOpen, onClose }) {
     preferredDate: '',
     notes: '',
   });
+  const [captchaData, setCaptchaData] = useState({ answer: '', expected: 0, token: '', hp_website: '' });
+  const [captchaError, setCaptchaError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
@@ -27,25 +30,27 @@ export default function CleanlinessAuditModal({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
-    try {
-      const messageContent = `
-[FREE SITE WALKTHROUGH & CLEANLINESS SCORE REQUEST]
-• Business / Facility Name: ${form.businessName}
-• Facility Type: ${form.facilityType}
-• Square Footage: ${form.sqft || 'Not specified'}
-• Contractor Audit Status: ${form.currentStatus}
-• City / Address: ${form.city || 'Not specified'}
-• Preferred Walkthrough Date: ${form.preferredDate || 'Flexible / ASAP'}
-• Additional Notes: ${form.notes || 'None'}
-      `.trim();
+    setCaptchaError(null);
 
-      await api.post('/api/contact', {
-        name: form.contactName,
-        email: form.email,
-        phone: form.phone,
-        message: messageContent,
+    // Validate Honeypot
+    if (captchaData.hp_website) {
+      // Bot detected
+      return;
+    }
+
+    // Validate Math Captcha
+    if (!captchaData.answer || parseInt(captchaData.answer, 10) !== captchaData.expected) {
+      setCaptchaError('Please solve the math security question correctly to proceed.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.post('/api/walkthrough', {
+        ...form,
+        captchaAnswer: captchaData.answer,
+        captchaToken: captchaData.token,
       });
 
       setSubmitted(true);
@@ -252,6 +257,12 @@ export default function CleanlinessAuditModal({ isOpen, onClose }) {
                   className="audit-input"
                 />
               </div>
+
+              {/* Security Captcha Challenge */}
+              <CaptchaChallenge
+                onVerify={setCaptchaData}
+                error={captchaError}
+              />
 
               <div className="audit-submit-row">
                 <button
