@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
 import { 
-  LayoutDashboard, CalendarCheck, MessageSquare, Users, 
+  LayoutDashboard, CalendarCheck, Calendar, MessageSquare, Users, 
   Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, 
   ChevronRight, DollarSign, Menu, Paperclip, FileText, 
   Upload, Building2, Download, Smartphone
