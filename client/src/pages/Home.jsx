@@ -298,18 +298,11 @@ export default function Home() {
       {/* ---------- WHO WE ARE ---------- */}
       <section className="section-alt">
         <div className="container split">
-          <div className="who-images">
+          <div>
             <img 
               src="/images/residential_cleaning.png" 
               alt="The Dozeles Professional Cleaning residential house cleaners team at work" 
               loading="lazy"
-              style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
-            />
-            <img 
-              src="/images/corporate_lobby_cleaning.png" 
-              alt="The Dozeles Professional Cleaning commercial cleaning services team at work" 
-              loading="lazy"
-              style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }}
             />
           </div>
           <div className="prose">
