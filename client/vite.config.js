@@ -16,7 +16,25 @@ export default defineConfig({
         theme_color: '#0A2540',
         background_color: '#ffffff',
         display: 'standalone',
+        orientation: 'portrait-primary',
         start_url: '/',
+        categories: ['business', 'productivity', 'utilities'],
+        shortcuts: [
+          {
+            name: 'Admin Dashboard',
+            short_name: 'Admin',
+            description: 'Open Dozeles Admin Portal',
+            url: '/admin',
+            icons: [{ src: '/pwa-192.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Book a Service',
+            short_name: 'Book',
+            description: 'Schedule a cleaning service',
+            url: '/book',
+            icons: [{ src: '/pwa-192.png', sizes: '192x192' }]
+          }
+        ],
         icons: [
           { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },

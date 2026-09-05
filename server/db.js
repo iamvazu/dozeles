@@ -52,7 +52,9 @@ export function loadDb() {
     saveDb();
   }
 
-  
+  if (!db.quotes) db.quotes = [];
+  if (!db.projects) db.projects = [];
+
   return db;
 }
 

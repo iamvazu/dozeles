@@ -116,6 +116,118 @@ app.post('/api/pricing', requireAdmin, (req, res) => {
 });
 app.get('/api/reviews', (req, res) => res.json(db.reviews));
 
+// ---------- Quote & Project helpers ----------
+function generateQuoteNumber() {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(1000 + Math.random() * 9000);
+  return `DOZ-${year}-${randomNum}`;
+}
+
+function buildDefaultQuote({ booking = null, custom = {} }) {
+  const today = new Date();
+  const validDate = new Date();
+  validDate.setDate(today.getDate() + 30);
+
+  const formatDate = (d) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const clientName = custom.clientName || (booking ? booking.name : 'Client / Company Name');
+  const contactName = custom.contactName || (booking ? booking.name : 'Contact Name');
+  const email = custom.email || (booking ? booking.email : '');
+  const phone = custom.phone || (booking ? booking.phone : '');
+  const siteAddress = custom.siteAddress || (booking ? booking.address : 'Street Address, City, State ZIP');
+  const serviceName = custom.serviceName || (booking ? booking.service : 'Commercial & Office Cleaning');
+  const facilityType = custom.facilityType || (booking?.notes?.toLowerCase().includes('office') ? 'Commercial Office' : 'Commercial Facility');
+  const squareFootage = custom.squareFootage || (booking?.notes?.match(/\d+[\d,]*\s*(sq|sqft|sq\.?\s*ft)/i)?.[0] || '3,500 sq. ft.');
+  const estimatedPrice = Number(booking?.price) > 0 ? Number(booking.price) : 450;
+
+  return {
+    id: newId(),
+    quoteNumber: generateQuoteNumber(),
+    bookingId: booking ? booking.id : null,
+    date: formatDate(today),
+    validUntil: formatDate(validDate),
+    status: 'draft',
+    preparedFor: {
+      clientName,
+      contactName,
+      email,
+      phone,
+      siteAddress,
+      facilityType,
+      squareFootage,
+    },
+    serviceProvider: {
+      companyName: 'Dozeles Professional Cleaning',
+      specialization: 'Commercial & Janitorial Facility Cleaning',
+      email: 'dozelescleaning@gmail.com',
+      phone: '650-290-0280',
+      website: 'www.dozeles.com',
+    },
+    programTitle: `${serviceName.toUpperCase()} SCOPE`,
+    items: [
+      {
+        id: '1',
+        serviceName: `${serviceName} - Core Service`,
+        details: 'Complete sanitization, trash disposal, restroom care, breakrooms, and high-frequency surface detailing.',
+        frequency: 'Regular / Scheduled',
+        amount: estimatedPrice
+      },
+      {
+        id: '2',
+        serviceName: 'HEPA Floor & Surface Care',
+        details: 'Commercial vacuuming, microfiber damp mopping, entrance mat detailing.',
+        frequency: 'Every Service',
+        amount: 150
+      },
+      {
+        id: '3',
+        serviceName: 'Touchpoint Disinfection',
+        details: 'Hospital-grade EPA registered disinfectant on all doors, handles, switches, and shared spaces.',
+        frequency: 'Every Service',
+        amount: 80
+      },
+      {
+        id: '4',
+        serviceName: 'Glass & Partition Detailing',
+        details: 'Interior glass partitions, front entry doors spotless and streak-free.',
+        frequency: 'Weekly',
+        amount: 60
+      }
+    ],
+    lineItems: [
+      { label: 'Core Service Program', amount: estimatedPrice },
+      { label: 'Eco-Friendly Supplies & Equipment Included', amount: 0 }
+    ],
+    totalLabel: 'Total Investment',
+    totalAmount: estimatedPrice,
+    optionalProgram: {
+      title: 'Quarterly Deep Carpet Extraction & Machine Buffing',
+      tag: 'OPTIONAL / SCHEDULED',
+      tasks: [
+        'Commercial hot-water extraction on all carpeted high-traffic corridors.',
+        'High-dusting of exposed HVAC ducts, ceiling fixtures, and diffusers.',
+        'Machine scrubbing and protective polish of vinyl/hard flooring.'
+      ],
+      rate: '$350.00 – $650.00 / session'
+    },
+    terms: {
+      siteAccess: 'Client to provide keycard/lockbox codes or designate on-site contact for entry.',
+      equipmentSupplies: 'Dozeles provides all commercial HEPA equipment, microfiber color-coded cloths, and green-seal certified chemicals.',
+      serviceHours: 'Agreed shifts (after-hours 6:00 PM or custom day schedule).',
+      billing: 'Net 30 billing terms. Invoices issued monthly.',
+      pricingAdjustment: 'Rates subject to review if facility square footage or service scope changes.'
+    },
+    certifications: {
+      smallBusinessCert: '2041212',
+      dirReg: 'JS-LR-1001274287',
+      wbe: true,
+      licensedBondedInsured: true
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+
 // ---------- bookings ----------
 app.post('/api/bookings', async (req, res) => {
   const { name, email, phone, service, date, time, address, notes } = req.body || {};
@@ -132,6 +244,13 @@ app.post('/api/bookings', async (req, res) => {
     createdAt: new Date().toISOString(),
   };
   db.bookings.push(booking);
+
+  // Automatically create a Service Quote template for this booking!
+  const autoQuote = buildDefaultQuote({ booking });
+  if (!db.quotes) db.quotes = [];
+  db.quotes.push(autoQuote);
+  booking.quoteId = autoQuote.id;
+
   saveDb();
   notify(`New booking request: ${service}`,
     `Name: ${name}\nPhone: ${phone}\nEmail: ${email || '-'}\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || '-'}\nNotes: ${notes || '-'}`);
@@ -141,7 +260,7 @@ app.post('/api/bookings', async (req, res) => {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
         <h2 style="color: #0E5FD8;">Thank you for your request, ${name}!</h2>
         <p>We have received your booking request for <strong>${service}</strong>.</p>
-        <p>Our team will review your details and contact you shortly to confirm your booking and provide a quote.</p>
+        <p>Our team will review your details and contact you shortly to confirm your booking and provide a formal service quote (Quote #${autoQuote.quoteNumber}).</p>
         <div style="background: #F3F5F2; padding: 15px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Request Summary</h3>
           <p style="margin: 5px 0;"><strong>Service:</strong> ${service}</p>
@@ -153,7 +272,7 @@ app.post('/api/bookings', async (req, res) => {
     `);
   }
   
-  res.status(201).json({ ok: true, id: booking.id });
+  res.status(201).json({ ok: true, id: booking.id, quoteId: autoQuote.id });
 });
 
 // ---------- contact + newsletter ----------
@@ -194,7 +313,7 @@ app.post('/api/subscribe', (req, res) => {
   res.status(201).json({ ok: true });
 });
 
-// ---------- admin API ----------
+// ---------- admin / staff API ----------
 app.get('/api/admin/bookings', requireAuth, (req, res) => res.json([...db.bookings].reverse()));
 app.patch('/api/admin/bookings/:id', requireAuth, (req, res) => {
   const b = db.bookings.find((x) => x.id === req.params.id);
@@ -233,7 +352,7 @@ app.post('/api/admin/bookings/:id/upload', requireAuth, upload.single('file'), (
   res.json(b);
 });
 
-app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
+app.post('/api/admin/bookings/:id/invoice', requireAdmin, async (req, res) => {
   const b = db.bookings.find((x) => x.id === req.params.id);
   if (!b) return res.status(404).json({ error: 'Not found' });
   if (!b.email) return res.status(400).json({ error: 'Customer has no email address' });
@@ -242,7 +361,6 @@ app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
   const subtotal = b.price || 0;
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
-  
   const dueDateStr = new Date().toLocaleDateString();
 
   const invoiceHtml = `
@@ -251,11 +369,10 @@ app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
         <h1 style="color: #0E5FD8; margin: 0;">INVOICE</h1>
         <div style="text-align: right;">
           <strong>Dozeles Professional Cleaning</strong><br>
-          contact@dozeles.com<br>
+          dozelescleaning@gmail.com<br>
           (650) 290-0280
         </div>
       </div>
-      
       <div style="margin-bottom: 30px;">
         <p><strong>Billed To:</strong><br>
         ${b.name}<br>
@@ -264,7 +381,6 @@ app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
         <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
         <strong>Due Date:</strong> ${dueDateStr} (Due upon receipt)</p>
       </div>
-
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
         <thead>
           <tr style="background: #F3F5F2; text-align: left;">
@@ -279,15 +395,13 @@ app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
           </tr>
         </tbody>
       </table>
-
       <div style="text-align: right; margin-bottom: 30px;">
         <p style="margin: 5px 0;"><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
         <p style="margin: 5px 0;"><strong>Tax (8.25%):</strong> $${tax.toFixed(2)}</p>
         <p style="margin: 5px 0; font-size: 1.2em;"><strong>Total Due:</strong> <span style="color: #0E5FD8;">$${total.toFixed(2)}</span></p>
       </div>
-      
       <div style="text-align: center; margin-top: 40px; color: #777; font-size: 0.9em;">
-        Thank you for your business! Please remit payment upon receipt.
+        Thank you for your business!
       </div>
     </div>
   `;
@@ -298,8 +412,158 @@ app.post('/api/admin/bookings/:id/invoice', requireAuth, async (req, res) => {
   res.json({ ok: true, message: 'Invoice sent successfully', booking: b });
 });
 
-app.delete('/api/admin/bookings/:id', requireAuth, (req, res) => {
+app.delete('/api/admin/bookings/:id', requireAdmin, (req, res) => {
   db.bookings = db.bookings.filter((x) => x.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+// ---------- Quotes API ----------
+app.get('/api/admin/quotes', requireAuth, (req, res) => {
+  if (!db.quotes) db.quotes = [];
+  res.json([...db.quotes].reverse());
+});
+
+app.get('/api/admin/quotes/:id', requireAuth, (req, res) => {
+  if (!db.quotes) db.quotes = [];
+  const q = db.quotes.find(x => x.id === req.params.id);
+  if (!q) return res.status(404).json({ error: 'Quote not found' });
+  res.json(q);
+});
+
+app.post('/api/admin/quotes', requireAdmin, (req, res) => {
+  const quote = buildDefaultQuote({ custom: req.body });
+  if (req.body.items) quote.items = req.body.items;
+  if (req.body.totalAmount) quote.totalAmount = req.body.totalAmount;
+  if (req.body.preparedFor) quote.preparedFor = { ...quote.preparedFor, ...req.body.preparedFor };
+  if (req.body.terms) quote.terms = { ...quote.terms, ...req.body.terms };
+  if (req.body.optionalProgram) quote.optionalProgram = { ...quote.optionalProgram, ...req.body.optionalProgram };
+  if (req.body.programTitle) quote.programTitle = req.body.programTitle;
+
+  if (!db.quotes) db.quotes = [];
+  db.quotes.push(quote);
+  saveDb();
+  res.status(201).json(quote);
+});
+
+app.post('/api/admin/quotes/from-booking/:bookingId', requireAdmin, (req, res) => {
+  const b = db.bookings.find(x => x.id === req.params.bookingId);
+  if (!b) return res.status(404).json({ error: 'Booking not found' });
+  
+  const quote = buildDefaultQuote({ booking: b, custom: req.body });
+  if (!db.quotes) db.quotes = [];
+  db.quotes.push(quote);
+  b.quoteId = quote.id;
+  saveDb();
+  res.status(201).json(quote);
+});
+
+app.put('/api/admin/quotes/:id', requireAdmin, (req, res) => {
+  if (!db.quotes) db.quotes = [];
+  const idx = db.quotes.findIndex(x => x.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Quote not found' });
+  
+  db.quotes[idx] = {
+    ...db.quotes[idx],
+    ...req.body,
+    id: req.params.id,
+    updatedAt: new Date().toISOString()
+  };
+  saveDb();
+  res.json(db.quotes[idx]);
+});
+
+app.delete('/api/admin/quotes/:id', requireAdmin, (req, res) => {
+  if (!db.quotes) db.quotes = [];
+  db.quotes = db.quotes.filter(x => x.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+// ---------- Projects API (For Admins & Field Janitors) ----------
+app.get('/api/admin/projects', requireAuth, (req, res) => {
+  if (!db.projects) db.projects = [];
+  // If Janitor, they can view all projects or their assigned projects
+  res.json([...db.projects].reverse());
+});
+
+app.post('/api/admin/projects', requireAdmin, (req, res) => {
+  const { title, clientName, address, facilityType, frequency, startDate, assignedJanitors, notes } = req.body;
+  if (!title || !clientName) return res.status(400).json({ error: 'Title and Client Name are required' });
+  
+  const project = {
+    id: newId(),
+    title,
+    clientName,
+    address: address || '',
+    facilityType: facilityType || 'Commercial Office',
+    status: 'in-progress',
+    frequency: frequency || '5x / week',
+    startDate: startDate || new Date().toISOString().split('T')[0],
+    assignedJanitors: Array.isArray(assignedJanitors) ? assignedJanitors : (assignedJanitors ? [assignedJanitors] : []),
+    checklist: [
+      { id: '1', task: 'Restrooms disinfected and restocked', completed: false },
+      { id: '2', task: 'Trash and recyclables removed', completed: false },
+      { id: '3', task: 'HEPA vacuum carpets & damp mop hard floors', completed: false },
+      { id: '4', task: 'High-touch disinfection (handles, switches, desks)', completed: false },
+      { id: '5', task: 'Entrance and lobby glass polished streak-free', completed: false }
+    ],
+    photos: [],
+    notes: notes || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (!db.projects) db.projects = [];
+  db.projects.push(project);
+  saveDb();
+  res.status(201).json(project);
+});
+
+app.put('/api/admin/projects/:id', requireAuth, (req, res) => {
+  if (!db.projects) db.projects = [];
+  const idx = db.projects.findIndex(x => x.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Project not found' });
+  
+  db.projects[idx] = {
+    ...db.projects[idx],
+    ...req.body,
+    id: req.params.id,
+    updatedAt: new Date().toISOString()
+  };
+  saveDb();
+  res.json(db.projects[idx]);
+});
+
+// Photo upload for projects (Admin and Janitor)
+app.post('/api/admin/projects/:id/photos', requireAuth, upload.single('photo'), (req, res) => {
+  if (!db.projects) db.projects = [];
+  const proj = db.projects.find(x => x.id === req.params.id);
+  if (!proj) return res.status(404).json({ error: 'Project not found' });
+  if (!req.file) return res.status(400).json({ error: 'No photo file provided' });
+
+  const { caption, type } = req.body;
+  if (!proj.photos) proj.photos = [];
+
+  const photoEntry = {
+    id: newId(),
+    url: '/uploads/' + req.file.filename,
+    caption: caption || '',
+    type: type || 'progress', // 'before' | 'after' | 'progress'
+    author: req.user.name || 'Staff',
+    authorRole: req.user.role || 'janitor',
+    uploadedAt: new Date().toISOString()
+  };
+
+  proj.photos.push(photoEntry);
+  proj.updatedAt = new Date().toISOString();
+  saveDb();
+  res.status(201).json({ ok: true, photo: photoEntry, project: proj });
+});
+
+app.delete('/api/admin/projects/:id', requireAdmin, (req, res) => {
+  if (!db.projects) db.projects = [];
+  db.projects = db.projects.filter(x => x.id !== req.params.id);
   saveDb();
   res.json({ ok: true });
 });
@@ -315,16 +579,19 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
 
 app.get('/api/admin/subscribers', requireAdmin, (req, res) => res.json(db.subscribers));
 
-// Users CRUD
+// Users CRUD (Supports Admin, Janitor, Staff)
 app.get('/api/admin/users', requireAdmin, (req, res) => {
-  res.json(db.users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role, createdAt: u.createdAt })));
+  res.json(db.users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role || 'staff', createdAt: u.createdAt })));
 });
 app.post('/api/admin/users', requireAdmin, (req, res) => {
   const { email, password, name, role } = req.body;
   if (!email || !password || !name) return res.status(400).json({ error: 'Missing fields' });
   if (db.users.find(u => u.email === email)) return res.status(400).json({ error: 'Email already exists' });
   
-  const user = { id: newId(), email, password, name, role: role === 'admin' ? 'admin' : 'staff', createdAt: new Date().toISOString() };
+  const validRoles = ['admin', 'janitor', 'staff'];
+  const assignedRole = validRoles.includes(role) ? role : 'janitor';
+
+  const user = { id: newId(), email, password, name, role: assignedRole, createdAt: new Date().toISOString() };
   db.users.push(user);
   saveDb();
   res.status(201).json({ id: user.id, email: user.email, name: user.name, role: user.role, createdAt: user.createdAt });

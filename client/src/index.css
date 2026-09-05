@@ -1974,3 +1974,723 @@ img, video, iframe, table { max-width: 100%; }
 
 @media (max-width: 768px) { .proc-line { left: 20px; } .proc-dot { left: 20px; } .proc-item { width: 100%; left: 0 !important; padding: 20px 0 20px 48px; } .proc-item::after { left: 12px !important; right: auto !important; } }
 
+/* ==========================================================================
+   SERVICE QUOTE GENERATOR & PDF TEMPLATE STYLES
+   ========================================================================== */
+
+.quote-manager-container {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  min-height: calc(100vh - 120px);
+}
+
+.quote-sidebar {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
+  position: sticky;
+  top: 90px;
+  overflow: hidden;
+}
+
+.quote-sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+}
+
+.quote-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.quote-filter-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.filter-pill {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.filter-pill.active {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+
+.quote-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quote-item-card {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fff;
+}
+
+.quote-item-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.quote-item-card.active {
+  border-color: var(--blue);
+  background: #f0f6ff;
+}
+
+.quote-num-badge {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--blue);
+  font-size: 0.82rem;
+}
+
+.quote-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.quote-action-bar {
+  background: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.quote-editor-panel {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid var(--blue);
+  box-shadow: 0 4px 14px rgba(14, 95, 216, 0.08);
+}
+
+/* Printable PDF Page Layout */
+.printable-quote-page {
+  background: #fff;
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto 40px auto;
+  padding: 36px 40px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1a202c;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+/* PDF Header matching template */
+.quote-pdf-header {
+  background: #0A2540;
+  color: #fff;
+  padding: 24px 28px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.quote-pdf-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quote-logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quote-brand-sub {
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.quote-pdf-meta {
+  text-align: right;
+}
+
+.quote-pdf-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #00C0F3;
+  margin: 0 0 6px 0;
+  letter-spacing: 1px;
+}
+
+.quote-pdf-meta-item {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  margin-bottom: 2px;
+}
+
+.quote-pdf-meta-item .q-label {
+  color: #94a3b8;
+  margin-right: 6px;
+}
+
+.quote-pdf-meta-item .q-val.bold {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* 2 Column Parties */
+.quote-pdf-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.quote-party-col {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 16px 18px;
+}
+
+.quote-party-header {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0E5FD8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid #0E5FD8;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+}
+
+.party-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0A2540;
+  margin-bottom: 4px;
+}
+
+.party-attn {
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.party-detail {
+  font-size: 0.82rem;
+  color: #475569;
+  margin-bottom: 3px;
+}
+
+/* Scope Section */
+.quote-pdf-scope-section {
+  margin-bottom: 24px;
+}
+
+.quote-section-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.quote-section-title-bar .cyan-bar {
+  width: 4px;
+  height: 20px;
+  background: #00C0F3;
+  border-radius: 2px;
+}
+
+.quote-section-title-bar h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0A2540;
+  letter-spacing: 0.5px;
+}
+
+.quote-pdf-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 14px;
+  font-size: 0.86rem;
+}
+
+.quote-pdf-table thead tr {
+  background: #0A2540;
+  color: #fff;
+}
+
+.quote-pdf-table th {
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.quote-pdf-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+.quote-pdf-table tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.svc-name {
+  color: #0A2540;
+}
+
+.svc-desc {
+  color: #475569;
+  font-size: 0.83rem;
+}
+
+.freq-tag {
+  color: #0E5FD8;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+/* Totals */
+.quote-pdf-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+.quote-total-row {
+  display: flex;
+  justify-content: space-between;
+  width: 320px;
+  font-size: 0.88rem;
+  color: #475569;
+}
+
+.quote-total-row.grand-total {
+  border-top: 2px solid #0A2540;
+  padding-top: 8px;
+  margin-top: 4px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0E5FD8;
+}
+
+/* Optional Program */
+.quote-pdf-optional-block {
+  border: 1.5px solid #10b981;
+  background: #f0fdf4;
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+}
+
+.optional-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.opt-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #065f46;
+}
+
+.opt-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #d1fae5;
+  color: #047857;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.opt-tasks {
+  margin: 0 0 10px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+  color: #1f2937;
+}
+
+.opt-tasks li {
+  margin-bottom: 4px;
+}
+
+.opt-rate {
+  font-size: 0.88rem;
+  color: #065f46;
+}
+
+/* Scope Assumptions & Terms */
+.quote-pdf-terms {
+  margin-bottom: 22px;
+}
+
+.terms-content {
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.terms-content p {
+  margin: 0 0 4px 0;
+}
+
+/* Certifications Banner */
+.quote-pdf-cert-banner {
+  background: #0A2540;
+  color: #fff;
+  border-radius: 6px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.cert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cert-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.cert-text strong {
+  font-size: 0.75rem;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.cert-text span {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+/* Signatures */
+.quote-pdf-signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.sig-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.sig-line {
+  border-bottom: 1.5px solid #475569;
+  height: 40px;
+  margin-bottom: 6px;
+}
+
+.sig-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0A2540;
+  text-transform: uppercase;
+}
+
+.sig-sub {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.quote-pdf-footer {
+  text-align: center;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 10px;
+}
+
+/* Print Stylesheet */
+@media print {
+  body {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .admin-sidebar,
+  .admin-header,
+  .quote-sidebar,
+  .quote-action-bar,
+  .quote-editor-panel,
+  .no-print {
+    display: none !important;
+  }
+
+  .admin-layout,
+  .admin-main,
+  .quote-manager-container,
+  .quote-preview-container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .printable-quote-page {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 20px 24px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .quote-pdf-header {
+    background: #0A2540 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .quote-pdf-cert-banner {
+    background: #0A2540 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .quote-pdf-table thead tr {
+    background: #0A2540 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* ==========================================================================
+   PROJECTS VIEW & JANITOR PHOTO STATION STYLES
+   ========================================================================== */
+
+.projects-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  min-height: calc(100vh - 120px);
+}
+
+.projects-sidebar {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
+  position: sticky;
+  top: 90px;
+  overflow: hidden;
+}
+
+.projects-sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfd;
+}
+
+.projects-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.project-list-card {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.project-list-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.project-list-card.active {
+  border-color: var(--blue);
+  background: #f0f6ff;
+}
+
+.project-header-bar {
+  background: #fff;
+  padding: 18px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.photo-upload-station {
+  border-left: 4px solid var(--blue);
+}
+
+.upload-controls-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 200px;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.project-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.project-photo-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-photo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.photo-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #000;
+}
+
+.photo-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.photo-type-badge.before {
+  background: #ea580c;
+  color: #fff;
+}
+
+.photo-type-badge.after {
+  background: #16a34a;
+  color: #fff;
+}
+
+.photo-type-badge.progress {
+  background: #0284c7;
+  color: #fff;
+}
+
+.photo-card-info {
+  padding: 10px 12px;
+}
+
+.photo-caption {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .quote-manager-container,
+  .projects-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .quote-sidebar,
+  .projects-sidebar {
+    position: static;
+    height: auto;
+    max-height: 350px;
+  }
+
+  .upload-controls-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-pdf-cert-banner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+

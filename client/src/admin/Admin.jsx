@@ -1,8 +1,15 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
-import { LayoutDashboard, CalendarCheck, MessageSquare, Users, Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, ChevronRight, DollarSign, Menu, Paperclip, FileText, Upload } from 'lucide-react';
+import { 
+  LayoutDashboard, CalendarCheck, MessageSquare, Users, 
+  Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, 
+  ChevronRight, DollarSign, Menu, Paperclip, FileText, 
+  Upload, Building2, Download, Smartphone
+} from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
+import ServiceQuote from './ServiceQuote.jsx';
+import ProjectsView from './ProjectsView.jsx';
 
 const SECTIONS = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
 const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
@@ -69,27 +76,55 @@ function Login({ onLogin }) {
 }
 
 function Dashboard({ user, onLogout }) {
-  const [tab, setTab] = useState('overview');
+  const initialTab = user.role === 'janitor' ? 'projects' : 'overview';
+  const [tab, setTab] = useState(initialTab);
   const [collapsed, setCollapsed] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState(null);
 
-  let navs = [
-    { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
-    { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck /> }
-  ];
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    });
+  }, []);
 
-  if (user.role === 'admin') {
-    navs = navs.concat([
+  const handleInstallApp = async () => {
+    if (!installPrompt) {
+      alert('To install the Dozeles Admin App:\n• On iOS: Tap Share -> "Add to Home Screen"\n• On Android/Chrome: Tap Menu (3 dots) -> "Install app"');
+      return;
+    }
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') setInstallPrompt(null);
+  };
+
+  let navs = [];
+
+  if (user.role === 'janitor') {
+    // Focused field view for Janitors
+    navs = [
+      { id: 'projects', label: 'Projects & Photos', icon: <Building2 /> },
+      { id: 'bookings', label: 'Assigned Schedule', icon: <CalendarCheck /> },
+      { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
+    ];
+  } else {
+    // Full access for Admins
+    navs = [
+      { id: 'overview', label: 'Overview', icon: <LayoutDashboard /> },
+      { id: 'bookings', label: 'Bookings & Jobs', icon: <CalendarCheck /> },
+      { id: 'quotes', label: 'Service Quotes', icon: <FileText /> },
+      { id: 'projects', label: 'Projects & Photos', icon: <Building2 /> },
       { id: 'messages', label: 'Messages', icon: <MessageSquare /> },
       { id: 'reviews', label: 'Reviews', icon: <Star /> },
       { id: 'users', label: 'Team & Staff', icon: <Shield /> },
       { id: 'subscribers', label: 'Subscribers', icon: <Users /> },
       { id: 'pricing', label: 'Pricing Engine', icon: <DollarSign /> },
       { id: 'content', label: 'Website Content', icon: <Edit3 /> },
-    ]);
+    ];
   }
 
-  // Fallback if staff tries to access unauthorized tab
-  if (!navs.find(n => n.id === tab)) setTab('overview');
+  // Fallback if user tries to access unauthorized tab
+  if (!navs.find(n => n.id === tab)) setTab(navs[0].id);
 
   return (
     <div className="admin-layout">
@@ -101,7 +136,9 @@ function Dashboard({ user, onLogout }) {
         <div className="admin-sidebar-user">
           <div style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>Logged in as</div>
           <div style={{ fontWeight: 600, color: 'var(--ink)' }}>{user.name}</div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--blue)', fontWeight: 600, textTransform: 'uppercase' }}>{user.role}</div>
+          <div style={{ fontSize: '0.8rem', color: user.role === 'janitor' ? '#138a4d' : 'var(--blue)', fontWeight: 700, textTransform: 'uppercase' }}>
+            {user.role === 'janitor' ? 'Field Janitor' : user.role}
+          </div>
         </div>
 
         <nav className="admin-nav">
@@ -115,7 +152,15 @@ function Dashboard({ user, onLogout }) {
             </button>
           ))}
         </nav>
+
         <div style={{ marginTop: 'auto', display: 'grid', gap: '8px' }}>
+          <button 
+            className="admin-nav-item" 
+            onClick={handleInstallApp}
+            style={{ color: 'var(--blue)', background: 'rgba(14, 95, 216, 0.08)', borderRadius: 6 }}
+          >
+            <Smartphone size={18} /> <span>Install PWA App</span>
+          </button>
           <Link to="/" target="_blank" rel="noopener noreferrer" className="admin-nav-item" style={{ justifyContent: 'center' }}>
             <span>View Live Site</span>
           </Link>
@@ -126,7 +171,7 @@ function Dashboard({ user, onLogout }) {
       </aside>
       
       <main className="admin-main">
-        <div className="admin-header">
+        <div className="admin-header no-print">
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <button onClick={() => setCollapsed(!collapsed)} className="btn btn-outline" style={{ padding: '8px', border: 'none' }}>
               <Menu size={20} />
@@ -136,7 +181,9 @@ function Dashboard({ user, onLogout }) {
         </div>
 
         {tab === 'overview' && <Overview user={user} setTab={setTab} />}
-        {tab === 'bookings' && <Bookings user={user} />}
+        {tab === 'bookings' && <Bookings user={user} setTab={setTab} />}
+        {tab === 'quotes' && <ServiceQuote user={user} onBackToBookings={() => setTab('bookings')} />}
+        {tab === 'projects' && <ProjectsView user={user} />}
         {tab === 'messages' && <Messages />}
         {tab === 'reviews' && <ReviewsAdmin />}
         {tab === 'users' && <UsersAdmin user={user} />}
@@ -257,7 +304,7 @@ function Modal({ title, onClose, children }) {
   );
 }
 
-function Bookings({ user }) {
+function Bookings({ user, setTab }) {
   const [rows, setRows] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
   const [newNote, setNewNote] = useState('');
@@ -265,6 +312,7 @@ function Bookings({ user }) {
   const [priceSaved, setPriceSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState(false);
+  const [quoteGenerating, setQuoteGenerating] = useState(false);
 
   const load = () => api.get('/api/admin/bookings').then(setRows).catch(console.error);
   useEffect(() => { load(); }, []);
@@ -323,6 +371,21 @@ function Bookings({ user }) {
       load();
     } catch (err) {
       alert(err.message);
+    }
+  }
+
+  async function handleGenerateOrOpenQuote() {
+    setQuoteGenerating(true);
+    try {
+      await api.post(`/api/admin/quotes/from-booking/${activeItem.id}`, {});
+      setActiveItem(null);
+      setTab('quotes');
+    } catch (err) {
+      // If already created, simply switch to quotes tab
+      setActiveItem(null);
+      setTab('quotes');
+    } finally {
+      setQuoteGenerating(false);
     }
   }
 
@@ -410,8 +473,12 @@ function Bookings({ user }) {
 
             {user.role === 'admin' && (
               <div className="detail-row" style={{ marginTop: 10 }}>
-                <span className="detail-label">Customer Invoicing</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span className="detail-label">Quotes &amp; Invoicing</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                  <button className="btn btn-blue" onClick={handleGenerateOrOpenQuote} disabled={quoteGenerating}>
+                    <FileText size={16} style={{ marginRight: 6 }} /> 
+                    {quoteGenerating ? 'Opening Quote...' : 'Create / View Service Quote'}
+                  </button>
                   <button className="btn btn-outline" onClick={generateInvoice} disabled={!activeItem.email}>
                     <FileText size={16} style={{ marginRight: 6 }} /> 
                     {invoiceSent ? 'Invoice Sent!' : 'Generate & Email Invoice'}
@@ -486,7 +553,7 @@ function Bookings({ user }) {
 
 function UsersAdmin({ user }) {
   const [users, setUsers] = useState([]);
-  const [draft, setDraft] = useState({ name: '', email: '', password: '', role: 'staff' });
+  const [draft, setDraft] = useState({ name: '', email: '', password: '', role: 'janitor' });
   const [err, setErr] = useState('');
 
   const load = () => api.get('/api/admin/users').then(setUsers).catch(console.error);
@@ -497,7 +564,7 @@ function UsersAdmin({ user }) {
     setErr('');
     try {
       await api.post('/api/admin/users', draft);
-      setDraft({ name: '', email: '', password: '', role: 'staff' });
+      setDraft({ name: '', email: '', password: '', role: 'janitor' });
       load();
     } catch (err) {
       setErr(err.message);
@@ -505,7 +572,7 @@ function UsersAdmin({ user }) {
   }
 
   async function remove(id) {
-    if (confirm('Remove this staff member?')) {
+    if (confirm('Remove this team member?')) {
       try {
         await api.del(`/api/admin/users/${id}`);
         load();
@@ -522,8 +589,9 @@ function UsersAdmin({ user }) {
         <div className="form-row">
           <input placeholder="Full Name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
           <select value={draft.role} onChange={(e) => setDraft({ ...draft, role: e.target.value })} className="form-select" style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}>
-            <option value="staff">Staff (Bookings Only)</option>
-            <option value="admin">Admin (Full Access)</option>
+            <option value="admin">Admin (Full Access &amp; Quotes)</option>
+            <option value="janitor">Janitor (Projects, Photo Station &amp; Tasks)</option>
+            <option value="staff">Staff (Bookings &amp; Schedule)</option>
           </select>
         </div>
         <div className="form-row">
@@ -545,7 +613,11 @@ function UsersAdmin({ user }) {
               <tr key={u.id}>
                 <td><strong>{u.name}</strong></td>
                 <td>{u.email}</td>
-                <td><span className={`pill ${u.role === 'admin' ? 'done' : 'pending'}`}>{u.role}</span></td>
+                <td>
+                  <span className={`pill ${u.role === 'admin' ? 'done' : u.role === 'janitor' ? 'in-progress' : 'pending'}`}>
+                    {u.role === 'janitor' ? 'Field Janitor' : u.role}
+                  </span>
+                </td>
                 <td>{new Date(u.createdAt).toLocaleDateString()}</td>
                 <td style={{ textAlign: 'right' }}>
                   {u.id !== user.id && (
