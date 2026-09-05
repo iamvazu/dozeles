@@ -27,12 +27,16 @@ export default function ServiceCity() {
   ];
 
   const keywords = [
-    ...service.keywords.map((k) => `${k} ${city.name.toLowerCase()}`),
-    ...service.keywords.map((k) => `${k} ${city.name.toLowerCase()} ca`),
+    `cleaners in ${city.name.toLowerCase()}`,
+    `cleaners near me in ${city.name.toLowerCase()}`,
+    `cleaning services ${city.name.toLowerCase()}`,
+    `janitorial services ${city.name.toLowerCase()}`,
+    `${service.short.toLowerCase()} in ${city.name.toLowerCase()}`,
     `${service.short.toLowerCase()} near me`,
     `${service.short.toLowerCase()} ${city.county.toLowerCase()}`,
-    `best ${service.keywords[0]} in ${city.name.toLowerCase()}`,
-    `affordable ${service.keywords[0]} ${city.name.toLowerCase()}`,
+    `best ${service.short.toLowerCase()} in ${city.name.toLowerCase()}`,
+    ...service.keywords.map((k) => `${k} ${city.name.toLowerCase()}`),
+    `${city.name.toLowerCase()} cleaners`,
     `${city.name.toLowerCase()} cleaning company`,
     `${city.name.toLowerCase()} janitorial services`,
   ];
@@ -40,7 +44,7 @@ export default function ServiceCity() {
   return (
     <>
       <Seo
-        title={fill(service.metaTitle, city.name)}
+        title={`${fill(service.metaTitle, city.name)} | Cleaners in ${city.name}, CA`}
         description={fill(service.metaDesc, city.name)}
         keywords={keywords}
         path={path}
@@ -53,7 +57,7 @@ export default function ServiceCity() {
       <CrumbStrip items={crumbs} />
       <PseoHero
         h1={`${service.title} in ${city.name}, CA`}
-        sub={`${service.tagline} Trusted by ${city.name} businesses and homeowners for over 20 years.`}
+        sub={`${service.tagline} Looking for trusted cleaners near me? Serving ${city.name} businesses and homeowners for over 20 years.`}
         image={service.hero}
         city={city.name}
       />

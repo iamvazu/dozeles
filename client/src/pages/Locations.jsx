@@ -9,13 +9,17 @@ export default function Locations() {
   return (
     <>
       <Seo
-        title="Service Areas | Cleaning & Janitorial Services Across Northern California"
-        description={`Dozeles Professional Cleaning provides commercial and residential cleaning services in ${CITIES.length}+ cities across the Bay Area, East Bay, North Bay, Sacramento, and the Central Valley. Find your city.`}
+        title="Find Cleaners Near Me | Cleaning Services Across Northern California — Dozeles"
+        description={`Find local cleaners near me in ${CITIES.length}+ cities across Northern California. Dozeles Professional Cleaning provides commercial cleaners, janitorial services, and residential house cleaning across the Bay Area.`}
         keywords={[
-          'bay area cleaning services',
+          'cleaners near me',
+          'cleaners',
+          'cleaning services',
+          'janitorial services',
+          'bay area cleaners',
           'northern california janitorial services',
-          'commercial cleaning bay area',
-          'residential cleaning norcal',
+          'commercial cleaners bay area',
+          'residential cleaners norcal',
           'east bay janitorial company',
           'sacramento cleaning services',
         ]}
@@ -25,17 +29,16 @@ export default function Locations() {
           { name: 'Locations', path: '/locations' },
         ]}
       />
-      <PageBanner title="Service Areas" crumb="Locations" />
+      <PageBanner title="Service Areas &amp; Locations" crumb="Locations" />
 
       <section>
         <div className="container">
           <div className="center" style={{ marginBottom: 44 }}>
-            <div className="eyebrow">Where We Work</div>
-            <h2 className="h2">Serving {CITIES.length}+ Cities Across Northern California</h2>
+            <div className="eyebrow">Local Coverage</div>
+            <h2 className="h2">Find Professional Cleaners &amp; Janitorial Services Near You</h2>
             <p className="lead">
-              From San Francisco to Sacramento, Napa to San Jose — Dozeles Professional Cleaning crews cover the Bay Area,
-              East Bay, North Bay, Sacramento Valley, and Central Valley with commercial janitorial,
-              office cleaning, residential house cleaning, and specialty services.
+              Searching for top-rated <strong>cleaners near me</strong>? From San Francisco to Sacramento, Napa to San Jose — Dozeles Professional Cleaning crews cover the Bay Area,
+              East Bay, North Bay, Sacramento Valley, and Central Valley with licensed <Link to="/services/commercial-cleaning" style={{ color: 'var(--blue)', fontWeight: 600 }}>commercial cleaning services</Link>, <Link to="/services/janitorial-services" style={{ color: 'var(--blue)', fontWeight: 600 }}>janitorial programs</Link>, and residential <Link to="/services/residential-cleaning" style={{ color: 'var(--blue)', fontWeight: 600 }}>house cleaners</Link>.
             </p>
           </div>
 

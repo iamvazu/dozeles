@@ -8,11 +8,16 @@ export default function About() {
   return (
     <>
       <Seo
-        title="About Us | Dozeles Professional Cleaning — 20+ Years Experience"
-        description="Learn about Dozeles Professional Cleaning — providing premier commercial janitorial, office, and residential cleaning services across the San Francisco Bay Area and Northern California."
+        title="About Us | Professional Cleaners & Janitorial Services — Dozeles"
+        description="Learn about Dozeles Professional Cleaning — 20+ years delivering premier commercial cleaners, janitorial services, and residential house cleaning across Northern California."
         keywords={[
+          'cleaners',
+          'cleaners near me',
+          'cleaning services',
+          'janitorial',
+          'janitorial services',
           'about dozeles cleaning',
-          'bay area cleaning company',
+          'bay area cleaners',
           'commercial cleaners history',
           'licensed insured janitorial team',
           'professional cleaners northern california'
@@ -23,7 +28,7 @@ export default function About() {
           { name: 'About Us', path: '/about-us' }
         ]}
       />
-      <PageBanner title="About" crumb="About Us" />
+      <PageBanner title="About Us" crumb="About Us" />
 
       <section>
         <div className="container split">
@@ -32,8 +37,11 @@ export default function About() {
             <h2 className="h2">{about.heading}</h2>
             <p style={{ fontStyle: 'italic', fontWeight: 600, marginBottom: 16 }}>{about.subheading}</p>
             <p className="lead">{about.body}</p>
+            <p style={{ marginTop: 16 }}>
+              Whether you are searching for dedicated <a href="/services-offered" style={{ color: 'var(--blue)', fontWeight: 600 }}>commercial cleaners</a>, customized <a href="/services/janitorial-services" style={{ color: 'var(--blue)', fontWeight: 600 }}>janitorial services</a>, or top-rated <a href="/locations" style={{ color: 'var(--blue)', fontWeight: 600 }}>cleaners near me</a> throughout Northern California, Dozeles delivers reliable, high-touch results on every visit.
+            </p>
           </div>
-          <img src={about.image} alt="Dozeles Professional Cleaning team" loading="lazy" />
+          <img src={about.image} alt="Dozeles Professional Cleaning cleaners team" loading="lazy" />
         </div>
       </section>
 

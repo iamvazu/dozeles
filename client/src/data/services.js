@@ -17,14 +17,18 @@ export const SERVICES = [
     metaDesc:
       'Professional commercial and office cleaning services in {city}, CA. Licensed, insured, eco-friendly workplace cleaning with HEPA filtration. Free quote — call 650-290-0280.',
     keywords: [
+      'cleaners',
+      'cleaners near me',
+      'cleaning services',
       'commercial cleaning services',
       'office cleaning services',
-      'commercial cleaning company',
-      'office cleaners',
+      'commercial cleaners',
+      'office cleaners near me',
+      'janitorial services',
       'business cleaning services',
-      'workplace cleaning',
+      'workplace cleaners',
       'corporate office cleaning',
-      'retail cleaning',
+      'retail cleaners',
       'building maintenance cleaning',
     ],
     intro:
@@ -98,11 +102,17 @@ export const SERVICES = [
     metaDesc:
       'Reliable janitorial services in {city}, CA for offices, schools, and public buildings. Nightly, weekly, and custom janitorial contracts. Free quote.',
     keywords: [
+      'janitorial',
       'janitorial services',
-      'janitorial company',
+      'cleaners',
+      'cleaners near me',
+      'cleaning services',
       'commercial janitorial services',
+      'janitorial company',
       'nightly janitorial',
+      'commercial cleaners',
       'building janitorial contractor',
+      'office cleaners near me',
     ],
     intro:
       'Janitorial service is a reliability business, not a cleaning business. Anyone can clean a building once — the hard part is doing it correctly on the 340th night in a row, when a crew member is out sick and the trash chute is backed up. Dozeles Professional Cleaning has run recurring janitorial programs across Northern California for two decades, with supervisor-verified checklists, cross-trained backup staff, and same-day response on anything that slips.',
@@ -164,11 +174,16 @@ export const SERVICES = [
     metaDesc:
       'Trusted residential house cleaning services in {city}, CA. Weekly, biweekly, and monthly home cleaning. Eco-friendly, background-checked cleaners. Free quote.',
     keywords: [
+      'cleaners',
+      'cleaners near me',
+      'cleaning services',
       'house cleaning services',
       'residential cleaning services',
+      'house cleaners near me',
       'home cleaning',
       'maid service',
       'weekly house cleaners',
+      'local home cleaners',
     ],
     intro:
       'Dozeles Professional Cleaning residential cleaning gives you your weekends back. Our house cleaners work from a room-by-room checklist covering kitchens, bathrooms, bedrooms, and living areas, using eco-friendly products that are safe around children and pets. Same team every visit, so they learn your home and your preferences.',

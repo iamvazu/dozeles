@@ -70,18 +70,19 @@ export default function CityPage() {
   return (
     <>
       <Seo
-        title={`Cleaning & Janitorial Services in ${city.name}, CA | Dozeles Professional Cleaning`}
-        description={`Top-rated commercial and residential cleaning services in ${city.name}, CA. Janitorial, office, house, move-out, and post-construction cleaning. Licensed, insured, eco-friendly. Free quote — 650-290-0280.`}
+        title={`Top-Rated Cleaners & Janitorial Services in ${city.name}, CA | Dozeles`}
+        description={`Looking for professional cleaners near me in ${city.name}, CA? Dozeles Professional Cleaning delivers commercial cleaners, janitorial services, office cleaning, and residential house cleaning in ${city.name}. Free quote.`}
         keywords={[
+          `cleaners in ${city.name.toLowerCase()}`,
+          `cleaners near me in ${city.name.toLowerCase()}`,
           `cleaning services ${city.name.toLowerCase()}`,
           `janitorial services ${city.name.toLowerCase()}`,
-          `commercial cleaning ${city.name.toLowerCase()}`,
-          `house cleaning ${city.name.toLowerCase()}`,
+          `commercial cleaners ${city.name.toLowerCase()}`,
+          `house cleaners ${city.name.toLowerCase()}`,
           `office cleaning ${city.name.toLowerCase()}`,
-          `cleaning company ${city.name.toLowerCase()} ca`,
-          `${city.name.toLowerCase()} cleaners near me`,
-          `commercial cleaning ${city.county.toLowerCase()}`,
-          `janitorial company ${city.region.toLowerCase()}`,
+          `${city.name.toLowerCase()} cleaners`,
+          `${city.name.toLowerCase()} janitorial company`,
+          `cleaning company ${city.county.toLowerCase()}`,
         ]}
         path={path}
         faqs={cityFaqs}
@@ -91,8 +92,8 @@ export default function CityPage() {
       />
       <CrumbStrip items={crumbs} />
       <PseoHero
-        h1={`Cleaning & Janitorial Services in ${city.name}, CA`}
-        sub={`Commercial janitorial, office cleaning, house cleaning, and specialty services across ${city.name} and all of ${city.county}. Licensed, insured, and eco-friendly for over 20 years.`}
+        h1={`Professional Cleaners & Janitorial Services in ${city.name}, CA`}
+        sub={`Top-rated commercial cleaners, janitorial programs, office cleaning, and house cleaning services across ${city.name} and ${city.county}. Licensed, insured, eco-friendly for over 20 years.`}
         image={HERO_IMAGES[getConsistentIndex(city.name, HERO_IMAGES.length)]}
         city={city.name}
       />
@@ -101,24 +102,23 @@ export default function CityPage() {
         <div className="container split">
           <div className="prose">
             <div className="eyebrow">{city.county} · {city.region}</div>
-            <h2 className="h2">Your Local {city.name} Cleaning Company</h2>
+            <h2 className="h2">Your Trusted Local Cleaners &amp; Janitorial Team in {city.name}</h2>
             <p>{city.blurb}</p>
             <p>
-              Dozeles Professional Cleaning has provided commercial and residential cleaning services throughout{' '}
+              Looking for reliable <strong>cleaners near me in {city.name}</strong>? Dozeles Professional Cleaning has provided premier commercial and residential cleaning services throughout{' '}
               {city.region} for more than twenty years. In {city.name} we serve offices, retail
-              storefronts, medical suites, government facilities, apartments, and single-family
-              homes — with the same crews, the same checklists, and the same guarantee on every job.
+              storefronts, medical suites, government facilities, and homes with dedicated programs:
             </p>
-            <p>
-              We cover{' '}
-              <strong>{city.landmarks.join(', ')}</strong> and every neighborhood in between.
-              Because we schedule by route rather than by dispatch, {city.name} clients get
-              consistent arrival times and the same team on every visit — which is the single
-              biggest factor in whether a cleaning contract actually holds up over years.
-            </p>
-            <Link to="/book" className="btn btn-blue" style={{ marginTop: 12 }}>
-              Get a Free {city.name} Quote
-            </Link>
+            <ul className="checklist">
+              <li><Link to={`/services/commercial-cleaning/${city.slug}`} style={{ color: 'var(--blue)', fontWeight: 600 }}>Commercial &amp; Office Cleaners in {city.name}</Link></li>
+              <li><Link to={`/services/janitorial-services/${city.slug}`} style={{ color: 'var(--blue)', fontWeight: 600 }}>Nightly &amp; Recurring Janitorial Services in {city.name}</Link></li>
+              <li><Link to={`/services/residential-cleaning/${city.slug}`} style={{ color: 'var(--blue)', fontWeight: 600 }}>Residential House Cleaners in {city.name}</Link></li>
+              <li><Link to={`/services/deep-cleaning/${city.slug}`} style={{ color: 'var(--blue)', fontWeight: 600 }}>Deep Cleaning &amp; Sanitizing in {city.name}</Link></li>
+            </ul>
+            <div style={{ marginTop: 22 }}>
+              <Link to="/book" className="btn btn-blue">Book Cleaners in {city.name}</Link>
+              <a href="tel:6502900280" className="btn btn-outline" style={{ marginLeft: 12 }}>650-290-0280</a>
+            </div>
           </div>
           <img
             src={CONTENT_IMAGES[getConsistentIndex(city.name + 'body', CONTENT_IMAGES.length)]}

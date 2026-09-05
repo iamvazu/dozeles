@@ -128,7 +128,16 @@ export default function Seo({
                 addressCountry: 'US',
               },
               priceRange: '$$',
-              aggregateRating: { '@type': 'AggregateRating', ratingValue: '5', reviewCount: '6' },
+              aggregateRating: { '@type': 'AggregateRating', ratingValue: '5', reviewCount: '40' },
+              knowsAbout: [
+                'Cleaners',
+                'Cleaning Services',
+                'Cleaners Near Me',
+                'Janitorial Services',
+                'Commercial Cleaners',
+                'Office Cleaning Services',
+                'Residential House Cleaners',
+              ],
             },
             areaServed: areaServed
               ? { '@type': 'City', name: areaServed }

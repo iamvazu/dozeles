@@ -38,14 +38,12 @@ export function PseoHero({ h1, sub, image, city }) {
             Call 650-290-0280
           </a>
         </div>
-        {city && (
-          <div className="hero-badges" style={{ marginTop: 30 }}>
-            <span>Serving {city}</span>
-            <span>Licensed &amp; Insured</span>
-            <span>20+ Years Experience</span>
-            <span>Free On-Site Quote</span>
-          </div>
-        )}
+        <div className="hero-badges" style={{ marginTop: 30 }}>
+          <span>{city ? `Top-Rated Cleaners in ${city}` : 'Top-Rated Cleaners Near Me'}</span>
+          <span>Commercial &amp; Residential Cleaning Services</span>
+          <span>Professional Janitorial Programs</span>
+          <span>Licensed &amp; Insured · 20+ Yrs</span>
+        </div>
       </div>
     </div>
   );
@@ -105,19 +103,19 @@ export function FaqSection({ faqs, city, heading = 'Frequently Asked Questions' 
 
 export function WhyDozeles({ city }) {
   const points = [
-    { icon: 'badge', title: '20+ Years in Northern California', text: `Two decades cleaning ${city || 'Bay Area'} buildings means we have already solved whatever your facility is dealing with.` },
+    { icon: 'badge', title: '20+ Years of Trusted Cleaners', text: `Two decades as professional cleaners in ${city || 'Bay Area'} buildings means we have solved every commercial and residential cleaning challenge.` },
     { icon: 'shield', title: 'Licensed, Bonded & Insured', text: 'Certificates of insurance provided before we start, with your business named as additional insured.' },
-    { icon: 'leaf', title: 'Green-Certified & HEPA Equipped', text: 'Eco-friendly products and HEPA filtration capturing 99.97% of airborne particles — safer for staff, families, and pets.' },
-    { icon: 'clock', title: 'On Schedule, Every Time', text: 'Consistent crews, cross-trained backup staff, and same-day response when something needs attention.' },
-    { icon: 'sparkles', title: 'Documented Quality Control', text: 'Supervisor walkthroughs and written inspection reports, not a promise that the work got done.' },
-    { icon: 'sliders', title: '100% Satisfaction Guarantee', text: 'Flag an issue within 24 hours and we re-clean the area at no charge. No arguments, no invoices.' },
+    { icon: 'leaf', title: 'Eco Cleaning Services & HEPA Vacuuming', text: 'Eco-friendly products and HEPA filtration capturing 99.97% of airborne particles — safer for staff, families, and pets.' },
+    { icon: 'clock', title: 'Reliable Janitorial Crews On Schedule', text: 'Consistent janitorial crews, cross-trained backup staff, and same-day response whenever emergency cleaning is needed.' },
+    { icon: 'sparkles', title: 'Documented Quality Control', text: 'Supervisor walkthroughs and written inspection reports, ensuring our cleaners deliver spotless results every visit.' },
+    { icon: 'sliders', title: '100% Satisfaction Guarantee', text: 'Flag an issue within 24 hours and our cleaners re-clean the area at no charge. No arguments, no invoices.' },
   ];
   return (
     <section className="section-cream">
       <div className="container">
         <div className="center" style={{ marginBottom: 40 }}>
-          <div className="eyebrow">Why Dozeles Professional Cleaning</div>
-          <h2 className="h2">Why {city || 'Northern California'} Chooses Dozeles Professional Cleaning</h2>
+          <div className="eyebrow">Why Choose Dozeles</div>
+          <h2 className="h2">Why {city || 'Northern California'} Chooses Our Cleaners &amp; Janitorial Teams</h2>
         </div>
         <div className="grid grid-3">
           {points.map((p) => (
@@ -138,13 +136,12 @@ export function CtaStrip({ city, service }) {
     <div className="cta-band">
       <div className="container">
         <h2>
-          Get Your Free {service || 'Cleaning'} Quote{city ? ` in ${city}` : ''}
+          Get Your Free {service || 'Cleaning Services'} Quote{city ? ` in ${city}` : ''}
         </h2>
         <p style={{ maxWidth: 620, margin: '0 auto 26px', color: '#dbe7f3' }}>
-          Free on-site walkthrough, fixed written pricing, and no long-term contract required.
-          Most quotes are returned within one business day.
+          Connect with professional local cleaners today. Free on-site walkthrough, fixed written pricing, and no long-term contracts.
         </p>
-        <Link to="/book" className="btn btn-white">Request My Quote</Link>
+        <Link to="/book" className="btn btn-white">Book Cleaners Now</Link>
         <a href="tel:6502900280" className="btn btn-outline" style={{ borderColor: '#fff', color: '#fff', marginLeft: 12 }}>
           Call 650-290-0280
         </a>
@@ -159,31 +156,34 @@ export function LinkMesh({ service, industry, city, limit = 24 }) {
     <section className="section-alt" style={{ padding: '80px 0' }}>
       <div className="container">
         <div className="center" style={{ marginBottom: 50 }}>
-          <div className="eyebrow">Explore More</div>
-          <h2 className="h2">Find Local Cleaning Services</h2>
+          <div className="eyebrow">Explore Cleaning Services &amp; Locations</div>
+          <h2 className="h2">Find Professional Cleaners &amp; Janitorial Services Near You</h2>
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '50px' }}>
            {city && (
              <div>
-                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Services in {city.name}</h3>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Cleaning Services in {city.name}</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {SERVICES.map((s) => (
                     <Link key={s.slug} to={`/services/${s.slug}/${city.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', borderBottom: '1px solid #eaeaea', paddingBottom: 10, fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = 'var(--blue)'} onMouseLeave={(e) => e.target.style.color = 'var(--text)'}>
-                      {s.short} in {city.name}
+                      {s.title} in {city.name}
                     </Link>
                   ))}
+                  <Link to={`/cleaning-services/${city.slug}`} style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'none', paddingTop: 6 }}>
+                    &rarr; All Cleaners &amp; Janitorial in {city.name}
+                  </Link>
                 </div>
              </div>
            )}
 
            {industry && (
              <div>
-                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>{industry.short} Locations</h3>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>{industry.short} Cleaners by Location</h3>
                 <div className="chip-row" style={{ gap: 10 }}>
                   {cityList.map((c) => (
                     <Link key={c.slug} to={`/industries/${industry.slug}/${c.slug}`} className="chip" style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
-                      {c.name}, CA
+                      {c.name} {industry.short} Cleaners
                     </Link>
                   ))}
                 </div>
@@ -192,11 +192,11 @@ export function LinkMesh({ service, industry, city, limit = 24 }) {
 
            {service && (
              <div>
-                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>{service.short} Locations</h3>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>{service.short} Cleaners Near Me</h3>
                 <div className="chip-row" style={{ gap: 10 }}>
                   {cityList.map((c) => (
                     <Link key={c.slug} to={`/services/${service.slug}/${c.slug}`} className="chip" style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
-                      {c.name}, CA
+                      {c.name} {service.short}
                     </Link>
                   ))}
                 </div>
@@ -205,14 +205,14 @@ export function LinkMesh({ service, industry, city, limit = 24 }) {
 
            {city && city.neighbors?.length > 0 && (
              <div>
-                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Nearby Areas</h3>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Cleaners Near Me (Nearby Cities)</h3>
                 <div className="chip-row" style={{ gap: 10 }}>
                   {city.neighbors
                     .map((n) => CITIES.find((c) => c.slug === n))
                     .filter(Boolean)
                     .map((n) => (
                       <Link className="chip" key={n.slug} to={`/cleaning-services/${n.slug}`} style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
-                        {n.name}
+                        Cleaners in {n.name}
                       </Link>
                     ))}
                 </div>
@@ -221,11 +221,11 @@ export function LinkMesh({ service, industry, city, limit = 24 }) {
 
            {!city && service && (
              <div>
-                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Other Services We Offer</h3>
+                <h3 className="h3" style={{ fontSize: '1.25rem', marginBottom: 24, paddingBottom: 12, borderBottom: '2px solid var(--blue)' }}>Popular Cleaning Services</h3>
                 <div className="chip-row" style={{ gap: 10 }}>
                   {SERVICES.filter((s) => s.slug !== service.slug).map((s) => (
                     <Link key={s.slug} to={`/services/${s.slug}`} className="chip" style={{ fontSize: '0.85rem', padding: '8px 14px' }}>
-                      {s.short}
+                      {s.title}
                     </Link>
                   ))}
                 </div>

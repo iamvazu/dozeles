@@ -150,55 +150,56 @@ export default function Home() {
         <div className="container chero-grid">
           <div>
             <h1>
-              Sparkling <span className="accent">Residential &amp; Commercial</span> Cleaning Services
+              Top-Rated <span className="accent">Cleaners &amp; Cleaning Services</span> Near You
             </h1>
             <p className="sub">
-              Stop spending your evenings and weekends cleaning. Dozeles Professional Cleaning has kept Bay Area homes,
-              offices, and public buildings spotless for over 20 years — eco-friendly, insured, and
-              guaranteed.
+              Stop searching for reliable <strong>cleaners near me</strong>. Dozeles Professional Cleaning delivers premier{' '}
+              <Link to="/services-offered" style={{ color: '#fff', textDecoration: 'underline' }}>commercial cleaning services</Link>,{' '}
+              <Link to="/services/janitorial-services" style={{ color: '#fff', textDecoration: 'underline' }}>janitorial</Link> programs, and residential{' '}
+              <Link to="/services/residential-cleaning" style={{ color: '#fff', textDecoration: 'underline' }}>cleaners</Link> across the Bay Area for over 20 years — eco-friendly, licensed, insured, and guaranteed.
             </p>
             <div className="chero-cta">
               <Link to="/book" className="btn btn-blue">Free Quote</Link>
               <Link to="/services-offered" className="btn btn-outline">Our Services</Link>
             </div>
             <div className="pill-row">
-              <span className="pill-feat"><Icon name="badge" size={17} /> Professional</span>
-              <span className="pill-feat"><Icon name="sparkles" size={17} /> Eco-Friendly</span>
-              <span className="pill-feat"><Icon name="clock" size={17} /> Convenient</span>
+              <span className="pill-feat"><Icon name="badge" size={17} /> Vetted Cleaners</span>
+              <span className="pill-feat"><Icon name="sparkles" size={17} /> Eco Cleaning</span>
+              <span className="pill-feat"><Icon name="clock" size={17} /> Janitorial Experts</span>
             </div>
             <div className="review-badge">
               <span className="score">5.0</span>
               <span>
                 <span className="stars">★★★★★</span>
                 <br />
-                <span className="count">Rated by Bay Area clients</span>
+                <span className="count">Top-Rated Cleaners by 40+ Clients</span>
               </span>
             </div>
           </div>
           <div className="hero-images">
             <img 
               src="/images/hero_residential.png" 
-              alt="Professional residential cleaning in the Bay Area" 
+              alt="Professional residential house cleaners in the Bay Area" 
               className="hero-bg"
               style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }} 
             />
             <img 
               src="/images/cannabis_store_cleaning.png" 
-              alt="Cannabis dispensary commercial cleaning" 
+              alt="Cannabis dispensary commercial cleaning services" 
               className="hero-bg"
               style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }} 
             />
 
             <img 
               src="/images/hero_commercial.png" 
-              alt="Professional commercial cleaning services" 
+              alt="Professional commercial cleaning services and janitorial" 
               loading="lazy" 
               className="hero-fg"
               style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }} 
             />
             <img 
               src="/images/corporate_lobby_cleaning.png" 
-              alt="Corporate building lobby cleaning" 
+              alt="Corporate building lobby cleaners" 
               loading="lazy" 
               className="hero-fg"
               style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }} 
@@ -244,32 +245,34 @@ export default function Home() {
           <div className="who-images">
             <img 
               src="/images/residential_cleaning.png" 
-              alt="The Dozeles Professional Cleaning residential cleaning team at work" 
+              alt="The Dozeles Professional Cleaning residential house cleaners team at work" 
               loading="lazy"
               style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }}
             />
             <img 
               src="/images/corporate_lobby_cleaning.png" 
-              alt="The Dozeles Professional Cleaning commercial cleaning team at work" 
+              alt="The Dozeles Professional Cleaning commercial cleaning services team at work" 
               loading="lazy"
               style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }}
             />
           </div>
           <div className="prose">
             <div className="eyebrow">Who We Are</div>
-            <h2 className="h2">The Best Option For a Sparkling Home or Office</h2>
+            <h2 className="h2">The Premier Choice for Cleaners &amp; Janitorial Services</h2>
             <p>
               Dozeles Professional Cleaning is a women-certified, family-run cleaning company serving the San Francisco Bay
-              Area and Northern California for more than two decades. Our mission is simple: connect
-              you with exceptional, thoroughly vetted cleaners who deliver results you can see.
+              Area and Northern California for more than two decades. Whether you need reliable{' '}
+              <Link to="/services/commercial-cleaning" style={{ color: 'var(--blue)', fontWeight: 600 }}>commercial cleaners</Link>, daily{' '}
+              <Link to="/services/janitorial-services" style={{ color: 'var(--blue)', fontWeight: 600 }}>janitorial services</Link>, or trusted{' '}
+              <Link to="/services/residential-cleaning" style={{ color: 'var(--blue)', fontWeight: 600 }}>house cleaning services</Link>, our mission is simple: provide exceptional, thoroughly vetted cleaners who deliver spotless results.
             </p>
             <ul className="checklist">
               <li>We keep you updated on every cleaning — no wondering whether it happened</li>
-              <li>Our cleaners treat your home and office like their own</li>
-              <li>Green-certified products safe around children, pets, and staff</li>
-              <li>Same crew every visit, so they learn your space and your preferences</li>
+              <li>Our vetted cleaners treat your home and office like their own</li>
+              <li>Green-certified cleaning products safe around children, pets, and staff</li>
+              <li>Same dedicated janitorial crew every visit, so they learn your space and preferences</li>
             </ul>
-            <Link to="/about-us" className="btn btn-blue" style={{ marginTop: 22 }}>Learn More</Link>
+            <Link to="/about-us" className="btn btn-blue" style={{ marginTop: 22 }}>Learn More About Us</Link>
           </div>
         </div>
       </section>

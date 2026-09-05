@@ -10,19 +10,20 @@ export default function Services() {
   return (
     <>
       <Seo
-        title="Cleaning Services | Commercial Janitorial & Residential — Dozeles Professional Cleaning"
-        description="Explore all Dozeles Professional Cleaning services: commercial cleaning, janitorial, office cleaning, residential house cleaning, move-out, post-construction, government facilities, Airbnb turnover, and disinfection. Bay Area & Northern California."
+        title="Professional Cleaners & Cleaning Services | Commercial Janitorial & House Cleaning — Dozeles"
+        description="Looking for trusted cleaners near me? Explore all Dozeles Professional Cleaning services: commercial cleaners, janitorial services, office cleaning, residential house cleaning, move-out, and post-construction across Northern California."
         keywords={[
-          'commercial cleaning services',
+          'cleaners',
+          'cleaning services',
+          'cleaners near me',
           'janitorial services',
+          'commercial cleaners',
           'office cleaning services',
           'residential cleaning services',
-          'move out cleaning',
+          'move out cleaners',
           'post construction cleaning',
           'government facility cleaning',
-          'airbnb cleaning service',
-          'disinfection services',
-          'cleaning services bay area',
+          'bay area cleaners',
         ]}
         path="/services-offered"
         breadcrumbs={[
@@ -36,12 +37,13 @@ export default function Services() {
         <div className="container">
           <div className="center" style={{ marginBottom: 44 }}>
             <div className="eyebrow">Complete Coverage</div>
-            <h2 className="h2">Nine Specialized Cleaning Service Lines</h2>
+            <h2 className="h2">Nine Specialized Cleaning Services &amp; Janitorial Lines</h2>
             <p className="lead">
-              Dozeles Professional Cleaning provides commercial janitorial, office cleaning, residential house cleaning,
-              and specialty services across {CITIES.length}+ cities in the San Francisco Bay Area
-              and Northern California. Every service uses green-certified products, HEPA-filtered
-              equipment, licensed and insured crews, and carries our free re-clean guarantee.
+              Looking for reliable <strong>cleaners near me</strong>? Dozeles Professional Cleaning delivers premier{' '}
+              <Link to="/services/commercial-cleaning" style={{ color: 'var(--blue)', fontWeight: 600 }}>commercial cleaning services</Link>, comprehensive{' '}
+              <Link to="/services/janitorial-services" style={{ color: 'var(--blue)', fontWeight: 600 }}>janitorial programs</Link>, and residential{' '}
+              <Link to="/services/residential-cleaning" style={{ color: 'var(--blue)', fontWeight: 600 }}>house cleaners</Link> across {CITIES.length}+ cities in the Bay Area.
+              Every service is eco-friendly, fully licensed, bonded, and backed by our free re-clean guarantee.
             </p>
           </div>
           <div className="grid grid-3">
@@ -50,7 +52,7 @@ export default function Services() {
                 <div className="icon"><Icon name={s.icon} /></div>
                 <h3>{s.title}</h3>
                 <p>{s.tagline}</p>
-                <div className="go">View {s.short} →</div>
+                <div className="go">Explore {s.short} Cleaners →</div>
               </Link>
             ))}
           </div>
