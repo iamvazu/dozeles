@@ -6,7 +6,7 @@ import {
   Edit3, Star, LogOut, X, Mail, Shield, ChevronLeft, 
   ChevronRight, DollarSign, Menu, Paperclip, FileText, 
   Upload, Building2, Download, Smartphone, Target, Briefcase, Layers,
-  Search, Filter, CheckCircle2, Clock, Trash2, Plus, ExternalLink, Send
+  Search, Filter, CheckCircle2, Clock, Trash2, Plus, ExternalLink, Send, Activity
 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, addMonths, subMonths } from 'date-fns';
 import ServiceQuote from './ServiceQuote.jsx';
@@ -16,6 +16,7 @@ import CustomersView from './CustomersView.jsx';
 import UsersAdminView from './UsersAdminView.jsx';
 import PricingAdminView from './PricingAdminView.jsx';
 import ContentEditorView from './ContentEditorView.jsx';
+import FacilityAuditsView from './FacilityAuditsView.jsx';
 
 const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
 
@@ -86,6 +87,7 @@ function Dashboard({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
+  const [selectedLeadForAudit, setSelectedLeadForAudit] = useState(null);
 
   useEffect(() => {
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -121,6 +123,7 @@ function Dashboard({ user, onLogout }) {
 
   if (user?.role === 'janitor') {
     navs = [
+      { id: 'audits', label: 'Facility Audits', icon: <Activity size={19} /> },
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
       { id: 'bookings', label: 'Assigned Schedule', icon: <CalendarCheck size={19} /> },
       { id: 'overview', label: 'Dashboard Overview', icon: <LayoutDashboard size={19} /> },
@@ -128,6 +131,7 @@ function Dashboard({ user, onLogout }) {
   } else {
     navs = [
       { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={19} /> },
+      { id: 'audits', label: 'Facility Audits', icon: <Activity size={19} /> },
       { id: 'leads', label: 'Leads & Pipeline', icon: <Target size={19} /> },
       { id: 'customers', label: 'Customers & CRM', icon: <Users size={19} /> },
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
@@ -276,7 +280,24 @@ function Dashboard({ user, onLogout }) {
 
         <div className="modern-content-wrapper">
           {tab === 'overview' && <Overview user={user} setTab={setTab} />}
-          {tab === 'leads' && <LeadsView user={user} onOpenQuotes={() => setTab('quotes')} onOpenCustomers={() => setTab('customers')} />}
+          {tab === 'audits' && (
+            <FacilityAuditsView 
+              user={user} 
+              onOpenLeads={() => setTab('leads')} 
+              initialLeadForAudit={selectedLeadForAudit} 
+            />
+          )}
+          {tab === 'leads' && (
+            <LeadsView 
+              user={user} 
+              onOpenQuotes={() => setTab('quotes')} 
+              onOpenCustomers={() => setTab('customers')} 
+              onStartAudit={(lead) => {
+                setSelectedLeadForAudit(lead);
+                setTab('audits');
+              }}
+            />
+          )}
           {tab === 'customers' && <CustomersView user={user} onOpenProject={(id) => setTab('projects')} onOpenQuote={(id) => setTab('quotes')} />}
           {tab === 'bookings' && <Bookings user={user} setTab={setTab} />}
           {tab === 'quotes' && <ServiceQuote user={user} onBackToBookings={() => setTab('bookings')} />}

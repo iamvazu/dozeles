@@ -20,6 +20,7 @@ import IndustryDetail from './pages/IndustryDetail.jsx';
 import IndustryCity from './pages/IndustryCity.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Admin from './admin/Admin.jsx';
+import CleanlinessReportCard from './components/CleanlinessReportCard.jsx';
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact-us" element={<Contact />} />
         <Route path="/book" element={<Booking />} />
+        <Route path="/report/:id" element={<CleanlinessReportCard />} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="/admin/*" element={<Admin />} />

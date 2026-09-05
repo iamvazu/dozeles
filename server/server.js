@@ -1270,6 +1270,369 @@ app.post('/api/admin/customers/:id/projects', requireAdmin, (req, res) => {
   res.status(201).json(project);
 });
 
+// ==========================================
+// FACILITY CLEANLINESS & SAFETY AUDITS (AI-POWERED)
+// ==========================================
+
+function computeAuditScores(payload) {
+  const atp = Number(payload.atpReading || 0);
+  let atpScore = 100;
+  if (atp === 0) atpScore = 85;
+  else if (atp <= 30) atpScore = Math.max(90, 100 - Math.round(atp * 0.3));
+  else if (atp <= 100) atpScore = Math.max(65, 90 - Math.round((atp - 30) * 0.35));
+  else atpScore = Math.max(25, 65 - Math.round((atp - 100) * 0.25));
+
+  // OSHA Score
+  const osha = payload.oshaChecklist || {};
+  const oshaKeys = Object.keys(osha);
+  let safetyScore = 100;
+  if (oshaKeys.length > 0) {
+    const passedCount = oshaKeys.filter(k => osha[k] === true).length;
+    safetyScore = Math.round((passedCount / oshaKeys.length) * 100);
+  }
+
+  // Restroom / Hygiene Score
+  let restroomScore = Number(payload.restroomScore);
+  if (isNaN(restroomScore) || restroomScore <= 0) {
+    const defs = payload.deficiencies || [];
+    const critDefs = defs.filter(d => d.severity === 'critical').length;
+    const modDefs = defs.filter(d => d.severity === 'moderate').length;
+    const minorDefs = defs.filter(d => d.severity === 'minor').length;
+    restroomScore = Math.max(20, 100 - (critDefs * 22) - (modDefs * 12) - (minorDefs * 5));
+  }
+
+  // Scope & Rate Benchmark
+  const sqftNum = parseInt(String(payload.sqFootage || payload.sqft || '').replace(/[^0-9]/g, ''), 10) || 5000;
+  const currentSpend = Number(payload.currentRate || payload.currentSpend || 0);
+  const currentPerSqft = currentSpend > 0 ? (currentSpend / sqftNum).toFixed(3) : 0;
+  
+  const marketBaselineRate = estimateFacilityMonthlyValue(payload.facilityType || 'Tech / Corporate Office', sqftNum) / sqftNum;
+  let scopeScore = 85;
+  if (currentSpend > 0) {
+    const ratio = (currentSpend / sqftNum) / marketBaselineRate;
+    if (ratio >= 0.85 && ratio <= 1.25) scopeScore = 90;
+    else if (ratio < 0.85) scopeScore = 65; // Under-scoped
+    else scopeScore = 70; // Over-paying
+  }
+
+  // Weighted overall
+  const overallScore = Math.round((restroomScore * 0.35) + (atpScore * 0.25) + (safetyScore * 0.25) + (scopeScore * 0.15));
+
+  let grade = 'A';
+  if (overallScore >= 93) grade = 'A+';
+  else if (overallScore >= 88) grade = 'A';
+  else if (overallScore >= 80) grade = 'B';
+  else if (overallScore >= 70) grade = 'C';
+  else if (overallScore >= 60) grade = 'D';
+  else grade = 'F';
+
+  return {
+    atpScore,
+    restroomScore,
+    safetyScore,
+    scopeScore,
+    overallScore,
+    grade,
+    currentPerSqft,
+    marketPerSqft: marketBaselineRate.toFixed(3),
+  };
+}
+
+// AI Analysis Engine
+async function analyzeAuditWithAI(data) {
+  const scores = computeAuditScores(data);
+  const { companyName, facilityType, sqFootage, atpReading, atpLocation, deficiencies, oshaChecklist, fieldNotes } = data;
+
+  const promptText = `
+You are an expert commercial facility cleanliness, bio-load, and Cal/OSHA safety inspector for Dozeles Professional Cleaning (San Francisco Bay Area, 20+ years in business, California Certified Small Business & DIR Registered).
+
+Analyze this on-site facility audit:
+- Company/Facility: ${companyName || 'Commercial Facility'} (${facilityType || 'Commercial Space'})
+- Square Footage: ${sqFootage || '5,000 sq.ft.'}
+- ATP Swab Reading: ${atpReading || 'N/A'} RLU (Tested at: ${atpLocation || 'General Touchpoint'})
+- Restroom & Grout Deficiencies: ${JSON.stringify(deficiencies || [])}
+- Cal/OSHA Safety Checklist: ${JSON.stringify(oshaChecklist || {})}
+- Field Inspector Notes: ${fieldNotes || 'Standard facility walkthrough'}
+
+Generate a structured inspection report including:
+1. Executive Summary: 2-3 concise paragraphs summarizing cleanliness state, bio-load risk, and vendor performance.
+2. Top 3 Critical Deficiencies and immediate remediation required.
+3. Cal/OSHA Compliance Assessment.
+4. Dozeles Custom SOP Solution (HEPA vacuuming, hospital-grade disinfectant, microfiber color-coding, supervisor QC walkthroughs).
+`;
+
+  // Check if OPENAI_API_KEY exists
+  if (process.env.OPENAI_API_KEY) {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            { role: 'system', content: 'You are a certified master facility hygiene and OSHA auditor. Return valid JSON.' },
+            { role: 'user', content: promptText }
+          ],
+          response_format: { type: 'json_object' }
+        })
+      });
+      const aiData = await response.json();
+      if (aiData.choices && aiData.choices[0]) {
+        const parsed = JSON.parse(aiData.choices[0].message.content);
+        return {
+          ...scores,
+          aiSummary: parsed.executiveSummary || parsed.summary || promptText,
+          topDeficiencies: parsed.topDeficiencies || [],
+          oshaAssessment: parsed.oshaAssessment || '',
+          dozelesSolution: parsed.dozelesSolution || ''
+        };
+      }
+    } catch (err) {
+      console.warn('OpenAI API call failed, falling back to built-in audit synthesis engine:', err.message);
+    }
+  }
+
+  // Built-in intelligent synthesis engine
+  let atpEvaluation = 'Within acceptable sanitary threshold.';
+  if (Number(atpReading) > 100) {
+    atpEvaluation = `CRITICAL BIO-LOAD ALERT: ATP reading of ${atpReading} RLU at ${atpLocation || 'high-touch surfaces'} exceeds hospital & commercial safe thresholds (<30 RLU), indicating active microbial residue, cross-contamination, and insufficient dwell-time disinfection by the current cleaning contractor.`;
+  } else if (Number(atpReading) > 30) {
+    atpEvaluation = `ELEVATED BIO-LOAD: ATP reading of ${atpReading} RLU at ${atpLocation || 'high-touch surfaces'} shows microbial buildup requiring enzyme treatment and microfiber cross-contamination controls.`;
+  }
+
+  const failedOshaItems = Object.entries(oshaChecklist || {})
+    .filter(([k, v]) => v === false)
+    .map(([k]) => k.replace(/([A-Z])/g, ' $1').toLowerCase());
+
+  const oshaSummary = failedOshaItems.length > 0
+    ? `Cal/OSHA flags detected in: ${failedOshaItems.join(', ')}. Requires updated GHS chemical labels, dedicated secondary containment trays, and unobstructed emergency eyewash/electrical clearances.`
+    : `Cal/OSHA primary safety compliance verified in chemical storage and hazard signage.`;
+
+  const topDeficiencies = (deficiencies && deficiencies.length > 0)
+    ? deficiencies.slice(0, 3).map(d => ({
+        category: d.category || 'General Cleanliness',
+        issue: d.note || 'Accumulated grime / unaddressed surface',
+        severity: d.severity || 'moderate',
+        correctiveAction: `Apply EPA-registered neutral disinfectant, deep rotary scrubbing, and micro-fiber extraction.`
+      }))
+    : [
+        { category: 'Restroom Tile & Grout', issue: 'Porous grout soil accumulation and urinal uric scale buildup', severity: 'moderate', correctiveAction: 'Acidic tile rejuvenation and high-temperature extraction.' },
+        { category: 'High-Touch Surface Disinfection', issue: 'Irregular sanitization on door hardware, light switches, and breakroom fixtures', severity: 'moderate', correctiveAction: 'Hospital-grade dual-quaternary disinfectant with 10-minute dwell time.' },
+        { category: 'Air Quality & Dusting', issue: 'High-level HVAC return vents and baseboard dust accumulation', severity: 'minor', correctiveAction: 'Four-stage HEPA backpack filtration capturing 99.97% of particulates to 0.3 microns.' }
+      ];
+
+  const aiSummary = `On-site inspection of ${companyName || 'the facility'} (${sqFootage || 'Commercial Space'}) yielded an overall cleanliness and safety rating of ${scores.overallScore}/100 (Grade ${scores.grade}). 
+
+${atpEvaluation}
+
+${oshaSummary}
+
+Dozeles Professional Cleaning's Standard Operating Procedures (SOP) directly resolve these deficiencies through daily multi-tier color-coded microfiber protocols (eliminating cross-contamination between restrooms and workstations), hospital-grade EPA List N disinfectants, quarterly rotary grout restoration, and monthly supervisor quality scorecards.`;
+
+  return {
+    ...scores,
+    aiSummary,
+    topDeficiencies,
+    oshaAssessment: oshaSummary,
+    dozelesSolution: `Full transition to Dozeles green-certified cleaning protocols, dedicated on-site supervisor walkthroughs, and guaranteed 24-hour issue correction.`
+  };
+}
+
+// GET all audits
+app.get('/api/admin/audits', requireAuth, (req, res) => {
+  if (!db.audits) db.audits = [];
+  const sorted = [...db.audits].sort((a, b) => new Date(b.auditDate || b.createdAt) - new Date(a.auditDate || a.createdAt));
+  res.json(sorted);
+});
+
+// GET single audit
+app.get('/api/admin/audits/:id', requireAuth, (req, res) => {
+  const audit = (db.audits || []).find(a => a.id === req.params.id);
+  if (!audit) return res.status(404).json({ error: 'Audit not found' });
+  res.json(audit);
+});
+
+// POST analyze endpoint (standalone or pre-save)
+app.post('/api/audits/analyze', async (req, res) => {
+  try {
+    const analysis = await analyzeAuditWithAI(req.body);
+    res.json(analysis);
+  } catch (err) {
+    console.error('Audit analysis error:', err);
+    res.status(500).json({ error: err.message || 'Failed to analyze audit' });
+  }
+});
+
+// POST create audit
+app.post('/api/admin/audits', requireAuth, async (req, res) => {
+  if (!db.audits) db.audits = [];
+
+  const body = req.body || {};
+  const scoresAndAi = await analyzeAuditWithAI(body);
+
+  const newAudit = {
+    id: newId(),
+    leadId: body.leadId || '',
+    companyName: body.companyName || 'Untitled Facility',
+    contactName: body.contactName || '',
+    email: body.email || '',
+    phone: body.phone || '',
+    address: body.address || '',
+    facilityType: body.facilityType || 'Tech / Corporate Office',
+    sqFootage: body.sqFootage || '5,000 sq.ft.',
+    currentRate: Number(body.currentRate || 0),
+    inspectorName: body.inspectorName || req.user?.name || 'Field Inspector',
+    auditDate: body.auditDate || new Date().toISOString(),
+    atpReading: Number(body.atpReading || 0),
+    atpLocation: body.atpLocation || 'Main Restroom Handle',
+    restroomScore: scoresAndAi.restroomScore,
+    safetyScore: scoresAndAi.safetyScore,
+    scopeScore: scoresAndAi.scopeScore,
+    overallScore: scoresAndAi.overallScore,
+    grade: scoresAndAi.grade,
+    deficiencies: body.deficiencies || scoresAndAi.topDeficiencies || [],
+    oshaChecklist: body.oshaChecklist || {},
+    fieldNotes: body.fieldNotes || '',
+    aiSummary: body.aiSummary || scoresAndAi.aiSummary,
+    dozelesSolution: scoresAndAi.dozelesSolution,
+    status: body.status || 'completed',
+    pdfUrl: `/report/${newAuditId()}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  function newAuditId() { return newId(); }
+
+  db.audits.unshift(newAudit);
+
+  // If connected to a lead, update lead stage
+  if (body.leadId && db.leads) {
+    const lead = db.leads.find(l => l.id === body.leadId);
+    if (lead) {
+      lead.stage = 'proposal_sent';
+      lead.auditId = newAudit.id;
+      lead.updatedAt = new Date().toISOString();
+    }
+  }
+
+  saveDb();
+  res.status(201).json(newAudit);
+});
+
+// PUT update audit
+app.put('/api/admin/audits/:id', requireAuth, async (req, res) => {
+  const idx = (db.audits || []).findIndex(a => a.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Audit not found' });
+
+  const existing = db.audits[idx];
+  const scoresAndAi = await analyzeAuditWithAI({ ...existing, ...req.body });
+
+  db.audits[idx] = {
+    ...existing,
+    ...req.body,
+    restroomScore: req.body.restroomScore !== undefined ? Number(req.body.restroomScore) : scoresAndAi.restroomScore,
+    safetyScore: req.body.safetyScore !== undefined ? Number(req.body.safetyScore) : scoresAndAi.safetyScore,
+    scopeScore: req.body.scopeScore !== undefined ? Number(req.body.scopeScore) : scoresAndAi.scopeScore,
+    overallScore: scoresAndAi.overallScore,
+    grade: scoresAndAi.grade,
+    aiSummary: req.body.aiSummary || scoresAndAi.aiSummary,
+    updatedAt: new Date().toISOString()
+  };
+
+  saveDb();
+  res.json(db.audits[idx]);
+});
+
+// DELETE audit
+app.delete('/api/admin/audits/:id', requireAuth, (req, res) => {
+  db.audits = (db.audits || []).filter(a => a.id !== req.params.id);
+  saveDb();
+  res.json({ ok: true });
+});
+
+// Send Report Card Email to Prospect & Leticia Maia
+app.post('/api/admin/audits/:id/send-email', requireAuth, async (req, res) => {
+  const audit = (db.audits || []).find(a => a.id === req.params.id);
+  if (!audit) return res.status(404).json({ error: 'Audit not found' });
+
+  const recipientEmail = audit.email || req.body.email;
+  if (!recipientEmail) return res.status(400).json({ error: 'Prospect email address is required' });
+
+  const reportLink = `${req.protocol}://${req.get('host')}/report/${audit.id}`;
+
+  const emailHtml = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+      <div style="background: linear-gradient(135deg, #0e5fd8, #0a4bb0); color: #ffffff; padding: 26px 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.5px;">DOZELES PROFESSIONAL CLEANING</h1>
+        <p style="margin: 6px 0 0 0; font-size: 13px; opacity: 0.9;">15-Point Facility Cleanliness &amp; Safety Audit Report Card</p>
+      </div>
+
+      <div style="padding: 30px;">
+        <p style="font-size: 15px; color: #1e293b; margin-top: 0;">Dear <strong>${audit.contactName || 'Facility Manager'}</strong>,</p>
+        <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+          Thank you for having Dozeles Professional Cleaning inspect <strong>${audit.companyName}</strong>. Our certified field inspector (${audit.inspectorName}) has completed your comprehensive 15-point facility audit.
+        </p>
+
+        <!-- Score Card Banner -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; text-align: center; margin: 20px 0;">
+          <div style="font-size: 12px; font-weight: 700; color: #64748b; letter-spacing: 1px; text-transform: uppercase;">Overall Facility Cleanliness &amp; Safety Grade</div>
+          <div style="font-size: 48px; font-weight: 900; color: ${audit.overallScore >= 80 ? '#15803d' : audit.overallScore >= 70 ? '#d97706' : '#dc2626'}; margin: 8px 0;">
+            ${audit.grade} <span style="font-size: 24px; font-weight: 600; color: #64748b;">(${audit.overallScore}/100)</span>
+          </div>
+          <div style="display: flex; justify-content: space-around; font-size: 12px; color: #475569; border-top: 1px solid #cbd5e1; padding-top: 12px; margin-top: 12px;">
+            <div><strong>ATP Bio-Load:</strong> ${audit.atpReading} RLU (${audit.atpScore}/100)</div>
+            <div><strong>Restroom/Grout:</strong> ${audit.restroomScore}/100</div>
+            <div><strong>Cal/OSHA Safety:</strong> ${audit.safetyScore}/100</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 16px; color: #0a2540; margin-bottom: 8px;">Executive Summary &amp; AI Analysis</h3>
+        <p style="font-size: 13.5px; color: #334155; line-height: 1.6; background: #eff6ff; border-left: 4px solid #0e5fd8; padding: 12px 14px; border-radius: 4px; white-space: pre-line;">
+          ${audit.aiSummary}
+        </p>
+
+        <div style="margin: 26px 0; text-align: center;">
+          <a href="${reportLink}" style="display: inline-block; background: #0e5fd8; color: #ffffff; padding: 14px 28px; font-weight: 700; font-size: 15px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 12px rgba(14, 95, 216, 0.3);">
+            📄 View &amp; Download Complete PDF Report Card ↗
+          </a>
+        </div>
+
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 18px; font-size: 12px; color: #64748b; line-height: 1.5;">
+          <strong>Dozeles Professional Cleaning</strong><br/>
+          Licensed, Bonded &amp; Insured • State Certified Small Business #2041212 • DIR Janitorial Reg. #JS-LR-1001274287<br/>
+          Direct Phone: <a href="tel:6502900280" style="color: #0e5fd8;">650-290-0280</a> | Email: <a href="mailto:dozelescleaning@gmail.com" style="color: #0e5fd8;">dozelescleaning@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    if (mailer) {
+      // Send to client
+      await mailer.sendMail({
+        from: `"Dozeles Facility Audits" <${process.env.SMTP_USER}>`,
+        to: recipientEmail,
+        cc: NOTIFY_RECIPIENTS,
+        subject: `🔬 Facility Cleanliness & Safety Report Card: ${audit.companyName} (Grade: ${audit.grade})`,
+        html: emailHtml
+      });
+      console.log(`[Audit Report Dispatched] Sent to: ${recipientEmail}, CC: ${NOTIFY_RECIPIENTS}`);
+    }
+
+    audit.status = 'sent';
+    audit.sentAt = new Date().toISOString();
+    saveDb();
+
+    res.json({ ok: true, message: `Report card successfully sent to ${recipientEmail}` });
+  } catch (err) {
+    console.error('Failed to send audit report email:', err);
+    res.status(500).json({ error: 'Failed to send email: ' + err.message });
+  }
+});
+
 // Content editing: replace a whole section (site, home, about, services, government, faqs, ...)
 const EDITABLE = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
 app.put('/api/admin/content/:section', requireAdmin, (req, res) => {

@@ -17,7 +17,7 @@ const STAGES = [
   { id: 'lost', label: 'Lost / Closed', color: '#64748b' }
 ];
 
-export default function LeadsView({ user, onOpenQuotes, onOpenCustomers }) {
+export default function LeadsView({ user, onOpenQuotes, onOpenCustomers, onStartAudit }) {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stageFilter, setStageFilter] = useState('all');
@@ -384,6 +384,17 @@ export default function LeadsView({ user, onOpenQuotes, onOpenCustomers }) {
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {onStartAudit && (
+                    <button 
+                      className="btn btn-outline"
+                      onClick={() => onStartAudit(l)}
+                      style={{ padding: '7px 10px', fontSize: '0.8rem', borderRadius: '6px', fontWeight: 600, color: '#0e5fd8', borderColor: '#bfdbfe', background: 'rgba(14, 95, 216, 0.05)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      title="Launch Mobile On-Site Inspector for this Lead"
+                    >
+                      <Activity size={14} /> Audit
+                    </button>
+                  )}
+
                   {l.stage !== 'won' ? (
                     <button 
                       className="btn btn-blue" 

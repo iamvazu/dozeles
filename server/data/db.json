@@ -414,7 +414,12 @@
       "password": "change-me-now",
       "name": "Master Admin",
       "role": "admin",
-      "createdAt": "2026-08-05T08:46:33.941Z"
+      "createdAt": "2026-08-05T08:46:33.941Z",
+      "lastLogin": "2026-09-05T20:29:48.817Z",
+      "lastActiveAt": "2026-09-05T20:29:48.825Z",
+      "loginCount": 4,
+      "lastIp": "::1",
+      "userAgent": "python-requests/2.32.2"
     }
   ],
   "pricing": {
@@ -613,6 +618,107 @@
       "assignedTo": "Vazu Admin",
       "createdAt": "2026-09-04T20:09:35.148Z",
       "updatedAt": "2026-09-05T20:09:35.148Z"
+    }
+  ],
+  "audits": [
+    {
+      "id": "mtou6r89z7xz68",
+      "leadId": "",
+      "companyName": "BioGenix Medical Innovation Center",
+      "contactName": "Dr. Vanessa Sterling",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "facilityType": "Medical / Dental Clinic",
+      "sqFootage": "8,500 sq.ft.",
+      "currentRate": 2400,
+      "inspectorName": "Master Admin",
+      "auditDate": "2026-09-05T20:29:49.786Z",
+      "atpReading": 142,
+      "atpLocation": "Restroom Main Faucet & Exam Room 3 Handle",
+      "restroomScore": 66,
+      "safetyScore": 71,
+      "scopeScore": 90,
+      "overallScore": 68,
+      "grade": "D",
+      "deficiencies": [
+        {
+          "category": "Restroom Tile & Grout",
+          "note": "High discoloration and uric acid crystallization around floor urinals",
+          "severity": "critical"
+        },
+        {
+          "category": "Touchpoint Sanitization",
+          "note": "Elevated microbial load on breakroom refrigerator handle",
+          "severity": "moderate"
+        }
+      ],
+      "oshaChecklist": {
+        "sdsBinderPresent": true,
+        "ghsChemicalLabels": false,
+        "secondaryContainment": true,
+        "eyewashUnobstructed": true,
+        "slipHazardSignage": true,
+        "electricalPanelClearance": false,
+        "emergencyEgressClear": true
+      },
+      "fieldNotes": "Current janitorial contractor only visits 2x/week at night and does not use hospital-grade disinfectants.",
+      "aiSummary": "On-site inspection of BioGenix Medical Innovation Center (8,500 sq.ft.) yielded an overall cleanliness and safety rating of 68/100 (Grade D). \n\nCRITICAL BIO-LOAD ALERT: ATP reading of 142 RLU at Restroom Main Faucet & Exam Room 3 Handle exceeds hospital & commercial safe thresholds (<30 RLU), indicating active microbial residue, cross-contamination, and insufficient dwell-time disinfection by the current cleaning contractor.\n\nCal/OSHA flags detected in: ghs chemical labels, electrical panel clearance. Requires updated GHS chemical labels, dedicated secondary containment trays, and unobstructed emergency eyewash/electrical clearances.\n\nDozeles Professional Cleaning's Standard Operating Procedures (SOP) directly resolve these deficiencies through daily multi-tier color-coded microfiber protocols (eliminating cross-contamination between restrooms and workstations), hospital-grade EPA List N disinfectants, quarterly rotary grout restoration, and monthly supervisor quality scorecards.",
+      "dozelesSolution": "Full transition to Dozeles green-certified cleaning protocols, dedicated on-site supervisor walkthroughs, and guaranteed 24-hour issue correction.",
+      "status": "sent",
+      "pdfUrl": "/report/mtou6r8bpi2zcn",
+      "createdAt": "2026-09-05T20:29:49.787Z",
+      "updatedAt": "2026-09-05T20:29:49.787Z",
+      "sentAt": "2026-09-05T20:29:54.936Z"
+    },
+    {
+      "id": "mtou653zxhj1yv",
+      "leadId": "",
+      "companyName": "BioGenix Medical Innovation Center",
+      "contactName": "Dr. Vanessa Sterling",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "facilityType": "Medical / Dental Clinic",
+      "sqFootage": "8,500 sq.ft.",
+      "currentRate": 2400,
+      "inspectorName": "Master Admin",
+      "auditDate": "2026-09-05T20:29:21.119Z",
+      "atpReading": 142,
+      "atpLocation": "Restroom Main Faucet & Exam Room 3 Handle",
+      "restroomScore": 66,
+      "safetyScore": 71,
+      "scopeScore": 90,
+      "overallScore": 68,
+      "grade": "D",
+      "deficiencies": [
+        {
+          "category": "Restroom Tile & Grout",
+          "note": "High discoloration and uric acid crystallization around floor urinals",
+          "severity": "critical"
+        },
+        {
+          "category": "Touchpoint Sanitization",
+          "note": "Elevated microbial load on breakroom refrigerator handle",
+          "severity": "moderate"
+        }
+      ],
+      "oshaChecklist": {
+        "sdsBinderPresent": true,
+        "ghsChemicalLabels": false,
+        "secondaryContainment": true,
+        "eyewashUnobstructed": true,
+        "slipHazardSignage": true,
+        "electricalPanelClearance": false,
+        "emergencyEgressClear": true
+      },
+      "fieldNotes": "Current janitorial contractor only visits 2x/week at night and does not use hospital-grade disinfectants.",
+      "aiSummary": "On-site inspection of BioGenix Medical Innovation Center (8,500 sq.ft.) yielded an overall cleanliness and safety rating of 68/100 (Grade D). \n\nCRITICAL BIO-LOAD ALERT: ATP reading of 142 RLU at Restroom Main Faucet & Exam Room 3 Handle exceeds hospital & commercial safe thresholds (<30 RLU), indicating active microbial residue, cross-contamination, and insufficient dwell-time disinfection by the current cleaning contractor.\n\nCal/OSHA flags detected in: ghs chemical labels, electrical panel clearance. Requires updated GHS chemical labels, dedicated secondary containment trays, and unobstructed emergency eyewash/electrical clearances.\n\nDozeles Professional Cleaning's Standard Operating Procedures (SOP) directly resolve these deficiencies through daily multi-tier color-coded microfiber protocols (eliminating cross-contamination between restrooms and workstations), hospital-grade EPA List N disinfectants, quarterly rotary grout restoration, and monthly supervisor quality scorecards.",
+      "dozelesSolution": "Full transition to Dozeles green-certified cleaning protocols, dedicated on-site supervisor walkthroughs, and guaranteed 24-hour issue correction.",
+      "status": "completed",
+      "pdfUrl": "/report/mtou653ztnm18j",
+      "createdAt": "2026-09-05T20:29:21.119Z",
+      "updatedAt": "2026-09-05T20:29:21.119Z"
     }
   ]
 }

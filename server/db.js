@@ -56,6 +56,7 @@ export function loadDb() {
   if (!db.projects) db.projects = [];
   if (!db.customers) db.customers = [];
   if (!db.leads) db.leads = [];
+  if (!db.audits) db.audits = [];
 
   if (db.customers.length === 0) {
     const cust1Id = newId();
