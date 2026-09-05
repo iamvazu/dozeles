@@ -12,6 +12,7 @@ import ServiceQuote from './ServiceQuote.jsx';
 import ProjectsView from './ProjectsView.jsx';
 import LeadsView from './LeadsView.jsx';
 import CustomersView from './CustomersView.jsx';
+import UsersAdminView from './UsersAdminView.jsx';
 
 const SECTIONS = ['site', 'home', 'whyUs', 'services', 'servicesPage', 'about', 'stats', 'government', 'faqs', 'beforeAfter', 'gallery'];
 const STATUSES = ['pending', 'quoted', 'scheduled', 'in-progress', 'completed', 'cancelled'];
@@ -280,7 +281,7 @@ function Dashboard({ user, onLogout }) {
           {tab === 'projects' && <ProjectsView user={user} />}
           {tab === 'messages' && <Messages />}
           {tab === 'reviews' && <ReviewsAdmin />}
-          {tab === 'users' && <UsersAdmin user={user} />}
+          {tab === 'users' && <UsersAdminView user={user} />}
           {tab === 'subscribers' && <Subscribers />}
           {tab === 'pricing' && <PricingAdmin />}
           {tab === 'content' && <ContentEditor />}
@@ -691,87 +692,7 @@ function Bookings({ user, setTab }) {
   );
 }
 
-function UsersAdmin({ user }) {
-  const [users, setUsers] = useState([]);
-  const [draft, setDraft] = useState({ name: '', email: '', password: '', role: 'janitor' });
-  const [err, setErr] = useState('');
 
-  const load = () => api.get('/api/admin/users').then(setUsers).catch(console.error);
-  useEffect(() => { load(); }, []);
-
-  async function add(e) {
-    e.preventDefault();
-    setErr('');
-    try {
-      await api.post('/api/admin/users', draft);
-      setDraft({ name: '', email: '', password: '', role: 'janitor' });
-      load();
-    } catch (err) {
-      setErr(err.message);
-    }
-  }
-
-  async function remove(id) {
-    if (confirm('Remove this team member?')) {
-      try {
-        await api.del(`/api/admin/users/${id}`);
-        load();
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-  }
-
-  return (
-    <>
-      <form className="form card" onSubmit={add} style={{ marginBottom: 30, maxWidth: 800 }}>
-        <h3 style={{ marginBottom: 16 }}>Add Team Member</h3>
-        <div className="form-row">
-          <input placeholder="Full Name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
-          <select value={draft.role} onChange={(e) => setDraft({ ...draft, role: e.target.value })} className="form-select" style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--line)' }}>
-            <option value="admin">Admin (Full Access &amp; Quotes)</option>
-            <option value="janitor">Janitor (Projects, Photo Station &amp; Tasks)</option>
-            <option value="staff">Staff (Bookings &amp; Schedule)</option>
-          </select>
-        </div>
-        <div className="form-row">
-          <input type="email" placeholder="Email Address" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} required />
-          <input type="password" placeholder="Temporary Password" value={draft.password} onChange={(e) => setDraft({ ...draft, password: e.target.value })} required />
-        </div>
-        <div>
-          <button className="btn btn-blue">Create User Account</button>
-          {err && <span style={{ color: '#b3261e', marginLeft: 16, fontSize: '0.85rem' }}>{err}</span>}
-        </div>
-      </form>
-      
-      <div className="table-card">
-        <table className="table">
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th></th></tr></thead>
-          <tbody>
-            {users.length === 0 && <tr><td colSpan="5">No users found.</td></tr>}
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td><strong>{u.name}</strong></td>
-                <td>{u.email}</td>
-                <td>
-                  <span className={`pill ${u.role === 'admin' ? 'done' : u.role === 'janitor' ? 'in-progress' : 'pending'}`}>
-                    {u.role === 'janitor' ? 'Field Janitor' : u.role}
-                  </span>
-                </td>
-                <td>{new Date(u.createdAt).toLocaleDateString()}</td>
-                <td style={{ textAlign: 'right' }}>
-                  {u.id !== user.id && (
-                    <button className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '0.75rem', borderColor: '#b3261e', color: '#b3261e' }} onClick={() => remove(u.id)}>Delete</button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
-}
 
 function Messages() {
   const [rows, setRows] = useState([]);

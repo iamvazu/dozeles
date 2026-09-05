@@ -97,10 +97,37 @@ app.post('/api/auth/login', (req, res) => {
   const user = db.users.find(u => u.email === email && u.password === password);
   
   if (user) {
+    user.lastLogin = new Date().toISOString();
+    user.lastActiveAt = new Date().toISOString();
+    user.loginCount = (user.loginCount || 0) + 1;
+    user.lastIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+    user.userAgent = req.headers['user-agent'] || 'Browser/App';
+    saveDb();
+
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '12h' });
-    return res.json({ token });
+    return res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        lastLogin: user.lastLogin,
+        loginCount: user.loginCount
+      }
+    });
   }
   res.status(401).json({ error: 'Invalid credentials' });
+});
+
+// Real-time heartbeat endpoint for logged in staff
+app.post('/api/admin/heartbeat', requireAuth, (req, res) => {
+  const user = db.users.find(u => u.id === req.user.id);
+  if (user) {
+    user.lastActiveAt = new Date().toISOString();
+    saveDb();
+  }
+  res.json({ ok: true, timestamp: new Date().toISOString() });
 });
 
 // ---------- public content API ----------
@@ -605,23 +632,88 @@ app.patch('/api/admin/messages/:id', requireAuth, (req, res) => {
 
 app.get('/api/admin/subscribers', requireAdmin, (req, res) => res.json(db.subscribers));
 
-// Users CRUD (Supports Admin, Janitor, Staff)
+// Users CRUD (Supports Admin, Janitor, Staff with rich analytics)
 app.get('/api/admin/users', requireAdmin, (req, res) => {
-  res.json(db.users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role || 'staff', createdAt: u.createdAt })));
+  const now = Date.now();
+  const enrichedUsers = db.users.map(u => {
+    const lastActiveTime = u.lastActiveAt ? new Date(u.lastActiveAt).getTime() : (u.lastLogin ? new Date(u.lastLogin).getTime() : 0);
+    const diffMinutes = lastActiveTime > 0 ? (now - lastActiveTime) / (1000 * 60) : 999999;
+    const isOnline = diffMinutes <= 15;
+    const isActiveToday = diffMinutes <= 1440; // 24 hours
+    
+    return {
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role || 'staff',
+      createdAt: u.createdAt,
+      lastLogin: u.lastLogin || null,
+      lastActiveAt: u.lastActiveAt || u.lastLogin || null,
+      loginCount: u.loginCount || (u.lastLogin ? 1 : 0),
+      isOnline,
+      isActiveToday,
+      lastIp: u.lastIp || null,
+      device: u.userAgent ? (u.userAgent.includes('Mobile') || u.userAgent.includes('Android') || u.userAgent.includes('iPhone') ? 'Mobile PWA' : 'Desktop Browser') : 'Web / App'
+    };
+  });
+  res.json(enrichedUsers);
 });
+
 app.post('/api/admin/users', requireAdmin, (req, res) => {
   const { email, password, name, role } = req.body;
   if (!email || !password || !name) return res.status(400).json({ error: 'Missing fields' });
-  if (db.users.find(u => u.email === email)) return res.status(400).json({ error: 'Email already exists' });
+  if (db.users.find(u => u.email.toLowerCase() === email.toLowerCase())) return res.status(400).json({ error: 'Email already exists' });
   
   const validRoles = ['admin', 'janitor', 'staff'];
   const assignedRole = validRoles.includes(role) ? role : 'janitor';
 
-  const user = { id: newId(), email, password, name, role: assignedRole, createdAt: new Date().toISOString() };
+  const user = {
+    id: newId(),
+    email: email.trim().toLowerCase(),
+    password,
+    name: name.trim(),
+    role: assignedRole,
+    createdAt: new Date().toISOString(),
+    lastLogin: null,
+    lastActiveAt: null,
+    loginCount: 0
+  };
   db.users.push(user);
   saveDb();
-  res.status(201).json({ id: user.id, email: user.email, name: user.name, role: user.role, createdAt: user.createdAt });
+  res.status(201).json({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    createdAt: user.createdAt,
+    lastLogin: null,
+    loginCount: 0,
+    isOnline: false,
+    isActiveToday: false
+  });
 });
+
+app.put('/api/admin/users/:id', requireAdmin, (req, res) => {
+  const user = db.users.find(u => u.id === req.params.id);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  const { name, role, password } = req.body;
+  if (name) user.name = name.trim();
+  if (role && ['admin', 'janitor', 'staff'].includes(role)) user.role = role;
+  if (password && password.trim()) user.password = password.trim();
+
+  saveDb();
+  res.json({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    createdAt: user.createdAt,
+    lastLogin: user.lastLogin || null,
+    loginCount: user.loginCount || 0
+  });
+});
+
 app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
   if (req.params.id === req.user.id) return res.status(400).json({ error: 'Cannot delete yourself' });
   db.users = db.users.filter((u) => u.id !== req.params.id);
