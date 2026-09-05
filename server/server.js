@@ -35,9 +35,6 @@ app.use('/api/uploads', express.static(uploadsDir));
 const db = loadDb();
 
 const NOTIFY_RECIPIENTS = Array.from(new Set([
-  process.env.NOTIFY_EMAIL,
-  'Maialeticia@hotmail.com',
-  'leticiamaia@hotmail.com',
   'dozelescleaning@gmail.com',
   ADMIN_EMAIL
 ].filter(Boolean))).join(', ');
@@ -139,8 +136,8 @@ function estimateFacilityMonthlyValue(facilityType, sqftStr) {
 
 // ---------- auth ----------
 function requireAuth(req, res, next) {
-  const header = req.headers.authorization || '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  const rawAuth = req.headers.authorization || req.headers['authorization'] || req.headers['x-access-token'] || req.headers['x-auth-token'] || req.query?.token || '';
+  const token = rawAuth.startsWith('Bearer ') ? rawAuth.slice(7) : rawAuth;
   if (!token) return res.status(401).json({ error: 'Not authenticated' });
   try {
     req.user = jwt.verify(token, JWT_SECRET);
@@ -179,8 +176,6 @@ app.post('/api/auth/login', (req, res) => {
   const isOfficialEmail = [
     'admin@dozeles.com',
     'dozelescleaning@gmail.com',
-    'maialeticia@hotmail.com',
-    'leticiamaia@hotmail.com',
     'admin',
     'dozeles'
   ].includes(cleanEmail);
@@ -191,7 +186,7 @@ app.post('/api/auth/login', (req, res) => {
       id: newId(),
       email: provisionedEmail,
       password: cleanPass,
-      name: cleanEmail.includes('leticia') || cleanEmail.includes('maia') ? 'Leticia Maia' : (cleanEmail.includes('dozeles') ? 'Dozeles Operations' : 'Master Admin'),
+      name: cleanEmail.includes('dozeles') ? 'Dozeles Operations' : 'Master Admin',
       role: 'admin',
       createdAt: new Date().toISOString()
     };
@@ -408,7 +403,7 @@ app.post('/api/walkthrough', rateLimitPublicForms, async (req, res) => {
       preferredDate: preferredDate || '',
       notes: notes || ''
     },
-    assignedTo: 'Leticia Maia',
+    assignedTo: 'Dozeles Operations',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -429,7 +424,7 @@ app.post('/api/walkthrough', rateLimitPublicForms, async (req, res) => {
 
   saveDb();
 
-  // 3. Dispatch Notification to Leticia Maia and Admin
+  // 3. Dispatch Notification to Operations and Admin
   const adminHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; color: #0A192F; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; background: #ffffff;">
       <div style="background: #0A2540; padding: 24px; color: #ffffff; text-align: center;">
@@ -561,7 +556,7 @@ app.post('/api/bookings', rateLimitPublicForms, async (req, res) => {
     stage: 'new',
     priority: 'high',
     notes: `[NEW BOOKING REQUEST]\nService: ${service}\nDate: ${date} ${time || ''}\nAddress: ${address || 'N/A'}\nNotes: ${notes || 'None'}`,
-    assignedTo: 'Leticia Maia',
+    assignedTo: 'Dozeles Operations',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
@@ -645,7 +640,7 @@ app.post('/api/contact', rateLimitPublicForms, async (req, res) => {
     stage: 'new',
     priority: 'medium',
     notes: message.trim(),
-    assignedTo: 'Leticia Maia',
+    assignedTo: 'Dozeles Operations',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
@@ -1498,8 +1493,8 @@ app.get('/api/admin/audits', requireAuth, (req, res) => {
   res.json(sorted);
 });
 
-// GET single audit
-app.get('/api/admin/audits/:id', requireAuth, (req, res) => {
+// GET single audit (Publicly viewable by report link)
+app.get(['/api/admin/audits/:id', '/api/reports/:id', '/api/audits/:id'], (req, res) => {
   const audit = (db.audits || []).find(a => a.id === req.params.id);
   if (!audit) return res.status(404).json({ error: 'Audit not found' });
   res.json(audit);
@@ -1603,7 +1598,7 @@ app.delete('/api/admin/audits/:id', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// Send Report Card Email to Prospect & Leticia Maia
+// Send Report Card Email to Prospect & Operations
 app.post('/api/admin/audits/:id/send-email', requireAuth, async (req, res) => {
   const audit = (db.audits || []).find(a => a.id === req.params.id);
   if (!audit) return res.status(404).json({ error: 'Audit not found' });
@@ -1611,7 +1606,9 @@ app.post('/api/admin/audits/:id/send-email', requireAuth, async (req, res) => {
   const recipientEmail = audit.email || req.body.email;
   if (!recipientEmail) return res.status(400).json({ error: 'Prospect email address is required' });
 
-  const reportLink = `${req.protocol}://${req.get('host')}/report/${audit.id}`;
+  const reqHost = req.get('host') || '';
+  const baseUrl = (reqHost.includes('dozeles.com')) ? `https://${reqHost}` : (process.env.APP_URL || 'https://dozeles.com');
+  const reportLink = `${baseUrl}/report/${audit.id}`;
 
   const emailHtml = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">

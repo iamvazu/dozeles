@@ -131,7 +131,7 @@ function Dashboard({ user, onLogout }) {
   } else {
     navs = [
       { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={19} /> },
-      { id: 'audits', label: 'Facility Audits', icon: <Activity size={19} /> },
+      { id: 'audits', label: '🔬 AI Facility Audits', icon: <Activity size={19} /> },
       { id: 'leads', label: 'Leads & Pipeline', icon: <Target size={19} /> },
       { id: 'customers', label: 'Customers & CRM', icon: <Users size={19} /> },
       { id: 'projects', label: 'Projects & Photos', icon: <Building2 size={19} /> },
@@ -302,7 +302,14 @@ function Dashboard({ user, onLogout }) {
           {tab === 'bookings' && <Bookings user={user} setTab={setTab} />}
           {tab === 'quotes' && <ServiceQuote user={user} onBackToBookings={() => setTab('bookings')} />}
           {tab === 'projects' && <ProjectsView user={user} />}
-          {tab === 'messages' && <Messages />}
+          {tab === 'messages' && (
+            <Messages 
+              onStartAudit={(lead) => {
+                setSelectedLeadForAudit(lead);
+                setTab('audits');
+              }} 
+            />
+          )}
           {tab === 'reviews' && <ReviewsAdmin />}
           {tab === 'users' && <UsersAdminView user={user} />}
           {tab === 'subscribers' && <Subscribers />}
@@ -339,6 +346,29 @@ function Overview({ user, setTab }) {
 
   return (
     <>
+      {/* Prominent AI Facility Audit Banner */}
+      <div style={{ background: 'linear-gradient(135deg, #0A2540 0%, #0E5FD8 100%)', borderRadius: '12px', padding: '22px 24px', color: '#ffffff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px', boxShadow: '0 8px 24px rgba(14, 95, 216, 0.2)' }}>
+        <div style={{ maxWidth: '640px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.18)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '8px' }}>
+            <Activity size={13} /> ON-SITE INSPECTION &amp; REPORT SUITE
+          </div>
+          <h3 style={{ margin: '0 0 6px 0', fontSize: '1.35rem', fontWeight: 800, color: '#ffffff' }}>
+            🔬 15-Point Facility Cleanliness &amp; Safety Audit
+          </h3>
+          <p style={{ margin: 0, fontSize: '0.88rem', color: '#e2e8f0', lineHeight: 1.5 }}>
+            Conduct on-site inspections, log ATP surface readings, capture photos, check Cal/OSHA compliance, and generate an AI-powered report card for the client in under 60 seconds.
+          </p>
+        </div>
+        <button 
+          className="btn" 
+          style={{ background: '#ffffff', color: '#0e5fd8', fontWeight: 800, padding: '12px 22px', borderRadius: '8px', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 14px rgba(0,0,0,0.15)', border: 'none', cursor: 'pointer' }}
+          onClick={() => setTab('audits')}
+        >
+          <Activity size={18} color="#0e5fd8" />
+          Conduct New Audit →
+        </button>
+      </div>
+
       {/* Sleek Compact Executive KPI Grid */}
       <div className="modern-kpi-grid">
         <div className="modern-kpi-card amber" onClick={() => setTab('bookings')}>
@@ -817,7 +847,7 @@ function Bookings({ user, setTab }) {
   );
 }
 
-function Messages() {
+function Messages({ onStartAudit }) {
   const [rows, setRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRead, setFilterRead] = useState('all');
@@ -993,10 +1023,39 @@ function Messages() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-              <a href={`mailto:${activeItem.email}?subject=Dozeles Cleaning Services Follow-Up`} className="btn btn-blue" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: 600 }}>
-                <Mail size={15} /> Reply via Email
-              </a>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <a href={`mailto:${activeItem.email}?subject=Dozeles Cleaning Services Follow-Up`} className="btn btn-blue" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: 600 }}>
+                  <Mail size={15} /> Reply via Email
+                </a>
+                
+                {onStartAudit && (
+                  <button 
+                    className="btn"
+                    style={{ background: 'linear-gradient(135deg, #0e5fd8, #0a4bb0)', color: '#ffffff', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '6px', fontSize: '0.84rem', fontWeight: 700, border: 'none', cursor: 'pointer' }}
+                    onClick={() => {
+                      const sqftMatch = activeItem.message?.match(/Square Footage:\s*([^\n]+)/i);
+                      const facilityMatch = activeItem.message?.match(/\(([^\)]+)\)/i);
+                      const companyMatch = activeItem.message?.match(/Request for ([^(]+)/i);
+
+                      const leadData = {
+                        companyName: companyMatch ? companyMatch[1].trim() : (activeItem.name || 'Commercial Facility'),
+                        contactName: activeItem.name || '',
+                        email: activeItem.email || '',
+                        phone: activeItem.phone || '',
+                        facilityType: facilityMatch ? facilityMatch[1].trim() : 'Commercial Office',
+                        sqFootage: sqftMatch ? sqftMatch[1].trim() : '4,000 sq.ft.',
+                        notes: activeItem.message
+                      };
+                      setActiveItem(null);
+                      onStartAudit(leadData);
+                    }}
+                  >
+                    <Activity size={15} /> 🔬 Start AI Facility Walkthrough Audit
+                  </button>
+                )}
+              </div>
+
               <button className="btn btn-outline" onClick={() => toggleRead(activeItem)} style={{ padding: '8px 14px', borderRadius: '6px', fontSize: '0.82rem' }}>
                 Mark as {activeItem.read ? 'Unread' : 'Read'}
               </button>

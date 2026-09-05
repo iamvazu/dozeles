@@ -160,16 +160,29 @@ export default function LeadsView({ user, onOpenQuotes, onOpenCustomers, onStart
           </p>
         </div>
 
-        {user?.role === 'admin' && (
-          <button 
-            onClick={() => setShowNewModal(true)} 
-            className="btn btn-blue"
-            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', fontWeight: 600 }}
-          >
-            <Plus size={17} />
-            <span>Add New Lead</span>
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {onStartAudit && (
+            <button 
+              onClick={() => onStartAudit(null)} 
+              className="btn"
+              style={{ background: 'linear-gradient(135deg, #0e5fd8, #0a4bb0)', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', borderRadius: '8px', fontWeight: 700, border: 'none', cursor: 'pointer', boxShadow: '0 4px 12px rgba(14,95,216,0.25)' }}
+            >
+              <Activity size={17} />
+              <span>🔬 Conduct On-Site Audit</span>
+            </button>
+          )}
+
+          {user?.role === 'admin' && (
+            <button 
+              onClick={() => setShowNewModal(true)} 
+              className="btn btn-outline"
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', borderRadius: '8px', fontWeight: 600, color: 'var(--navy)', borderColor: 'var(--line)' }}
+            >
+              <Plus size={17} />
+              <span>Add New Lead</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Top Pipeline KPI Bar */}

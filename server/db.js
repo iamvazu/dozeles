@@ -25,6 +25,12 @@ export function loadDb() {
   
   if (!db.users) db.users = [];
 
+  // Filter out removed accounts
+  db.users = db.users.filter(u => {
+    const e = (u.email || '').toLowerCase();
+    return !e.includes('leticia') && !e.includes('maialeticia');
+  });
+
   const defaultAdminAccounts = [
     {
       email: 'admin@dozeles.com',
@@ -36,18 +42,6 @@ export function loadDb() {
       email: 'dozelescleaning@gmail.com',
       password: process.env.ADMIN_PASSWORD || 'admin123',
       name: 'Dozeles Operations',
-      role: 'admin'
-    },
-    {
-      email: 'Maialeticia@hotmail.com',
-      password: process.env.ADMIN_PASSWORD || 'admin123',
-      name: 'Leticia Maia',
-      role: 'admin'
-    },
-    {
-      email: 'leticiamaia@hotmail.com',
-      password: process.env.ADMIN_PASSWORD || 'admin123',
-      name: 'Leticia Maia',
       role: 'admin'
     }
   ];

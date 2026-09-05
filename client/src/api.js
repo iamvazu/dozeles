@@ -7,7 +7,10 @@ async function request(path, options = {}) {
   const res = await fetch(BASE + path, {
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? { 
+        Authorization: `Bearer ${token}`,
+        'X-Access-Token': token
+      } : {}),
     },
     ...options,
   });
