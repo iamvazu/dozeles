@@ -138,8 +138,16 @@ export default function Seo({
         : null
     );
 
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'page_view', {
+        page_title: title,
+        page_location: url,
+        page_path: path,
+      });
+    }
+
     window.scrollTo(0, 0);
-  }, [title, description, url, noindex]);
+  }, [title, description, url, path, noindex]);
 
   return null;
 }
