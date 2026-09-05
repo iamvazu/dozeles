@@ -144,12 +144,12 @@ export default function Home() {
   const { site, stats } = useContent();
   const featured = FEATURED;
   const groups = citiesByRegion();
-  const [altHero, setAltHero] = useState(false);
+  const [heroSlide, setHeroSlide] = useState(0);
   const [showAuditModal, setShowAuditModal] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAltHero((prev) => !prev);
+      setHeroSlide((prev) => (prev + 1) % 3);
     }, 4500);
     return () => clearInterval(interval);
   }, []);
@@ -213,32 +213,49 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-images">
+            {/* Set 1: Residential Living & Commercial Janitorial Floor Care */}
             <img 
               src="/images/hero_residential.png" 
               alt="Professional residential house cleaners in the Bay Area" 
               className="hero-bg"
-              style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }} 
+              style={{ opacity: heroSlide === 0 ? 1 : 0, transition: 'opacity 1s ease-in-out', pointerEvents: heroSlide === 0 ? 'auto' : 'none' }} 
             />
-            <img 
-              src="/images/cannabis_store_cleaning.png" 
-              alt="Cannabis dispensary commercial cleaning services" 
-              className="hero-bg"
-              style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }} 
-            />
-
             <img 
               src="/images/hero_commercial.png" 
               alt="Professional commercial cleaning services and janitorial" 
               loading="lazy" 
               className="hero-fg"
-              style={{ opacity: altHero ? 0 : 1, transition: 'opacity 1s ease-in-out' }} 
+              style={{ opacity: heroSlide === 0 ? 1 : 0, transition: 'opacity 1s ease-in-out', pointerEvents: heroSlide === 0 ? 'auto' : 'none' }} 
+            />
+
+            {/* Set 2: Retail Dispensary & Corporate Lobby */}
+            <img 
+              src="/images/cannabis_store_cleaning.png" 
+              alt="Cannabis dispensary commercial cleaning services" 
+              className="hero-bg"
+              style={{ opacity: heroSlide === 1 ? 1 : 0, transition: 'opacity 1s ease-in-out', pointerEvents: heroSlide === 1 ? 'auto' : 'none' }} 
             />
             <img 
               src="/images/corporate_lobby_cleaning.png" 
               alt="Corporate building lobby cleaners" 
               loading="lazy" 
               className="hero-fg"
-              style={{ opacity: altHero ? 1 : 0, transition: 'opacity 1s ease-in-out' }} 
+              style={{ opacity: heroSlide === 1 ? 1 : 0, transition: 'opacity 1s ease-in-out', pointerEvents: heroSlide === 1 ? 'auto' : 'none' }} 
+            />
+
+            {/* Set 3: Pristine Kitchen & Spotless Commercial Restroom */}
+            <img 
+              src="/images/hero_kitchen_slide.png" 
+              alt="Luxury kitchen deep cleaning and countertop sanitization" 
+              className="hero-bg"
+              style={{ opacity: heroSlide === 2 ? 1 : 0, transition: 'opacity 1s ease-in-out', pointerEvents: heroSlide === 2 ? 'auto' : 'none' }} 
+            />
+            <img 
+              src="/images/hero_bathroom_slide.png" 
+              alt="Commercial restroom tile, fixtures and mirror sanitization" 
+              loading="lazy" 
+              className="hero-fg"
+              style={{ opacity: heroSlide === 2 ? 1 : 0, transition: 'opacity 1s ease-in-out', pointerEvents: heroSlide === 2 ? 'auto' : 'none' }} 
             />
           </div>
         </div>
