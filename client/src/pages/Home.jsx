@@ -154,9 +154,9 @@ export default function Home() {
             </h1>
             <p className="sub">
               Stop searching for reliable <strong>cleaners near me</strong>. Dozeles Professional Cleaning delivers premier{' '}
-              <Link to="/services-offered" style={{ color: '#fff', textDecoration: 'underline' }}>commercial cleaning services</Link>,{' '}
-              <Link to="/services/janitorial-services" style={{ color: '#fff', textDecoration: 'underline' }}>janitorial</Link> programs, and residential{' '}
-              <Link to="/services/residential-cleaning" style={{ color: '#fff', textDecoration: 'underline' }}>cleaners</Link> across the Bay Area for over 20 years — eco-friendly, licensed, insured, and guaranteed.
+              <Link to="/services-offered" style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'underline' }}>commercial cleaning services</Link>,{' '}
+              <Link to="/services/janitorial-services" style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'underline' }}>janitorial</Link> programs, and residential{' '}
+              <Link to="/services/residential-cleaning" style={{ color: 'var(--blue)', fontWeight: 600, textDecoration: 'underline' }}>cleaners</Link> across the Bay Area for over 20 years — eco-friendly, licensed, insured, and guaranteed.
             </p>
             <div className="chero-cta">
               <Link to="/book" className="btn btn-blue">Free Quote</Link>
