@@ -30,15 +30,15 @@ export const RES_FREQ = [
 ];
 
 export const RES_ADDONS = [
-  { id: 'fridge-empty', label: 'Inside empty refrigerator', price: 35, icon: 'home' },
-  { id: 'fridge-full', label: 'Inside occupied refrigerator', price: 45, icon: 'home' },
-  { id: 'oven', label: 'Inside oven', price: 35, icon: 'spray' },
-  { id: 'cabinets', label: 'Inside kitchen cabinets', price: 40, icon: 'store' },
-  { id: 'windows', label: 'Interior windows & tracks', price: 55, icon: 'image' },
-  { id: 'laundry', label: 'Laundry & folding', price: 35, icon: 'users' },
-  { id: 'dishes', label: 'Dish washing', price: 25, icon: 'sparkles' },
-  { id: 'garage', label: 'Garage sweep-out', price: 45, icon: 'truck' },
-  { id: 'pets', label: 'Heavy pet hair treatment', price: 40, icon: 'smile' },
+  { id: 'fridge-empty', label: 'Inside empty refrigerator', price: 50, icon: 'home' },
+  { id: 'fridge-full', label: 'Inside occupied refrigerator', price: 60, icon: 'home' },
+  { id: 'oven', label: 'Inside oven', price: 50, icon: 'spray' },
+  { id: 'cabinets', label: 'Inside kitchen cabinets', price: 50, icon: 'store' },
+  { id: 'windows', label: 'Interior windows, tracks & sills ($25–$30/window)', price: 30, icon: 'image' },
+  { id: 'laundry', label: 'Laundry & folding ($50/load)', price: 50, icon: 'users' },
+  { id: 'dishes', label: 'Dish washing', price: 35, icon: 'sparkles' },
+  { id: 'garage', label: 'Garage sweep-out', price: 50, icon: 'truck' },
+  { id: 'pets', label: 'Heavy pet hair treatment', price: 50, icon: 'smile' },
 ];
 
 /* ---------------- COMMERCIAL ---------------- */
