@@ -577,24 +577,22 @@ section { padding: 84px 0; }
 
 .modern-admin-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   background: #f8fafc;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #1e293b;
   position: relative;
 }
 
-/* Luxury Dark Navy Sidebar - Fixed Full Viewport Height */
+/* Luxury Dark Navy Sidebar - 100% Full Height Left Column */
 .modern-admin-sidebar {
   width: 280px;
   background: #0a192f;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
   height: 100vh;
   max-height: 100vh;
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -845,16 +843,11 @@ section { padding: 84px 0; }
   display: flex;
   flex-direction: column;
   min-width: 0;
-  margin-left: 280px;
-  width: calc(100% - 280px);
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: #f8fafc;
-  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.modern-admin-main.expanded {
-  margin-left: 74px;
-  width: calc(100% - 74px);
 }
 
 /* Top App Bar */
