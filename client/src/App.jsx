@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
@@ -28,8 +28,19 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about-us" element={<About />} />
+        <Route path="/about" element={<Navigate to="/about-us" replace />} />
         <Route path="/cleaning-process" element={<CleaningProcess />} />
         <Route path="/services-offered" element={<Services />} />
+        <Route path="/services" element={<Navigate to="/services-offered" replace />} />
+
+        {/* Common aliases & legacy redirect helpers */}
+        <Route path="/booking" element={<Navigate to="/book" replace />} />
+        <Route path="/estimate" element={<Navigate to="/pricing" replace />} />
+        <Route path="/quote" element={<Navigate to="/pricing" replace />} />
+        <Route path="/calculator" element={<Navigate to="/pricing" replace />} />
+        <Route path="/post-title-here*" element={<Navigate to="/blog" replace />} />
+        <Route path="/sample-page*" element={<Navigate to="/" replace />} />
+        <Route path="/hello-world*" element={<Navigate to="/blog" replace />} />
 
         {/* Programmatic SEO routes */}
         <Route path="/services/:service" element={<ServiceDetail />} />
@@ -46,6 +57,7 @@ export default function App() {
         <Route path="/blog" element={<BlogIndex />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/contact-us" element={<Contact />} />
+        <Route path="/contact" element={<Navigate to="/contact-us" replace />} />
         <Route path="/book" element={<Booking />} />
         <Route path="/report/:id" element={<CleanlinessReportCard />} />
         <Route path="*" element={<NotFound />} />
