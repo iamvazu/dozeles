@@ -245,7 +245,7 @@ function Dashboard({ user, onLogout }) {
       </aside>
       
       {/* Main Content Area */}
-      <main className="modern-admin-main">
+      <main className={`modern-admin-main ${collapsed ? 'expanded' : ''}`}>
         {/* Top Header Bar */}
         <header className="modern-top-bar no-print">
           <div className="top-bar-left">
